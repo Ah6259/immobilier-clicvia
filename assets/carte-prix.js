@@ -143,8 +143,12 @@
     dessiner();
     cadrer();
   }
-  function charger(src) {
-    return new Promise(function (ok, ko) { var s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
+  // audit de sécurité (16/10/2026) : une bibliothèque venue d'un autre site est vérifiée par son empreinte officielle (SRI) :
+  // si le fichier de cdnjs était modifié, le navigateur refuserait de l'exécuter
+  var SRI_LEAFLET_JS = "sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==";
+  var SRI_LEAFLET_CSS = "sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==";
+  function charger(src, integrite) {
+    return new Promise(function (ok, ko) { var s = document.createElement("script"); s.src = src; if (integrite) { s.integrity = integrite; s.crossOrigin = "anonymous"; } s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
   }
   function lancer() {
     zone = document.getElementById("cp-carte");
@@ -159,10 +163,10 @@
         if (window.CARTE_SUIT) { if (bt.getAttribute("data-mode")) CARTE_SUIT("mode", mode); if (bt.getAttribute("data-type")) CARTE_SUIT("type", type); }
       });
     });
-    var css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+    var css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; css.integrity = SRI_LEAFLET_CSS; css.crossOrigin = "anonymous";
     document.head.appendChild(css);
     Promise.all([charger(racine + "prix/carte.js?v=" + ((document.body && (document.body.getAttribute("data-cv") || document.body.getAttribute("data-maj"))) || "")),
-                 window.L ? Promise.resolve() : charger("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js")])
+                 window.L ? Promise.resolve() : charger("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js", SRI_LEAFLET_JS)])
       .then(demarrer).catch(function () { /* pas de réseau : l'ancienne carte reste affichée */ });
     document.addEventListener("langue", function () { if (carte) dessiner(); });
     // la recherche et la carte vont ensemble (15/10/2026, Ahmed : « si l'un est sélectionné, l'autre doit suivre »)

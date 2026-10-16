@@ -5,7 +5,7 @@
 // - Jamais en cache : requêtes non-GET, autres sites (statistiques, formulaires, Telegram, polices…), pages exclues.
 // Repris des autres sites d'Ahmed (Alerte Concours). Changer CACHE_VERSION pour vider le cache de tous les téléphones.
 const CACHE_VERSION = "1";
-const PREFIXE = "immobilier-tunisie-";                       // propre à ce site : tous les sites partagent ah6259.github.io
+const PREFIXE = "immobilier-tunisie-";                       // propre à ce site (caches séparés de ceux des autres sites)
 const CACHE = PREFIXE + CACHE_VERSION;
 const PORTEE = new URL("./", self.location.href).pathname;   // dossier du site, ex. /appels-offres-tunisie/
 const EXCLUS = [];                          // chemins jamais mis en cache (relatifs au site)

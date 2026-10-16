@@ -1,11 +1,11 @@
 /* Immobilier Tunisie — script commun à toutes les pages : langue (FR / AR), en-tête et pied de page, partage,
    numéros révélés au clic, protection légère contre la copie, service worker prudent, statistiques GoatCounter.
    Aucun script en ligne dans les pages (CSP). */
-/* Adresse : immobilier.clicvia.com (racine « / ») ; secours ah6259.github.io/immobilier-tunis/.
-   GoatCounter (compteur commun à tous les sites d'Ahmed) : préfixe /immobilier-tunis (nom du dépôt). */
-var BASE_SITE = /\.github\.io$/.test(location.hostname) ? "/immobilier-tunis/" : "/";
+/* Adresse : immobilier.clicvia.com (racine « / »).
+   Compteur de visites : préfixe /immobilier-tunis (gardé tel quel : continuité des statistiques). */
+var BASE_SITE = "/";
 window.goatcounter = window.goatcounter || {};
-window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier-tunis" + p : p; };   // préfixe = nom du dépôt (lien du tableau de bord GoatCounter → clicvia.com/immobilier-tunis/… → site)
+window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier-tunis" + p : p; };   // préfixe des statistiques (inchangé)
 
 (function () {
   var html = document.documentElement;

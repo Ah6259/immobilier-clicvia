@@ -73,3 +73,15 @@ jobs:
           git commit -qm "Site publié le $(date +'%d/%m/%Y %H:%M')"
           for essai in 1 2 3; do git pull --rebase -q && git push -q && exit 0; sleep $((essai * 10)); done
           exit 1
+      - name: Audit après publication (le code est-il toujours privé ? le site publié contient-il un fichier interdit ?)
+        if: steps.v.outputs.pub == 'oui'
+        run: |
+          # règle d'Ahmed (16/10/2026) : un audit de sécurité après CHAQUE publication, sans qu'il ait à le demander
+          code=$(curl -s -o /dev/null -w "%{http_code}" https://github.com/Ah6259/immobilier-tunis)
+          [ "$code" = "404" ] || { echo "ÉCHEC - le dépôt du code n'est plus privé (réponse $code)"; exit 1; }
+          python -c "import sys; sys.path.insert(0, 'moteur/tools'); import publier; f = publier.fuites('public'); print('ÉCHEC - fichiers interdits publiés : ' + ', '.join(f) if f else 'Partie publiée propre'); sys.exit(1 if f else 0)"
+          for chemin in donnees/annonces.json robot/collecter.py tools/publier.py journaux/maj.log donnees-internes/modele-complet.json; do
+            [ -e "public/$chemin" ] && { echo "ÉCHEC - $chemin est dans la partie publique"; exit 1; }
+          done
+          echo "Audit après publication : OK"
+

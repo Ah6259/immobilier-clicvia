@@ -1,0 +1,132 @@
+# 16/10/2026 : le CODE est PRIVÉ (Ah6259/immobilier-tunis) ; ce robot tourne ici (dépôt public, minutes gratuites), lit et écrit
+# le code privé avec la clé CLE_MOTEUR, garde son journal détaillé DANS le dépôt privé (journaux/), puis demande la publication.
+# Robot de la nuit d'Immobilier Tunisie — tourne sur GitHub, sans PC.
+# Collecte des sources AUTORISÉES (robot/reglages.py) -> pages -> tests -> enregistrement (GitHub Pages republie seul).
+# Rien n'est enregistré si un test échoue (GitHub prévient Ahmed par e-mail, l'ancien site reste en ligne).
+# Source en panne ou bloquée : ses anciennes annonces restent 7 jours au plus (journal : lignes « ÉCHEC »).
+# Les annonces déposées chez nous (source « depot », aussi relue toutes les 2 h par depots.yml) sont lues et gardées ici aussi.
+name: maj
+on:
+  schedule:
+    - cron: "17 1 * * *"       # CHAQUE JOUR 2h17 heure de Tunis (décision d'Ahmed 15/10/2026, pour que l'IA progresse jour après jour :
+                               # chaque jour jusqu'au 15/11/2026, puis un jour sur deux ; ensuite Ahmed décidera). Avant : le lundi
+                               # (11/10/2026). Ce dépôt est public : ses minutes GitHub sont gratuites. Étape « Jour de relevé ? ».
+  workflow_dispatch:
+    inputs:
+      seulement:
+        description: "Lire seulement ces sources (ex. immobiliere_tn) ; vide = toutes"
+        required: false
+        default: ""
+concurrency:
+  group: maj-site
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: write      # pour lancer le robot « publier »
+env:
+  TZ: Africa/Tunis
+  PYTHONIOENCODING: utf-8
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200     # 15/10/2026 : Tayara et Tunisie-annonce lus plus loin (chaque source a sa propre limite de temps, reglages.py)
+    steps:
+      - name: Jour de relevé ? (chaque jour jusqu'au 15/11/2026, puis un jour sur deux)
+        id: jour
+        run: |
+          j=$(date +%Y-%m-%d)
+          n=$(( ( $(date -d "$j" +%s) - $(date -d 2026-11-15 +%s) ) / 86400 ))
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$n" -le 0 ] || [ $((n % 2)) -eq 0 ]; then
+            echo "oui=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "oui=0" >> "$GITHUB_OUTPUT"
+            echo "Pas de relevé aujourd'hui : un jour sur deux depuis le 15/11/2026 (décision d'Ahmed du 15/10/2026). Relevé demain." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/checkout@v4
+        with:
+          repository: Ah6259/immobilier-tunis
+          ssh-key: ${{ secrets.CLE_MOTEUR }}
+      - uses: actions/setup-python@v5
+        if: steps.jour.outputs.oui == '1'
+        with: { python-version: "3.12" }
+      - name: Test du robot (sans réseau)
+        if: steps.jour.outputs.oui == '1'
+        run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources (audit du 16/10/2026)
+      - name: Quartiers automatiques (noms des annonces retrouvés dans la liste officielle des localités)
+        if: steps.jour.outputs.oui == '1'
+        run: python tools/lieux_auto.py
+      # 15/10/2026 (Ahmed) : toutes les sources lues EN MÊME TEMPS (chaque site garde 1 s entre deux de ses pages) ; chaque source
+      # finie est enregistrée et envoyée sur GitHub tout de suite (SAUVER_PAR_SOURCE) : une panne plus loin ne perd plus rien
+      - name: Collecte des annonces (toutes les sources en parallèle, lecture polie)
+        id: collecte
+        if: steps.jour.outputs.oui == '1'
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          mkdir -p journaux; python -u robot/collecter.py ${SEULEMENT:+--seulement "$SEULEMENT"} > journaux/maj.log 2>&1; c=$?; tail -2 journaux/maj.log; exit $c
+        timeout-minutes: 175
+        env:
+          SEULEMENT: ${{ github.event.inputs.seulement }}
+          SAUVER_PAR_SOURCE: "1"
+      # 15/10/2026 (Ahmed : « assure-toi que les annonces soient enregistrées ») : deux relevés de 2 h perdus le même jour, parce qu'un
+      # test du site avait échoué APRÈS la collecte. Les annonces lues sont maintenant enregistrées TOUT DE SUITE (seulement le fichier
+      # du robot, donnees/annonces.json : les pages et donnees/annonces.js, lus par les visiteurs, ne changent qu'après les tests).
+      - name: Garder les annonces lues (même si une étape suivante échoue)
+        if: steps.jour.outputs.oui == '1' && steps.collecte.outcome == 'success'
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add donnees/annonces.json donnees/lieux-auto.json journaux/
+          git diff --cached --quiet && exit 0
+          git commit -qm "Annonces lues le $(date +%d/%m/%Y) (avant les pages)"
+          for essai in 1 2 3 4; do git pull --rebase --autostash -q && git push -q && exit 0; sleep $((essai * 10)); done
+          echo "ÉCHEC : annonces lues non enregistrées (elles le seront avec les pages)"; exit 1
+      # positions des nouveaux quartiers DANS le même passage (15/10/2026 : le robot positions-quartiers en attente était annulé par
+      # GitHub quand un autre robot du même groupe arrivait) ; une panne d'OpenStreetMap n'arrête pas le relevé
+      - name: Positions des nouveaux quartiers (OpenStreetMap)
+        if: steps.jour.outputs.oui == '1'
+        continue-on-error: true
+        timeout-minutes: 15
+        run: python tools/coords_quartiers.py
+      # les positions trouvées sont enregistrées TOUT DE SUITE aussi (15/10/2026, Ahmed : « l'enregistrement sera-t-il fait de la
+      # recherche que le robot fait ? ») : un test du site qui échoue ensuite ne les fait plus perdre
+      - name: Garder les positions trouvées (même si une étape suivante échoue)
+        if: steps.jour.outputs.oui == '1'
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add donnees/coords-quartiers.json
+          git diff --cached --quiet && exit 0
+          git commit -qm "Positions des quartiers du $(date +%d/%m/%Y) (avant les pages)"
+          for essai in 1 2 3 4; do git pull --rebase --autostash -q && git push -q && exit 0; sleep $((essai * 10)); done
+          echo "ÉCHEC : positions non enregistrées (elles le seront avec les pages)"; exit 1
+      # modèle COMPLET de l'IA (avec ses erreurs) : INTERNE (décision d'Ahmed, 15/10/2026), enregistré dans le dépôt PRIVÉ
+      # (donnees-internes/, depuis le 16/10/2026) et jamais publié (tools/publier.py) ; sert à refuser un nouveau modèle moins bon
+      - name: Pages du site
+        if: steps.jour.outputs.oui == '1'
+        run: python robot/construire_site.py
+      - uses: actions/setup-node@v4
+        if: steps.jour.outputs.oui == '1'
+        with: { node-version: "22" }
+      - name: Tests du site (rien n'est publié si un test échoue)
+        if: steps.jour.outputs.oui == '1'
+        run: |
+          npm install --no-save --no-package-lock jsdom
+          node tools/test_site.mjs > /tmp/t.log 2>&1 || { grep -E "ÉCHEC|vérifications" /tmp/t.log; exit 1; }; tail -1 /tmp/t.log
+          node tools/test_securite.mjs   # audit de sécurité automatique (16/10/2026)
+      - name: Enregistrer
+        if: steps.jour.outputs.oui == '1'
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Annonces du $(date +%d/%m/%Y)"
+          git pull --rebase --autostash -q && git push -q
+      - name: Sources en panne depuis plus de 2 jours ? (échec = e-mail à Ahmed ; les annonces sont déjà enregistrées)
+        if: steps.jour.outputs.oui == '1'
+        run: python tools/sources_en_panne.py > /dev/null 2>&1 || { echo "ÉCHEC : au moins une source est en panne depuis plus de 2 jours (détail dans le dépôt privé)"; exit 1; }   # sans nom de source (audit du 16/10/2026)
+      - name: Demander la publication du site
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publier.yml -R ${{ github.repository }} || true

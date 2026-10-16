@@ -1,0 +1,55 @@
+# 16/10/2026 : le CODE est PRIVÉ (Ah6259/immobilier-tunis) ; ce robot tourne ici (dépôt public, minutes gratuites), lit et écrit
+# le code privé avec la clé CLE_MOTEUR, garde son journal détaillé DANS le dépôt privé (journaux/), puis demande la publication.
+# Positions des quartiers pour la CARTE DES PRIX (15/10/2026, Ahmed : « plein d'annonces à Djerba, Sfax… pourquoi pas sur la carte ? »).
+# Une requête polie à OpenStreetMap (tools/coords_quartiers.py : lieux dessinés comme points ET comme zones), chaque jour et à la
+# main ; puis les pages sont refaites et testées (rien n'est publié si un test échoue). Aucun lieu déjà placé n'est perdu.
+name: positions-quartiers
+on:
+  schedule:
+    - cron: "17 4 * * *"       # chaque jour 5h17 heure de Tunis : les quartiers automatiques du jour reçoivent leur position
+  workflow_dispatch:
+concurrency:
+  group: maj-site              # jamais en même temps que le relevé (mêmes fichiers)
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: write      # pour lancer le robot « publier »
+env:
+  TZ: Africa/Tunis
+  PYTHONIOENCODING: utf-8
+jobs:
+  positions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Ah6259/immobilier-tunis
+          ssh-key: ${{ secrets.CLE_MOTEUR }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Positions des quartiers (OpenStreetMap)
+        run: python tools/coords_quartiers.py
+      - name: Pages du site
+        run: python robot/construire_site.py
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Tests du site (rien n'est publié si un test échoue)
+        run: |
+          npm install --no-save --no-package-lock jsdom
+          node tools/test_site.mjs > /tmp/t.log 2>&1 || { grep -E "ÉCHEC|vérifications" /tmp/t.log; exit 1; }; tail -1 /tmp/t.log
+          node tools/test_securite.mjs   # audit de sécurité automatique (16/10/2026)
+      - name: Enregistrer
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Carte des prix : positions des quartiers du $(date +%d/%m/%Y)"
+          git pull --rebase --autostash -q && git push -q
+      - name: Demander la publication du site
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publier.yml -R ${{ github.repository }} || true

@@ -1,0 +1,65 @@
+# 16/10/2026 : le CODE est PRIVÉ (Ah6259/immobilier-tunis) ; ce robot tourne ici (dépôt public, minutes gratuites), lit et écrit
+# le code privé avec la clé CLE_MOTEUR, garde son journal détaillé DANS le dépôt privé (journaux/), puis demande la publication.
+# Robot LÉGER des annonces déposées sur notre formulaire — tourne sur GitHub, sans PC.
+# Toutes les 2 h de 8h à 22h (heure de Tunis) : lit SEULEMENT l'onglet « public » de la feuille des réponses
+# (robot/sources/depot.py ; les autres sources ne sont pas relues, leurs annonces restent celles de donnees/annonces.json),
+# vérifie automatiquement, reconstruit les pages, teste, puis enregistre SEULEMENT si quelque chose a changé.
+# Journal : lignes « depot : refusé : raison » (sans nom ni numéro) et « ÉCHEC » si la feuille ne répond pas.
+name: depots
+on:
+  schedule:
+    - cron: "5 7-21/2 * * *"   # 8h05, 10h05 … 22h05 heure de Tunis (UTC+1 toute l'année)
+  workflow_dispatch:
+concurrency:
+  group: maj-site              # même groupe que maj.yml : jamais deux robots en même temps
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: write      # pour lancer le robot « publier »
+env:
+  TZ: Africa/Tunis
+  PYTHONIOENCODING: utf-8
+jobs:
+  depots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Ah6259/immobilier-tunis
+          ssh-key: ${{ secrets.CLE_MOTEUR }}
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Test du robot (sans réseau)
+        run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources (audit du 16/10/2026)
+      - name: Annonces déposées (seulement cette source)
+        run: mkdir -p journaux; python -u robot/collecter.py --seulement depot > journaux/depots.log 2>&1; c=$?; tail -2 journaux/depots.log; exit $c
+      - name: Quelque chose a changé ?
+        id: change
+        run: |
+          if git diff --quiet -- donnees/; then echo "oui=non" >> "$GITHUB_OUTPUT"; echo "Rien de nouveau : pas de reconstruction"; else echo "oui=oui" >> "$GITHUB_OUTPUT"; fi
+      - name: Pages du site
+        if: steps.change.outputs.oui == 'oui'
+        run: python robot/construire_site.py
+      - uses: actions/setup-node@v4
+        if: steps.change.outputs.oui == 'oui'
+        with: { node-version: "22" }
+      - name: Tests du site (rien n'est publié si un test échoue)
+        if: steps.change.outputs.oui == 'oui'
+        run: |
+          npm install --no-save --no-package-lock jsdom
+          node tools/test_site.mjs > /tmp/t.log 2>&1 || { grep -E "ÉCHEC|vérifications" /tmp/t.log; exit 1; }; tail -1 /tmp/t.log
+          node tools/test_securite.mjs   # audit de sécurité automatique (16/10/2026)
+      - name: Enregistrer
+        if: steps.change.outputs.oui == 'oui'
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Annonces déposées du $(date +'%d/%m/%Y %Hh%M')"
+          git pull --rebase --autostash -q && git push -q
+      - name: Demander la publication du site
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publier.yml -R ${{ github.repository }} || true

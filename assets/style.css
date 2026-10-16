@@ -1,0 +1,975 @@
+/* Immobilier Tunisie — feuille de style unique.
+   Identité : terre cuite (portes et toits), sable, encre ; accent doré #F2B33D (famille des icônes d'Ahmed).
+   Titres en Fraunces, texte en Instrument Sans, arabe en IBM Plex Sans Arabic. Mobile d'abord (360-390 px). */
+:root{
+  --terre:#B4532F; --terre-f:#8E3B1F; --terre-clair:#F6E3D8; --terre-voile:#FBF1EA;
+  --sable:#F7F2EA; --sable-f:#EFE6D8; --carte:#FFFFFF; --encre:#1E2A30; --doux:#5F6B70; --ligne:#E5DACB;
+  --olive:#4F6B4A; --olive-clair:#E5EDE1; --bleu:#2C5872; --bleu-clair:#E2ECF1; --or:#F2B33D; --or-f:#B57E12;
+  --ok:#2F7A4A; --ko:#B3261E;
+  --r:18px; --r-petit:12px;
+  --ombre:0 1px 2px rgba(30,42,48,.05),0 6px 18px -10px rgba(30,42,48,.18);
+  --titres:"Fraunces",Georgia,"Times New Roman",serif;
+  --texte:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --arabe:"IBM Plex Sans Arabic","Noto Sans Arabic",Tahoma,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--sable);color:var(--encre);font:16px/1.55 var(--texte);overflow-x:hidden}
+html[lang="ar"] body{font-family:var(--arabe)}
+h1,h2,h3{font-family:var(--titres);font-weight:600;line-height:1.18;letter-spacing:-.01em;margin:0 0 .5em}
+html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{font-family:var(--arabe);font-weight:700;letter-spacing:0;line-height:1.35}
+a{color:var(--terre-f)}
+img{max-width:100%;height:auto}
+.wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 16px}
+[hidden]{display:none!important}
+[data-l]{display:none}
+html[lang="fr"] [data-l="fr"],html[lang="ar"] [data-l="ar"]{display:revert}
+html[lang="fr"] [data-l="ar"],html[lang="ar"] [data-l="fr"]{display:none!important}
+svg{flex:none}
+
+/* ---------------------------------------------------------------- en-tête */
+.entete{background:var(--carte);border-bottom:1px solid var(--ligne);position:sticky;top:0;z-index:20}
+.entete .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:62px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--encre);min-width:0;overflow:hidden}
+.logo-mark{width:38px;height:38px;flex:none}
+.logo-nom{font-family:var(--titres);font-weight:600;font-size:19px;line-height:1.1;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+html[lang="ar"] .logo-nom{font-family:var(--arabe);font-weight:700}
+.logo-nom small{display:block;font-family:var(--texte);font-weight:500;font-size:12px;color:var(--doux);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[lang="ar"] .logo-nom small{font-family:var(--arabe)}
+.entete-boutons{display:flex;align-items:center;gap:8px;flex:none}
+.entete-depot{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:600;font-size:14px;color:var(--terre-f);border:1.5px solid var(--terre);border-radius:999px;padding:7px 13px;white-space:nowrap}
+.entete-depot svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.entete-depot:hover{background:var(--terre-voile)}
+.partager,.langue{font:inherit;cursor:pointer;border:1.5px solid var(--ligne);background:var(--carte);color:var(--encre);border-radius:999px;height:38px}
+.partager{width:38px;display:grid;place-items:center;padding:0}
+.partager svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.langue{padding:0;width:38px;font-weight:700;font-size:15px}
+html[lang="fr"] .langue{font-family:var(--arabe)}
+@media (max-width:560px){
+  .entete-depot .long{display:none}
+  .logo-nom small{max-width:150px}
+}
+@media (max-width:440px){ .logo-nom{font-size:17px} .logo-nom small{display:none} .entete-boutons{gap:6px} .logo-mark{width:34px;height:34px}
+  /* téléphone : le nom entier sur 2 lignes (« Immobilier » / « Tunisie ») au lieu de « Immobili… » (demande d'Ahmed 11/10/2026) */
+  .logo{gap:8px;overflow:visible} .logo-nom{white-space:normal;overflow:visible;text-overflow:clip;font-size:16.5px;line-height:1.05}
+  .logo-nom .nom2{display:block} .entete-depot{padding:7px 11px!important} }
+
+/* ---------------------------------------------------------------- bandeau */
+.hero{background:var(--carte);border-bottom:1px solid var(--ligne)}
+.bande-photo{margin:0;position:relative;height:150px;overflow:hidden;background:#d9cbb8}
+.bande-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 46%;display:block}
+.credit-photo{position:absolute;top:6px;right:8px;font-size:10.5px;color:#fff;background:rgba(30,42,48,.55);padding:2px 7px;border-radius:999px;line-height:1.5}
+.credit-photo a{color:#fff}
+html[dir="rtl"] .credit-photo{right:auto;left:8px}
+@media (min-width:760px){ .bande-photo{height:190px} }
+.hero-grille{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;padding-top:26px;padding-bottom:30px}
+@media (min-width:900px){ .hero-grille{grid-template-columns:minmax(0,1fr) 300px;gap:44px;align-items:start;padding-top:36px;padding-bottom:40px} }
+/* accueil (16/10/2026, Ahmed) : titre en haut, puis la RECHERCHE à gauche et la CARTE DES PRIX à droite ; sur téléphone l'ordre
+   de la page suffit (titre, carte des prix, recherche) */
+@media (min-width:900px){ .hero-grille:has(> .zone-recherche){grid-template-columns:minmax(0,1fr) minmax(320px,420px);
+    grid-template-areas:"texte texte" "recherche carte";row-gap:14px}
+  .hero-grille > .hero-texte{grid-area:texte} .hero-grille > .hero-carte{grid-area:carte} .hero-grille > .zone-recherche{grid-area:recherche;margin-top:0} }
+.surtitre{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--terre)}
+html[lang="ar"] .surtitre{letter-spacing:0}
+.hero h1{font-size:clamp(27px,6.6vw,44px);font-weight:600;margin-bottom:14px;text-wrap:balance}
+.hero-page h1{font-size:clamp(25px,5.8vw,38px)}
+.intro{font-size:17px;color:#3c494f;margin:0 0 20px;max-width:62ch}
+.intro strong{color:var(--encre)}
+.hero-page{padding:0}
+.hero-page > .wrap:not(.hero-grille){padding-top:26px;padding-bottom:28px}
+.fil{font-size:13.5px;color:var(--doux);margin:0 0 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fil a{color:var(--doux);text-decoration:none;border-bottom:1px solid var(--ligne)}
+.fil .sep{opacity:.6}
+.chiffres{list-style:none;display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0 0 18px}
+.chiffres li{background:var(--sable);border:1px solid var(--ligne);border-radius:var(--r-petit);padding:8px 13px;font-size:13.5px;color:var(--doux);display:flex;flex-direction:column;min-width:96px}
+.chiffres b{font-family:var(--titres);font-size:22px;color:var(--encre);font-weight:600;line-height:1.15}
+.lieux h2{font-size:17px;margin:4px 0 10px}
+.lieux ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0}
+.lieux a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--encre);background:var(--carte);border:1.5px solid var(--ligne);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:500}
+.lieux a b{font-size:12px;color:var(--terre-f);background:var(--terre-voile);border-radius:999px;padding:1px 7px}
+.lieux a:hover{border-color:var(--terre)}
+
+/* carte de la Tunisie (même dessin que les autres sites ; bulles = nombre d'annonces) */
+.hero-carte{margin:0;background:linear-gradient(180deg,#F4ECE0,#FBF7F1);border:1px solid var(--ligne);border-radius:var(--r);padding:14px 16px 12px}
+.hero-carte figcaption{font-size:12.5px;color:var(--doux);text-align:center;margin-top:6px}
+.carte-tn{display:block;width:100%;max-width:250px;height:auto;margin:0 auto;overflow:visible;-webkit-user-select:none;user-select:none}
+.hero-carte.petite .carte-tn{max-width:190px}
+@media (max-width:899px){ .hero-carte .carte-tn{max-width:200px} .hero-carte.petite .carte-tn{max-width:150px} }
+.tn-terre{fill:#EADCC8;stroke:#C9B497;stroke-width:1.2;stroke-linejoin:round}
+.tn-b circle{fill:var(--terre);stroke:#FFF8F0;stroke-width:1.8;transition:fill .15s,transform .15s}
+.tn-b:hover circle,.tn-b:focus circle{fill:var(--terre-f)}
+.tn-b.vide circle{fill:#B9A893}
+.tn-b.actif circle{fill:var(--or);stroke:#fff;stroke-width:2.4}
+.tn-b.actif text{fill:#3A2A00}
+.tn-b text{fill:#fff;font:700 9.5px var(--texte);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+
+/* ---------------------------------------------------------------- recherche */
+.recherche{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:14px;box-shadow:var(--ombre);max-width:720px}
+main > .recherche{margin:22px 0 0}
+.bascule{display:flex;background:var(--sable);border-radius:999px;padding:4px;gap:2px;margin-bottom:12px;max-width:360px}
+.bascule label{flex:1;text-align:center}
+.bascule label{cursor:pointer}
+.bascule input{position:absolute;opacity:0;width:1px;height:1px}
+.bascule label > span{display:block;padding:7px 12px;border-radius:999px;font-weight:600;font-size:14.5px;color:var(--doux)}
+.bascule input:checked + span{background:var(--encre);color:#fff}
+.bascule input:checked + span span{color:#fff}
+.bascule input:focus-visible + span{outline:3px solid var(--or);outline-offset:1px}
+.champs{display:grid;gap:10px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.champ{display:flex;flex-direction:column;gap:4px;min-width:0}
+.champ > span{font-size:12.5px;font-weight:600;color:var(--doux)}
+.champ select,.champ input,.champ textarea,.tri select{width:100%;font:inherit;font-size:16px;color:var(--encre);background:var(--carte);border:1.5px solid var(--ligne);border-radius:var(--r-petit);padding:10px 12px;min-height:46px}
+.champ select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--doux) 50%),linear-gradient(135deg,var(--doux) 50%,transparent 50%);background-position:calc(100% - 18px) 52%,calc(100% - 13px) 52%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+html[dir="rtl"] .champ select{background-position:18px 52%,13px 52%;padding-right:12px;padding-left:32px}
+.champ select:focus,.champ input:focus,.champ textarea:focus{outline:0;border-color:var(--terre);box-shadow:0 0 0 4px var(--terre-clair)}
+.champ input,.champ textarea{-webkit-user-select:text;user-select:text}
+.btn-chercher{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:var(--r-petit);background:var(--terre);color:#fff;font:inherit;font-weight:700;font-size:16px;min-height:48px;cursor:pointer}
+.btn-chercher svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2.3;stroke-linecap:round}
+.btn-chercher:hover{background:var(--terre-f)}
+@media (min-width:760px){ .champs{grid-template-columns:repeat(3,minmax(0,1fr)) auto;align-items:end} .btn-chercher{grid-column:auto;padding:0 22px} }
+
+/* ---------------------------------------------------------------- blocs et liste */
+main{padding-bottom:30px}
+.bloc{margin:34px 0 0}
+.bloc h2{font-size:clamp(22px,5vw,29px)}
+.bloc-tete{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.bloc-tete h2{margin:0}
+.bloc-sous{margin:4px 0 0;color:var(--doux);font-size:14px}
+.tri{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--doux)}
+.tri select{width:auto;min-height:40px;padding:7px 10px;font-size:15px}
+.resultat{margin:4px 0 14px;font-size:14px;color:var(--doux)}
+.grille-annonces{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:640px){ .grille-annonces{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (min-width:980px){ .grille-annonces{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.vide-msg{background:var(--carte);border:1px dashed var(--ligne);border-radius:var(--r);padding:22px;text-align:center;color:var(--doux)}
+.btn-plus{display:block;margin:20px auto 0;font:inherit;font-weight:600;color:var(--encre);background:var(--carte);border:1.5px solid var(--encre);border-radius:999px;padding:11px 24px;cursor:pointer}
+.btn-plus:hover{background:var(--encre);color:#fff}
+
+/* carte d'annonce : faits seulement, prix bien lisible */
+.annonce{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .15s,transform .15s}
+.annonce:hover{border-color:#D3C2AC}
+.an-tete{display:flex;gap:12px;align-items:flex-start}
+.an-vignette{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;flex:none}
+.an-vignette svg{width:40px;height:40px}
+.an-vignette .vtrait{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.an-vignette .vor{fill:var(--or)}
+.v-appartement{background:var(--bleu-clair)} .v-appartement .v1{fill:#fff} .v-appartement .v2{fill:#C9DAE4} .v-appartement .v3{fill:var(--bleu)} .v-appartement .vtrait{stroke:var(--bleu)}
+.v-maison{background:var(--terre-clair)} .v-maison .v1{fill:#fff} .v-maison .v2{fill:#EFD2C2} .v-maison .v3{fill:var(--terre)} .v-maison .vtrait{stroke:var(--terre)}
+.v-terrain{background:var(--olive-clair)} .v-terrain .v1{fill:#B9CDB2} .v-terrain .v2{fill:#9DB894} .v-terrain .vtrait{stroke:var(--olive)}
+.v-local,.v-commerce{background:#ECE7F0} .v-local .v1,.v-commerce .v1{fill:#fff} .v-local .v2,.v-commerce .v2{fill:#DCD3E3} .v-local .v3,.v-commerce .v3{fill:#5E4E70}
+.v-bureau{background:#E4ECF2} .v-bureau .v1{fill:#fff} .v-bureau .v2{fill:#CBD9E4} .v-bureau .v3{fill:#3D5A73}
+.v-industriel{background:#E9E6E1} .v-industriel .v1{fill:#fff} .v-industriel .v2{fill:#D6D0C6} .v-industriel .v3{fill:#6B6256}
+.v-terrainind{background:var(--olive-clair)} .v-terrainind .v1{fill:#B9CDB2} .v-terrainind .v2{fill:#9DB894} .v-terrainind .v3{fill:#6B6256}
+.v-agricole{background:#EEF3E2} .v-agricole .v1{fill:#C9D9A8} .v-agricole .v2{fill:#AFC789} .v-agricole .v3{fill:#5F7F3A} .v-agricole .vtrait{stroke:#5F7F3A}
+.v-autre{background:var(--sable-f)} .v-autre .v1{fill:#fff} .v-autre .v2{fill:#E3D6C3} .v-autre .vtrait{stroke:var(--doux)}
+.an-quoi{min-width:0;flex:1}
+.an-badge{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:2px 7px;margin-bottom:5px}
+html[lang="ar"] .an-badge{letter-spacing:0}
+.an-badge.vendre{background:var(--bleu-clair);color:var(--bleu)}
+.an-badge.louer{background:var(--olive-clair);color:var(--olive)}
+.an-titre{font-family:var(--texte);font-size:16.5px;font-weight:700;letter-spacing:0;line-height:1.3;margin:0 0 3px}
+html[lang="ar"] .an-titre{font-family:var(--arabe)}
+.an-lieu{display:flex;align-items:center;gap:5px;margin:0;font-size:14px;color:var(--doux)}
+.an-lieu svg,.an-faits svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.an-prix{margin:2px 0 0;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 6px;border-top:1px solid var(--sable-f);padding-top:10px}
+.an-prix strong{font-family:var(--titres);font-size:26px;font-weight:600;line-height:1;color:var(--encre);font-variant-numeric:lining-nums tabular-nums}
+.an-prix .dt{font-weight:700;font-size:14px;color:var(--encre)}
+.an-prix-note{font-size:12.5px;color:var(--doux);margin-inline-start:auto}
+.an-prix.sans{font-size:14px;font-weight:500;color:var(--doux);font-style:italic}
+.an-faits{list-style:none;display:flex;flex-wrap:wrap;gap:6px 14px;padding:0;margin:0;font-size:13.5px;color:#46535a}
+.an-faits li{display:inline-flex;align-items:center;gap:5px}
+.an-contact{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;font-weight:600;font-size:15px;color:var(--terre-f);background:var(--terre-voile);border:1.5px solid var(--terre-clair);border-radius:var(--r-petit);padding:10px 12px}
+.an-contact svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.an-contact:hover{background:var(--terre);border-color:var(--terre);color:#fff}
+html[dir="rtl"] .an-contact svg{transform:scaleX(-1)}
+
+/* gouvernorats */
+.liste-gouv{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (min-width:640px){ .liste-gouv{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.liste-gouv a{display:flex;justify-content:space-between;align-items:center;gap:8px;text-decoration:none;color:var(--encre);background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r-petit);padding:11px 13px;font-weight:600;font-size:15px}
+.liste-gouv a b{font-size:13px;color:var(--terre-f);background:var(--terre-voile);border-radius:999px;padding:1px 8px}
+.liste-gouv a.vide{color:var(--doux);font-weight:500}
+.liste-gouv a.vide b{color:var(--doux);background:var(--sable)}
+.liste-gouv a:hover{border-color:var(--terre)}
+
+/* appel au dépôt */
+.depot-appel{background:var(--encre);color:#F4EEE6;border-radius:calc(var(--r) + 4px);padding:24px 20px;display:grid;gap:16px;position:relative;overflow:hidden}
+.depot-appel::after{content:"";position:absolute;inset:auto -40px -60px auto;width:180px;height:180px;border-radius:50%;border:26px solid rgba(242,179,61,.16)}
+html[dir="rtl"] .depot-appel::after{inset:auto auto -60px -40px}
+.depot-appel h2{color:#fff;margin-bottom:6px}
+.depot-appel p{margin:0;color:#D9D0C4;max-width:58ch}
+.depot-appel strong{color:var(--or)}
+.btn-depot{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font:inherit;font-weight:700;font-size:16px;color:#2B1D00;background:var(--or);border:0;border-radius:var(--r-petit);padding:13px 20px;cursor:pointer;justify-self:start;position:relative;z-index:1}
+.btn-depot svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+.btn-depot:hover{filter:brightness(1.05)}
+@media (min-width:760px){ .depot-appel{grid-template-columns:1fr auto;align-items:center;padding:30px 32px} }
+
+/* confiance */
+.confiance{display:grid;gap:12px}
+@media (min-width:760px){ .confiance{grid-template-columns:repeat(3,1fr)} }
+.conf{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:18px}
+.conf-ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--terre-voile);color:var(--terre);margin-bottom:10px}
+.conf-ico svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.conf h3{font-size:18px;margin:0 0 4px}
+.conf p{margin:0;color:var(--doux);font-size:14.5px}
+
+/* ---------------------------------------------------------------- déposer */
+.etapes{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+@media (min-width:760px){ .etapes{grid-template-columns:repeat(4,1fr)} }
+.etapes li{display:flex;gap:12px;background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:16px}
+.etapes .num{width:34px;height:34px;border-radius:50%;background:var(--terre);color:#fff;display:grid;place-items:center;font-weight:700;flex:none;font-family:var(--titres)}
+.etapes h3{font-size:16.5px;margin:2px 0 4px}
+.etapes p{margin:0;font-size:14px;color:var(--doux)}
+.formulaire-depot{position:relative;background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:18px}
+.depot-champs{border:0;margin:0;padding:0;min-width:0;display:grid;gap:14px}
+.depot-champs:disabled{opacity:.55}
+.depot-champs legend{font-family:var(--titres);font-weight:600;font-size:21px;padding:0;margin:0 0 4px}
+html[lang="ar"] .depot-champs legend{font-family:var(--arabe)}
+.depot-champs legend.sous{margin-top:8px}
+.grille-champs{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:640px){ .grille-champs{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.aide{font-size:13.5px;color:var(--doux);margin:0;background:var(--sable);border-radius:var(--r-petit);padding:10px 12px}
+.case{display:flex;gap:10px;align-items:flex-start;font-size:14.5px}
+.case input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--terre);flex:none}
+.tampon{position:absolute;z-index:3;top:150px;left:50%;transform:translate(-50%,-50%) rotate(-8deg);border:4px solid var(--terre);color:var(--terre);background:rgba(255,255,255,.92);font-family:var(--titres);font-weight:700;font-size:clamp(20px,5.4vw,30px);letter-spacing:.04em;text-transform:uppercase;padding:10px 22px;border-radius:10px;white-space:nowrap;pointer-events:none}
+html[lang="ar"] .tampon{font-family:var(--arabe);letter-spacing:0}
+#depot-statut{margin:0;font-weight:600}
+.regles ul{margin:0;padding-inline-start:20px;display:grid;gap:8px}
+.regles li{font-size:15px}
+.texte-long .bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:20px}
+.texte-long h2{font-size:22px;margin-top:18px}
+.texte-long h2:first-child{margin-top:0}
+.texte-long p{max-width:70ch}
+
+/* ---------------------------------------------------------------- votre avis */
+.avis{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:20px}
+.avis .avis-intro{color:var(--doux);margin:0 0 12px}
+.avis form{display:flex;flex-direction:column;gap:10px;max-width:620px}
+.avis fieldset{border:0;margin:0;padding:0;min-width:0}
+.avis legend,.avis .avis-etiquette{font-weight:700;font-size:14px;margin:0 0 6px;padding:0}
+.avis-notes{display:flex;gap:8px;flex-wrap:wrap}
+.avis-notes label{cursor:pointer}
+.avis-notes input{position:absolute;opacity:0;width:1px;height:1px}
+.avis-notes .emoji{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;border:1.5px solid var(--ligne);background:var(--carte);font-size:26px;line-height:1}
+.avis-notes input:checked + .emoji{border-color:var(--terre);background:var(--terre-voile)}
+.avis textarea,.avis input[type=email]{width:100%;font:inherit;font-size:16px;padding:11px 13px;border:1.5px solid var(--ligne);border-radius:12px;background:var(--carte);color:var(--encre);-webkit-user-select:text;user-select:text}
+.avis input[type=email]{direction:ltr}
+.avis textarea:focus,.avis input[type=email]:focus{outline:0;border-color:var(--terre);box-shadow:0 0 0 4px var(--terre-clair)}
+.avis-compte{align-self:flex-end;direction:ltr;font-size:12px;color:var(--doux);margin-top:-6px}
+.piege{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);opacity:0;border:0;padding:0}
+.btn-avis{align-self:flex-start;border:0;border-radius:12px;padding:12px 24px;font:inherit;font-weight:700;color:#fff;background:var(--encre);cursor:pointer}
+.btn-avis:disabled{opacity:.55}
+#avis-status{font-size:14px;color:var(--doux);margin:0}
+#avis-status.ok{color:var(--ok);font-weight:700}
+#avis-status.err{color:var(--ko);font-weight:700}
+.avis-note{font-size:12.5px;color:var(--doux);margin:0}
+
+/* ---------------------------------------------------------------- pied de page */
+.pied{margin-top:40px;background:#1A2328;color:#C9C2B8;font-size:14px}
+.pied .wrap{padding-top:30px;padding-bottom:30px}
+.pied-logo{display:flex;align-items:center;gap:9px;font-family:var(--titres);font-size:18px;color:#fff;margin-bottom:14px}
+html[lang="ar"] .pied-logo{font-family:var(--arabe)}
+.pied nav{display:flex;flex-wrap:wrap;gap:8px 18px;margin-bottom:16px}
+.pied a{color:#F1E6D6}
+.pied p{margin:6px 0;max-width:80ch}
+.lien-video{text-align:center}
+
+/* anti-copie légère : photos et cartes d'annonces (les champs restent sélectionnables) */
+img,.carte-tn,.an-vignette,.annonce{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+
+/* boutons de contact (agence : numéro pro ; dépôt : Appeler + WhatsApp ; particulier repris : annonce d'origine) */
+.an-actions{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.an-appel,.an-voir,.an-wa{display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;font-weight:600;font-size:15px;border-radius:var(--r-petit);padding:10px 8px;min-width:0}
+.an-appel{background:var(--terre);color:#fff;border:1.5px solid var(--terre)}
+.an-appel:hover{background:var(--terre-f)}
+.an-appel.revele{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.an-voir{color:var(--terre-f);background:var(--terre-voile);border:1.5px solid var(--terre-clair)}
+.an-wa{color:#fff;background:#1F8A50;border:1.5px solid #1F8A50}
+.an-appel svg,.an-voir svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+html[dir="rtl"] .an-voir svg{transform:scaleX(-1)}
+.an-contact{font-size:15.5px;padding:12px}
+.an-vendeur{display:block;text-align:center;font-size:13px;color:var(--doux);text-decoration:none;border-top:1px dashed var(--ligne);padding-top:9px;margin-top:-2px}
+.an-vendeur b{color:var(--terre-f);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.an-appel,.an-voir,.an-wa{white-space:nowrap;font-size:14.5px}
+@media (max-width:370px){ .an-appel,.an-voir,.an-wa{font-size:13.5px;gap:5px;padding:10px 5px} }
+.an-contact svg:first-child{width:17px;height:17px}
+html[dir="rtl"] .an-contact svg:first-child{transform:none}
+html[lang="ar"] .an-prix.sans{font-style:normal}
+@media (min-width:980px){ .an-appel,.an-voir{font-size:13.5px;gap:5px;padding:10px 6px} }
+
+/* filtres supplémentaires (11/10/2026, demande d'Ahmed) */
+.plus-filtres{margin-top:10px;border-top:1px dashed var(--ligne);padding-top:8px}
+.plus-filtres > summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--terre);padding:6px 0;list-style:none}
+.plus-filtres > summary::-webkit-details-marker{display:none}
+.plus-filtres > summary::before{content:"+ ";font-weight:700}
+.plus-filtres[open] > summary::before{content:"− "}
+.plus-filtres .champs{margin-top:6px}
+.actions-recherche{margin-top:12px;align-items:center}
+.btn-effacer{font:inherit;font-size:14px;font-weight:600;color:var(--doux);background:transparent;border:1.5px solid var(--ligne);border-radius:var(--r-petit);min-height:46px;padding:10px 12px;cursor:pointer}
+.btn-effacer:hover{color:var(--encre);border-color:var(--doux)}
+.champ select:disabled{opacity:.55}
+
+/* bouton « Publier une annonce gratuite » : doré, bien visible (demande d'Ahmed 11/10/2026, même famille que le bouton or commun) */
+.entete-depot{background:linear-gradient(180deg,#FFD978 0%,#F2B33D 52%,#DC9416 100%)!important;color:#2B1D00!important;border:2px solid #8A5A00!important;
+  box-shadow:0 3px 0 #8A5A00,0 6px 14px rgba(138,90,0,.25);font-weight:800!important;position:relative;overflow:hidden}
+.entete-depot::after{content:"";position:absolute;top:-2px;bottom:-2px;left:-60%;width:38%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:depot-reflet 5s ease-in-out 1.2s infinite}
+.entete-depot:active{transform:translateY(2px);box-shadow:0 1px 0 #8A5A00}
+.entete-depot:hover{background:linear-gradient(180deg,#FFE08F 0%,#F5BD52 52%,#E09E25 100%)!important}
+.entete-depot .court{display:none}
+@media (max-width:560px){ .entete-depot .court{display:inline} }
+@keyframes depot-reflet{0%{left:-60%}30%,100%{left:130%}}
+@media (prefers-reduced-motion:reduce){.entete-depot::after{animation:none;display:none}}
+/* Annonces déposées chez nous (titre et texte de la personne, « Afficher le numéro ») */
+.an-titre .perso{unicode-bidi:plaintext;overflow-wrap:anywhere}
+.an-type{margin:0 0 3px;font-size:13px;color:var(--doux)}
+.an-details{font-size:14px;color:#3b474d}
+.an-details summary{cursor:pointer;font-weight:600;color:var(--terre-f)}
+.an-texte{white-space:pre-line;overflow-wrap:anywhere;unicode-bidi:plaintext;margin:6px 0 0;max-height:16em;overflow:auto}
+.an-numero-bloc{margin-top:auto}
+.an-numero{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;font:inherit;font-weight:600;font-size:15px;color:#fff;background:var(--terre);border:1.5px solid var(--terre);border-radius:var(--r-petit);padding:10px 12px;cursor:pointer}
+.an-numero:hover{background:var(--terre-f)}
+.an-numero svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Alertes Telegram (11/10/2026) : bouton « Créer une alerte » dans la recherche + fenêtre (assets/alerte.js) */
+.btn-alerte{display:flex;align-items:center;justify-content:center;gap:7px;font:inherit;font-size:14.5px;font-weight:700;color:#fff;background:var(--bleu);border:1.5px solid var(--bleu);border-radius:var(--r-petit);min-height:46px;padding:8px 10px;cursor:pointer;line-height:1.2;text-align:center}
+.btn-alerte:hover{background:#21465C}
+.btn-alerte svg,.btn-telegram svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-alerte:focus-visible,.btn-telegram:focus-visible,.alerte-fermer:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+html.alerte-ouverte{overflow:hidden}
+.alerte-fond{position:fixed;inset:0;z-index:50;background:rgba(30,42,48,.55);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.alerte-boite{position:relative;background:var(--carte);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:var(--r) var(--r) 0 0;padding:20px 16px 18px;box-shadow:0 -10px 40px rgba(30,42,48,.3)}
+@media (min-width:640px){ .alerte-fond{align-items:center;padding:16px} .alerte-boite{border-radius:var(--r);padding:24px 24px 20px} }
+.alerte-boite h2{font-size:21px;margin:0 36px .4em 0}
+html[dir="rtl"] .alerte-boite h2{margin:0 0 .4em 36px}
+.alerte-fermer{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:0;background:var(--sable);color:var(--encre);font:700 24px/1 var(--texte);cursor:pointer}
+html[dir="rtl"] .alerte-fermer{right:auto;left:10px}
+.alerte-intro{margin:0 0 12px;font-size:14.5px;color:var(--doux)}
+.alerte-form .bascule{max-width:none}
+.alerte-prix{grid-column:1/-1}
+.alerte-resume{margin:12px 0;padding:10px 12px;background:var(--bleu-clair);border-radius:var(--r-petit);font-weight:600;font-size:14.5px;color:var(--bleu)}
+.btn-telegram{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:700;font-size:16.5px;color:#fff;background:#229ED9;border-radius:var(--r-petit);min-height:50px;padding:12px 16px}
+.btn-telegram svg{fill:currentColor;stroke:none}
+.btn-telegram:hover{background:#1B8BC0}
+html[dir="rtl"] .btn-telegram svg{transform:scaleX(-1)}
+.alerte-ok{margin:12px 0 4px;padding:12px 14px;background:#E8F5EC;border:1.5px solid #2E8B57;border-radius:var(--r-petit);color:#1E5E3A;font-size:14.5px}
+.alerte-ok p{margin:0 0 6px}.alerte-ok p:last-child{margin:0}
+.alerte-ok-titre{font-weight:700;font-size:15.5px}
+.alerte-etapes{margin:12px 0 6px;padding-inline-start:20px;font-size:14px}
+.alerte-etapes li{margin:3px 0}
+.alerte-note{margin:6px 0 0;font-size:12.5px;color:var(--doux)}
+.localite-autre{margin-top:6px}
+/* Case « Où ? » (11/10/2026) : on tape un lieu, le site propose gouvernorat / délégation / localité */
+.champ-ou{position:relative;margin:0 0 10px}
+.champ-ou>label{display:block;font-size:13px;font-weight:700;color:var(--doux);margin:0 0 4px}
+.ou-boite{position:relative}
+.ou-boite svg{position:absolute;top:50%;left:12px;width:19px;height:19px;transform:translateY(-50%);stroke:var(--doux);fill:none;stroke-width:2;stroke-linecap:round;pointer-events:none}
+html[dir="rtl"] .ou-boite svg{left:auto;right:12px}
+.champ-ou input{width:100%;font:inherit;font-size:16px;color:var(--encre);background:var(--carte);border:1.5px solid var(--terre);border-radius:var(--r-petit);padding:11px 12px 11px 40px;min-height:48px;-webkit-appearance:none;appearance:none}
+html[dir="rtl"] .champ-ou input{padding:11px 40px 11px 12px}
+.champ-ou input:focus{outline:0;box-shadow:0 0 0 4px var(--terre-clair)}
+.ou-suggestions{position:absolute;z-index:30;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r-petit);box-shadow:0 12px 30px rgba(30,42,48,.18);max-height:330px;overflow:auto}
+.ou-suggestions li{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:9px 10px;border-radius:8px;cursor:pointer;line-height:1.25}
+.ou-suggestions li.actif,.ou-suggestions li[role=option]:hover{background:var(--terre-clair)}
+.ou-nom{font-weight:700;color:var(--encre)}
+.ou-sous{grid-column:1;font-size:13px;color:var(--doux)}
+.ou-n{grid-column:2;grid-row:1/3;align-self:center;font-size:12.5px;font-weight:700;color:var(--terre);white-space:nowrap}
+.ou-suggestions li.ou-rien{display:block;color:var(--doux);cursor:default}
+.btn-elargir{margin-top:10px;font:inherit;font-weight:700;color:#fff;background:var(--terre);border:0;border-radius:var(--r-petit);padding:10px 14px;cursor:pointer}
+/* Bouton « Professionnels & industriels » de l'accueil (11/10/2026) */
+.raccourcis{margin:12px 0 0;max-width:720px}
+.btn-pro{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;line-height:1.3;color:#fff;background:#3D5A73;border-radius:999px;padding:10px 16px;text-decoration:none;box-shadow:var(--ombre)}
+.btn-pro:hover{background:#2E475C}
+.btn-pro svg{flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+.btn-pro:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+/* Bandeau de l'accueil (11/10/2026) : 4 thèmes du site en vraies photos (habitation, bureaux, usines, terrains) */
+.bande-themes{margin:0;background:#d9cbb8}
+/* téléphone : les photos défilent seules, en continu, de droite à gauche (demande d'Ahmed 11/10/2026) ; les 4 photos sont
+   doublées par page.js (copies cachées aux lecteurs d'écran) pour une boucle sans à-coup */
+.bande-themes{overflow:hidden;direction:ltr}   /* même sens en arabe : sinon la rangée part du bord droit et se vide */
+html[dir="rtl"] .theme-nom{direction:rtl}
+.bande-themes ul{list-style:none;margin:0;padding:0;display:flex;gap:2px;width:max-content;direction:ltr;animation:themes-defile 13s linear infinite}
+.bande-themes li{flex:none;width:calc(50vw - 1px)}
+.bande-themes:active ul{animation-play-state:paused}
+@keyframes themes-defile{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 1px))}}
+@media (prefers-reduced-motion:reduce){ .bande-themes{overflow-x:auto} .bande-themes ul{animation:none} }
+.bande-themes li{position:relative;height:118px;overflow:hidden;background:#cdbfae}
+.bande-themes img{width:100%;height:100%;object-fit:cover;display:block}
+.theme-nom{position:absolute;left:8px;bottom:8px;font-size:13px;font-weight:700;line-height:1.2;color:#fff;background:rgba(30,42,48,.72);padding:4px 9px;border-radius:999px}
+html[dir="rtl"] .theme-nom{left:auto;right:8px}
+.credit-themes{font-size:10.5px;line-height:1.45;color:var(--doux);background:var(--carte);padding:5px 16px 0}
+.credit-themes a{color:var(--doux)}
+/* 16/10/2026 (Ahmed) : sur ordinateur aussi les photos DÉFILENT (4 visibles à la fois), pause quand la souris est dessus */
+@media (min-width:760px){ .bande-themes li{width:calc(25vw - 2px);height:190px} .bande-themes ul{animation-duration:22s}
+  .bande-themes:hover ul{animation-play-state:paused} .theme-nom{font-size:14px;left:10px;bottom:10px} }
+/* Page video/ (11/10/2026) : vidéo de présentation, « Ouvrir le site », « Partager la vidéo » */
+.video-main{padding-bottom:10px}
+.video-page{max-width:560px;margin:0 auto;padding:22px 0 30px;text-align:center}
+.video-tete{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px}
+.video-tete img{width:52px;height:52px;border-radius:12px}
+.video-nom{font-weight:700;font-size:1.05rem;margin:0}
+.video-page h1{font-size:1.5rem;line-height:1.25;margin:6px 0 14px}
+.video-lecteur{display:block;height:min(62vh,640px);width:auto;max-width:100%;aspect-ratio:9/16;object-fit:contain;margin:0 auto 18px;border-radius:18px;background:#111;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.btn-video-site{display:block;max-width:360px;margin:0 auto 12px;padding:15px;border-radius:var(--r-petit);background:var(--terre);color:#fff;font-weight:700;font-size:1.1rem;text-decoration:none}
+.btn-video-partager{display:block;width:100%;max-width:360px;margin:0 auto;padding:13px;border-radius:var(--r-petit);border:2px solid var(--terre);background:var(--carte);color:var(--terre-f);font:inherit;font-weight:700;cursor:pointer}
+.pied-credits{font-size:12px;opacity:.85}
+@media (max-width:380px){ .logo-nom{font-size:15px} .logo-mark{width:30px;height:30px} .logo{gap:6px}
+  .entete-depot{padding:6px 9px!important;font-size:13px!important;gap:4px!important} .langue{width:36px;height:36px} .partager{width:36px;height:36px} .entete .wrap{gap:6px} }
+.h1-accent{color:var(--terre);white-space:nowrap}
+/* « gouvernorat par gouvernorat » sur UNE ligne (demande d'Ahmed) : titre de l'accueil un peu plus petit sur téléphone */
+.hero:not(.hero-page) h1{font-size:clamp(20px,6.6vw,44px)}   /* « gouvernorat par gouvernorat » en couleur (demande d'Ahmed 11/10/2026) */
+
+/* === « Où investir ? » + Pass Investisseur (13/10/2026) === */
+.investir .petit,.pass .petit{font-size:13px;color:var(--doux,#6B5B52);margin:8px 0 0}
+.inv-cartes{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.inv-carte{position:relative;background:#fff;border:1px solid var(--ligne,#EADFD6);border-radius:16px;padding:14px 16px;box-shadow:var(--ombre)}
+.inv-rang{position:absolute;top:12px;inset-inline-end:14px;width:30px;height:30px;border-radius:50%;background:var(--terre);color:#fff;font-weight:700;display:grid;place-items:center}
+.inv-carte h3{margin:0 40px 2px 0;font-size:18px}
+html[dir="rtl"] .inv-carte h3{margin:0 0 2px 40px}
+.inv-carte h3 small{display:block;font-size:13px;font-weight:500;color:var(--doux,#6B5B52)}
+.inv-taille{margin:0 0 8px;font-weight:600}
+.inv-carte dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:0}
+.inv-carte dt{font-size:12.5px;color:var(--doux,#6B5B52)}
+.inv-carte dd{margin:0;font-weight:700}
+.inv-rdt dd{color:var(--terre-f);font-size:20px}
+.inv-tableau{overflow-x:auto;margin-top:10px;border:1px solid var(--ligne,#EADFD6);border-radius:14px;background:#fff}
+.inv-tableau table{width:100%;border-collapse:collapse;font-size:14px}
+.inv-tableau th,.inv-tableau td{padding:8px 10px;text-align:start;border-bottom:1px solid var(--ligne,#EADFD6);vertical-align:top}
+.inv-tableau thead th{background:var(--terre-voile);font-size:13px}
+.inv-tableau td b{display:block;color:var(--terre-f)}
+.inv-tableau td small{display:block;font-size:12px;color:var(--doux,#6B5B52);white-space:nowrap}
+.inv-tableau td.vide{color:#B8A99E}
+/* encart du Pass en haut de investir/ (14/10/2026), même idée que l'encart Pass Examen du Code de la route */
+.pass-encart{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:var(--terre-voile);border:2px solid #E7C27A;border-radius:16px;padding:12px 16px;margin:0 0 18px}
+.pass-encart-texte{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 280px}
+.pass-encart-texte b{display:inline-flex;align-items:center;gap:6px;font-size:17px}
+.pass-encart-texte svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pass-encart-texte span{font-size:14px;line-height:1.45}
+.pass-encart-boutons{display:flex;flex-direction:column;align-items:center;gap:6px;flex:0 0 auto}
+.pass-encart-lien{font-size:13px;font-weight:700}
+.inv-base{font-size:14px;margin:8px 0 0}
+/* carte du haut : toute la carte mène à l'exemple complet ; les boutons restent cliquables au-dessus (14/10/2026) */
+.pass-encart{position:relative;cursor:pointer}
+.pass-encart-tout{position:absolute;inset:0;z-index:1;border-radius:16px}
+.pass-encart-tout:focus-visible{outline:3px solid #8A5A00;outline-offset:2px}
+.pass-encart-boutons{position:relative;z-index:2}
+.pass-encart:hover{border-color:#D9A43A}
+.pass-encart-telegram{flex:1 1 100%;margin:0;font-size:12.5px;line-height:1.45;color:var(--doux,#6B5B52)}
+.pass-exemple-lien{display:block;color:inherit;text-decoration:none}
+.pass-exemple-lien:hover .pass-exemple{border-color:#D9A43A}
+.pass-exemple-plus{display:block;margin:8px 0 0;font-weight:800;color:var(--terre,#8A3B12);text-decoration:underline}
+/* page investir/exemple/ : messages du robot comme dans Telegram */
+.exemple-avert{background:#FFF4D6;border:1px solid #E7C27A;border-radius:12px;padding:8px 12px;font-size:14px;color:#4A3500}
+.tg-bulle{position:relative;background:#fff;border:1px solid #E3D6C8;border-radius:16px 16px 16px 4px;padding:12px 14px;box-shadow:0 2px 8px rgba(60,40,20,.08);font-size:14.5px;line-height:1.5;max-width:640px}
+.tg-bulle p{margin:0 0 8px}
+.tg-titre{font-weight:800;padding-inline-end:78px}
+/* tampon « EXEMPLE » incliné sur chaque message (14/10/2026, demande d'Ahmed : que le client se rappelle que les chiffres sont des exemples) */
+.tg-bulle{overflow:hidden}
+.tg-tampon{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%) rotate(-18deg);font:800 46px/1 Figtree,system-ui,sans-serif;letter-spacing:.12em;
+  color:rgba(178,34,34,.16);border:5px solid rgba(178,34,34,.16);border-radius:12px;padding:6px 18px;pointer-events:none;white-space:nowrap;user-select:none}
+.tg-mode{font-size:14px;margin:0 0 8px;color:var(--doux,#6B5B52)}
+.tg-moi{display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin:0 0 10px auto;max-width:520px;width:fit-content;background:#DCF8C6;border:1px solid #B7E2A0;
+  border-radius:16px 16px 4px 16px;padding:8px 12px;margin-inline-start:auto}
+.tg-qui{font-size:11px;font-weight:800;color:#3B7A2A}
+.tg-moi code{font:700 15px/1.3 ui-monospace,Consolas,monospace;color:#1F4D12;white-space:normal}
+.tg-cmd{color:#1F6FB2;font-weight:700;text-decoration:underline}
+.tg-liste,.tg-points{margin:0 0 8px;padding-inline-start:18px}
+.tg-liste li,.tg-points li{margin:0 0 6px}
+.tg-suite{font-style:italic;color:var(--doux,#6B5B52)}
+.pass{background:var(--terre-voile);border:2px solid #E7C27A;border-radius:18px;padding:16px 18px}
+.pass h2{display:flex;align-items:center;gap:8px;margin-top:0}
+.pass h2 svg,.btn-paie-grand svg{width:26px;height:26px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pass-prix{font-size:18px;margin:4px 0 8px}
+.pass-prix b{font-size:26px}
+.pass-plus{margin:0 0 6px;padding-inline-start:20px;line-height:1.55}
+.pass-plus li{margin-bottom:4px}
+details.paiement{margin-top:10px}
+details.paiement>summary{list-style:none}
+details.paiement>summary::-webkit-details-marker{display:none}
+.calc{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-top:10px}
+.calc label{display:grid;gap:4px;font-size:14px;font-weight:600}
+.calc input{font:inherit;font-size:16px;padding:9px 12px;border:1.5px solid var(--ligne,#EADFD6);border-radius:12px;background:#fff;min-width:0}
+.calc-res{margin-top:12px;background:#fff;border:1px solid var(--ligne,#EADFD6);border-radius:14px;padding:8px 14px}
+.calc-res p{display:flex;justify-content:space-between;gap:12px;margin:6px 0}
+.calc-res p.fort b{color:var(--terre-f);font-size:20px}
+.calc-res p.bon b{color:#1F7A47}
+.calc-res p.mauvais b{color:#B42318}
+.btn-paie-grand{display:flex;align-items:center;gap:12px;margin:14px 0 0;max-width:560px;text-decoration:none;border-radius:16px;padding:12px 16px;font-weight:800;font-size:16px;line-height:1.3}
+.btn-paie-grand span{min-width:0}
+.btn-paie-grand small{display:block;font-size:12.5px;font-weight:700;opacity:.85;margin-top:2px}
+.btn-paie{display:block;text-align:center;width:100%;max-width:420px;text-decoration:none;font:inherit;font-weight:800;font-size:15.5px;border-radius:12px;padding:12px 14px;margin:12px 0 0;cursor:pointer;box-sizing:border-box}
+.entete-pass{display:inline-flex;align-items:center;gap:5px;text-decoration:none;font-weight:800;font-size:13.5px;border-radius:999px;padding:7px 11px;white-space:nowrap}
+.entete-pass svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:560px){ .entete-pass{display:none!important} }   /* téléphone : en-tête déjà plein (nom + Publier + Partager + langue) -> gros bouton doré de l accueil */
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:800;font-size:15px;color:#fff;background:#1F9D55;border-radius:12px;padding:12px 14px;margin:10px 0 0;max-width:420px}
+.btn-wa svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* === BOUTON DE PAIEMENT — commun à tous les sites d'Ahmed (07/10/2026) : or en dégradé, contour brun, relief, reflet toutes les 5 s === */
+.btn-paie-grand,.btn-paie,.entete-pass{background:linear-gradient(180deg,#FFD978 0%,#F2B33D 52%,#DC9416 100%)!important;color:#2B1D00!important;
+  border:2px solid #8A5A00!important;box-shadow:0 3px 0 #8A5A00,0 6px 14px rgba(138,90,0,.28)!important;position:relative;overflow:hidden}
+.btn-paie-grand::after,.btn-paie::after,.entete-pass::after{content:"";position:absolute;top:-2px;bottom:-2px;left:-60%;width:38%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:paie-reflet 5s ease-in-out 1.2s infinite}
+.btn-paie-grand:active,.btn-paie:active,.entete-pass:active{transform:translateY(2px);box-shadow:0 1px 0 #8A5A00!important}
+@keyframes paie-reflet{0%{left:-60%}30%,100%{left:130%}}
+@media (prefers-reduced-motion:reduce){.btn-paie-grand::after,.btn-paie::after,.entete-pass::after{animation:none;display:none}}
+
+/* paiement en 3 étapes ; quand « Paiement » est ouvert, la description au-dessus se cache (règle commune) */
+:has(> details.paiement[open]) > .masque-si-paiement{display:none}
+.paie-etapes{list-style:none;counter-reset:etape;margin:10px 0;padding:0;display:grid;gap:8px}
+.paie-etapes>li{counter-increment:etape;position:relative;padding:10px 12px 10px 46px;background:#fff;border-radius:12px;line-height:1.55;font-weight:600}
+.paie-etapes>li::before{content:counter(etape);position:absolute;left:12px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--terre);color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center}
+html[dir="rtl"] .paie-etapes>li{padding:10px 46px 10px 12px}
+html[dir="rtl"] .paie-etapes>li::before{left:auto;right:12px}
+.applis{display:inline-flex;flex-wrap:wrap;gap:8px;vertical-align:middle}
+.appli-btn{display:inline-flex;align-items:center;padding:3px;border-radius:14px;line-height:0;background:#fff;border:2px solid var(--terre)}
+.appli-btn img{width:44px;height:44px;border-radius:10px;display:block}
+.paie a.appli{color:var(--terre-f);font-weight:800;text-decoration:underline;text-underline-offset:2px}
+.paie-confiance{font-size:13px;color:var(--doux,#6B5B52);margin:6px 0 10px}
+.paie-etapes bdi{white-space:nowrap}
+.aide-transfert{display:inline-block;vertical-align:middle;margin-inline-start:6px}
+.aide-transfert>summary{list-style:none;cursor:pointer;width:26px;height:26px;border-radius:50%;background:#F2B33D;color:#14202E;font-weight:800;display:inline-grid;place-items:center}
+.aide-transfert>summary::-webkit-details-marker{display:none}
+.aide-transfert[open]{display:block;margin:8px 0 0}
+.aide-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.aide-images figure{margin:0;text-align:center}
+.aide-images img{width:100%;height:auto;border-radius:12px;border:1px solid #E1E7EE}
+.aide-images figcaption{font-weight:800;font-size:13px;margin-top:2px}
+@media (max-width:440px){ .inv-tableau th,.inv-tableau td{padding:7px 6px} .inv-tableau table{font-size:13px} .inv-tableau td small{font-size:11px} }
+/* cadrage des 4 photos de l'accueil (classes : la CSP du site refuse les attributs style="…") */
+.bande-themes img.theme-habitation{object-position:62% 35%}
+.bande-themes img.theme-bureaux{object-position:50% 50%}
+.bande-themes img.theme-industrie{object-position:60% 45%}
+.bande-themes img.theme-terrains{object-position:50% 60%}
+.inv-tableau th small{display:block;font-weight:500;font-size:12px;color:var(--doux,#6B5B52)}
+.inv-peu{display:inline-block;margin-top:2px;font-size:11px;font-weight:600;color:#8A5A00;background:#FFF1D6;border-radius:999px;padding:1px 7px}
+.pass-accroche{font-size:17px;margin:2px 0 6px}
+.pass-plus{list-style:none;padding:0}
+.pass-plus li{margin-bottom:8px}
+.pass-exemple{margin:12px 0 0;background:#fff;border:1px dashed #C9A35A;border-radius:14px;padding:10px 14px}
+.pass-exemple figcaption{font-size:12.5px;font-weight:700;color:#8A5A00;text-transform:uppercase;letter-spacing:.03em}
+.pe-titre{margin:6px 0 4px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.pe-note{margin-inline-start:auto;background:var(--terre);color:#fff;font-weight:800;border-radius:999px;padding:2px 10px}
+.pass-exemple ul{margin:0;padding-inline-start:18px;line-height:1.55}
+.pass-exemple small{color:var(--doux,#6B5B52)}
+/* 14/10/2026 : essai du Pass sur le web ou Telegram, « Par où commencer ? », modèle d'IA, page investir/pass/ */
+.essai-choix{margin:12px 0 0;max-width:560px}
+.essai-choix .btn-paie{margin-top:0}
+.essai-web{margin:6px 0 0}
+.essai-telegram{margin:10px 0 0;background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:8px 14px}
+.essai-telegram>summary{cursor:pointer;font-weight:700;font-size:14.5px;color:var(--bleu);padding:4px 0}
+.etapes-tg{margin:8px 0;padding-inline-start:20px;line-height:1.5;font-size:14.5px}
+.etapes-tg li{margin-bottom:6px}
+.essai-telegram .btn-telegram{max-width:320px}
+.par-ou-liste{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.par-ou-liste a{display:flex;flex-direction:column;gap:4px;height:100%;box-sizing:border-box;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--ligne);border-radius:16px;padding:12px 14px;box-shadow:var(--ombre)}
+.par-ou-liste a:hover{border-color:var(--terre)}
+.par-ou-liste b{color:var(--terre-f);font-size:16px}
+.par-ou-liste span{font-size:14px;line-height:1.45}
+.ia-bandeau{display:inline-flex;align-items:center;gap:10px;margin:12px 0 0;padding:9px 14px;border-radius:14px;background:var(--encre);color:#fff;text-decoration:none;max-width:100%;box-sizing:border-box}
+.ia-bandeau svg,.ia-bloc h2 svg{width:28px;height:28px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ia-bandeau b{display:block;font-size:16px}
+.ia-bandeau small{display:block;font-size:12.5px;opacity:.85}
+.ia-bandeau:hover{background:#2C3B42}
+.ia-bloc{background:var(--bleu-clair);border:1px solid #C9DBE5;border-radius:var(--r);padding:16px}
+.ia-bloc h2{display:flex;align-items:center;gap:8px;margin-top:0}
+.ia-bloc h2 svg{color:var(--bleu)}
+.calc select{font:inherit;font-size:16px;padding:9px 10px;border:1.5px solid var(--ligne,#EADFD6);border-radius:12px;background:#fff;min-width:0;max-width:100%}
+.ia-ligne{flex-wrap:wrap;align-items:baseline}
+.ia-ligne span{flex:1 1 160px}
+.ia-ligne b{color:var(--terre-f);font-size:20px}
+.ia-ligne small{flex:1 1 100%;text-align:end;color:var(--doux);font-size:12.5px}
+.ia-pas{color:var(--doux);font-size:13px;flex:1 1 100%!important}
+.ia-rdt b{color:var(--ok)}
+.pass-maj{margin:6px 0 0;font-size:15px}
+.pass-titre svg{width:30px;height:30px;vertical-align:-4px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pass-etat:not(:empty){margin:18px 0 0;background:var(--terre-voile);border:2px solid #E7C27A;border-radius:16px;padding:10px 16px}
+.pass-etat p{margin:6px 0}
+.pass-code b{font-size:18px;letter-spacing:.04em}
+.pass-url{word-break:break-all;font-size:13px}
+.pass-copier,.p-voir,.p-fermer,.pass-code-form button{font:inherit;font-size:14px;font-weight:700;border:1.5px solid var(--terre);color:var(--terre-f);background:#fff;border-radius:10px;padding:6px 12px;cursor:pointer}
+.pass-code-form{display:grid;gap:6px;margin:16px 0 0;max-width:420px;font-size:14px}
+.pass-code-form span{display:flex;gap:8px}
+.pass-code-form input{font:inherit;font-size:16px;flex:1;min-width:0;padding:8px 12px;border:1.5px solid var(--ligne);border-radius:10px;text-transform:uppercase}
+.p-filtre{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;margin:10px 0}
+.p-filtre select{font:inherit;font-size:15px;padding:7px 10px;border:1.5px solid var(--ligne);border-radius:10px;background:#fff;min-width:0;max-width:100%}
+.p-liste{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.p-q{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:10px 12px;font-size:14px;line-height:1.5}
+.p-q>div{flex:1 1 calc(100% - 50px);min-width:0}
+.p-q .p-voir,.p-q .p-ajout{margin-inline-start:42px}
+.p-q .p-ajout{margin-inline-start:0}
+.p-q .pe-note{margin-inline-start:8px}
+.p-q .inv-rang{position:static;flex:none}
+.p-fiche-bloc{background:#fff;border:1px solid var(--ligne);border-radius:var(--r);padding:14px 16px}
+.p-fiche{border-top:1px solid var(--ligne);padding-top:6px}
+.p-fiche h3{display:flex;align-items:center;gap:8px;font-size:17px}
+.p-fiche ul,.p-affaires,.p-m2{padding-inline-start:18px;line-height:1.6;font-size:14.5px}
+.p-affaires li,.p-m2 li{margin-bottom:6px}
+.btn-paie-petit{font-size:14.5px}
+/* Avis du modèle d'IA sous le prix d'une annonce (14/10/2026) */
+.an-ia{display:flex;gap:7px;align-items:flex-start;margin:6px 0 0;font-size:13px;line-height:1.4;background:var(--bleu-clair);color:var(--encre);border-radius:10px;padding:6px 9px}
+.an-ia svg{width:17px;height:17px;flex:none;margin-top:1px;fill:none;stroke:var(--bleu);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.an-ia small{color:var(--doux);white-space:nowrap}
+.an-ia-b{background:var(--olive-clair)}
+.an-ia-h{background:#FFF1D6}
+/* Accueil clair (15/10/2026) : « Que voulez-vous faire ? » en 5 cartes ; la recherche s'ouvre depuis les 2 premières */
+.choix-accueil{margin:16px 0 0}
+.choix-question{font-family:var(--titres);font-size:20px;font-weight:600;margin:0 0 10px}
+.choix-accueil ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:1fr}
+@media (min-width:700px){.choix-accueil ul{grid-template-columns:1fr 1fr}}
+.choix{display:flex;align-items:center;gap:12px;min-height:64px;padding:12px 14px;border-radius:16px;text-decoration:none;color:var(--encre);background:#fff;border:1.5px solid var(--ligne);box-shadow:var(--ombre);box-sizing:border-box;height:100%}
+.choix:hover,.choix.actif{border-color:var(--terre)}
+.choix>svg{width:30px;height:30px;flex:none;fill:none;stroke:var(--terre);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.choix b{display:block;font-size:16.5px;line-height:1.3}
+.choix small{display:block;font-size:13px;color:var(--doux);margin-top:2px;line-height:1.35}
+.choix.choix-or{background:linear-gradient(180deg,#FFE7A6 0%,#F7C55A 100%);border-color:#C98A12;position:relative}
+.choix.choix-or>svg{stroke:#5A3A00}
+.choix.choix-or small{color:#4A3300}
+.choix:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.zone-recherche{margin-top:16px;scroll-margin-top:70px}
+.zone-recherche.replie{display:none}
+/* « Comment ça marche ? » en 3 étapes avec icône numérotée */
+.etapes-ico{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:18px;grid-template-columns:1fr;text-align:center}
+@media (min-width:700px){.etapes-ico{grid-template-columns:repeat(3,1fr)}}
+.etapes-ico li{display:flex;flex-direction:column;align-items:center;gap:6px}
+.etape-ico{position:relative;display:grid;place-items:center;width:84px;height:84px;border-radius:20px;background:var(--sable-f)}
+.etape-ico svg{width:38px;height:38px;fill:none;stroke:var(--encre);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.etape-num{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;background:var(--or);color:var(--encre);font-weight:800;display:grid;place-items:center}
+.etapes-ico h3{margin:6px 0 0;font-size:18px}
+.etapes-ico p{margin:0;color:var(--doux);font-size:14.5px;max-width:320px}
+.hero-page h1 svg{width:30px;height:30px;vertical-align:-5px;margin-inline-end:6px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.alerte-cta{text-align:center}
+.btn-alerte-grand{display:inline-flex;font-size:17px;min-height:54px;padding:12px 26px;max-width:420px;width:100%;justify-content:center}
+.questions details{background:#fff;border:1px solid var(--ligne);border-radius:12px;padding:10px 14px;margin-top:8px}
+.questions summary{cursor:pointer;font-weight:700}
+.questions p{margin:8px 0 2px;font-size:14.5px}
+/* page vendre/ */
+.base-calcul{background:#fff;border-radius:10px;padding:8px 10px}
+.analyse-vendeur{background:#fff;border:2px solid #E7C27A;border-radius:var(--r);padding:16px}
+.analyse-vendeur h3{margin:18px 0 6px;font-size:17px}
+/* Pass Propriétaire (15/10/2026) : valeur des atouts, annonce prête à publier, mise en avant, suivi Telegram */
+.v-atouts-valeur{margin:6px 0;padding-inline-start:20px}
+.v-atouts-valeur li{margin:4px 0}
+.v-atouts-valeur .plus{font-weight:800;color:var(--olive)}
+.v-mon-prix{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-weight:700;margin:6px 0}
+.v-mon-prix input{width:140px;font:inherit;padding:8px 10px;border:1px solid var(--ligne);border-radius:10px}
+.v-texte p{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 4px}
+.v-texte textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;line-height:1.5;padding:10px;border:1px solid var(--ligne);border-radius:10px;background:var(--sable);resize:vertical}
+.btn-copier{font:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid var(--bleu);background:#fff;color:var(--bleu);cursor:pointer}
+.depot-avant{background:#FFF3D6;border:1px solid #E7C27A;color:#7A4E00;border-radius:12px;padding:10px 12px;font-weight:700;margin:0 0 12px}
+.an-badge.avant{background:#FFF3D6;color:#7A4E00;border:1px solid #E7C27A;margin-inline-start:4px}
+.annonce.en-avant{border-color:#E7C27A;box-shadow:0 0 0 2px #F5E2B8}
+.trois-prix{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:1fr}
+@media (min-width:700px){.trois-prix{grid-template-columns:repeat(3,1fr)}}
+.trois-prix li{border:1px solid var(--ligne);border-radius:14px;padding:10px 12px;background:var(--sable)}
+.trois-prix li.juste{border:2px solid var(--terre);background:var(--terre-voile)}
+.trois-prix span{display:block;font-size:13px;font-weight:700;color:var(--doux)}
+.trois-prix b{display:block;font-size:22px;color:var(--terre-f);margin:2px 0}
+.trois-prix small{display:block;font-size:12.5px;color:var(--doux);line-height:1.4}
+.calc-res p.petit,.calc-res p.base-calcul{display:block}
+.etapes-ico{gap:30px}
+.analyse-vendeur td b,.analyse-vendeur td small{white-space:nowrap}
+/* 15/10/2026 (demandes d'Ahmed) : le mot « IA » d'une autre couleur, mots clés soulignés, cartes payantes de couleurs différentes */
+/* RÈGLE d'Ahmed (15/10/2026) : le mot « IA » est TOUJOURS en blanc dans un carré bleu #2C5872 (comme le titre de l'accueil), partout */
+.mot-ia{display:inline-block;background:var(--bleu)!important;color:#fff!important;border-radius:7px;padding:0 .3em;line-height:1.25;font-weight:800;letter-spacing:.02em;position:relative;margin-inline:.32em}
+/* (les longueurs animées sont des nombres × 1em : @property n'accepte pas « em » comme valeur de départ)
+   16/10/2026 (demande d'Ahmed) : le carré « IA » est une PUCE vivante : 2 petits traits sur chacun des 4 côtés, qui s'allongent
+   et rétrécissent, chacun à son propre rythme. CSS seulement (marche partout où il y a .mot-ia) ; fixes si « réduire les animations » */
+@property --ia1{syntax:"<number>";inherits:false;initial-value:.16}
+@property --ia2{syntax:"<number>";inherits:false;initial-value:.16}
+@property --ia3{syntax:"<number>";inherits:false;initial-value:.16}
+@property --ia4{syntax:"<number>";inherits:false;initial-value:.16}
+@property --ia5{syntax:"<number>";inherits:false;initial-value:.16}
+@property --ia6{syntax:"<number>";inherits:false;initial-value:.16}
+@property --ia7{syntax:"<number>";inherits:false;initial-value:.16}
+@property --ia8{syntax:"<number>";inherits:false;initial-value:.16}
+.mot-ia::after{content:"";position:absolute;inset:-.32em;pointer-events:none;--pin:var(--bleu);--e:.32em;--t:max(1.5px,.08em);
+  background:
+    linear-gradient(var(--pin),var(--pin)) left 32% top calc(var(--e) - calc(var(--ia1) * 1em)) / var(--t) calc(var(--ia1) * 1em),
+    linear-gradient(var(--pin),var(--pin)) left 68% top calc(var(--e) - calc(var(--ia2) * 1em)) / var(--t) calc(var(--ia2) * 1em),
+    linear-gradient(var(--pin),var(--pin)) left 32% bottom calc(var(--e) - calc(var(--ia3) * 1em)) / var(--t) calc(var(--ia3) * 1em),
+    linear-gradient(var(--pin),var(--pin)) left 68% bottom calc(var(--e) - calc(var(--ia4) * 1em)) / var(--t) calc(var(--ia4) * 1em),
+    linear-gradient(var(--pin),var(--pin)) left calc(var(--e) - calc(var(--ia5) * 1em)) top 34% / calc(var(--ia5) * 1em) var(--t),
+    linear-gradient(var(--pin),var(--pin)) left calc(var(--e) - calc(var(--ia6) * 1em)) top 66% / calc(var(--ia6) * 1em) var(--t),
+    linear-gradient(var(--pin),var(--pin)) right calc(var(--e) - calc(var(--ia7) * 1em)) top 34% / calc(var(--ia7) * 1em) var(--t),
+    linear-gradient(var(--pin),var(--pin)) right calc(var(--e) - calc(var(--ia8) * 1em)) top 66% / calc(var(--ia8) * 1em) var(--t);
+  background-repeat:no-repeat;
+  animation:ia-p1 1.3s ease-in-out infinite alternate,ia-p2 1.9s ease-in-out .4s infinite alternate,ia-p3 1.6s ease-in-out .2s infinite alternate,
+    ia-p4 1.1s ease-in-out .7s infinite alternate,ia-p5 1.75s ease-in-out .1s infinite alternate,ia-p6 1.4s ease-in-out .9s infinite alternate,
+    ia-p7 2.1s ease-in-out .3s infinite alternate,ia-p8 1.25s ease-in-out .55s infinite alternate}
+@keyframes ia-p1{to{--ia1:.3}} @keyframes ia-p2{to{--ia2:.3}} @keyframes ia-p3{to{--ia3:.3}} @keyframes ia-p4{to{--ia4:.3}}
+@keyframes ia-p5{to{--ia5:.3}} @keyframes ia-p6{to{--ia6:.3}} @keyframes ia-p7{to{--ia7:.3}} @keyframes ia-p8{to{--ia8:.3}}
+.ia-tete .mot-ia::after,.barre-ia .mot-ia::after{--pin:rgba(255,255,255,.75)}   /* sur fond sombre : traits clairs */
+@media (prefers-reduced-motion:reduce){.mot-ia::after{animation:none}}
+h1 .mot-ia{font-family:var(--texte);font-size:.82em;vertical-align:.08em}
+.choix b u{text-decoration-thickness:2px;text-underline-offset:3px}
+.choix.choix-vert{background:linear-gradient(180deg,#D4F1DE 0%,#8FD3A8 100%);border-color:#2F7A4A}
+.choix.choix-vert>svg{stroke:#1E4D2E}
+.choix.choix-vert small{color:#1E4D2E}
+/* « Votre avis » : confirmation bien visible dans la carte après l'envoi (15/10/2026) */
+.avis-merci{background:var(--olive-clair);border:2px solid var(--ok);border-radius:14px;padding:16px 18px;max-width:620px}
+.avis-merci p{margin:6px 0}
+.avis-merci-titre{font-size:19px;font-weight:800;color:var(--ok)}
+.btn-avis-autre{font:inherit;font-weight:700;margin-top:6px;padding:9px 14px;border-radius:10px;border:1.5px solid var(--ok);background:#fff;color:var(--ok);cursor:pointer}
+.avis-merci:focus{outline:none}
+
+/* 15/10/2026 : carte « louer votre bien » (3e couleur), barre « IA pour l'immobilier » sous l'en-tête sur téléphone, avis expliqué */
+.choix.choix-bleu{background:linear-gradient(180deg,#DCEAF3 0%,#9CC3DB 100%);border-color:#2C5872}
+.choix.choix-bleu>svg{stroke:#1D3E52}
+.choix.choix-bleu small{color:#1D3E52}
+/* 15/10/2026 (demandes d'Ahmed) : carte « Notre IA … calcule : » qui MONTRE les avantages de l'IA — titre + 3 tuiles
+   (prix de vente, loyer, rendement) en bleu nuit, bord et accents dorés. 16/10/2026 : sur TOUTES les pages (téléphone et
+   ordinateur, page ia/ comprise) et barre qui se REMPLIT à chaque étape (calcul / chargement), demandes d'Ahmed. */
+.barre-ia{display:block;margin:8px 12px 6px;padding:8px 9px 11px;border-radius:16px;
+  background:radial-gradient(120% 140% at 0% 0%,#34506A 0%,#1B2833 62%);border:1.5px solid rgba(242,179,61,.8);
+  box-shadow:0 8px 20px rgba(20,32,46,.3)}
+@media (min-width:561px){.barre-ia{max-width:1128px;margin:12px auto 8px;padding:10px 14px 13px}
+  .barre-ia .ia-tuiles{max-width:820px}}
+@media (min-width:1160px){.barre-ia{margin-inline:auto}}
+.ia-tete{display:flex;align-items:center;gap:7px;color:#fff;text-decoration:none;font-weight:700;font-size:13px;line-height:1.2;margin:0 2px 8px}
+.ia-tete .mot-ia{font-size:12.5px;padding:1px 6px;border-radius:6px;box-shadow:0 0 0 1px rgba(255,255,255,.45)}   /* même bleu que les titres ; fin contour clair sur le fond sombre */
+.ia-tete .ia-fleche{margin-inline-start:auto;flex:none;color:#FFD978;font-size:16px;line-height:1}
+html[dir="rtl"] .ia-tete .ia-fleche{transform:scaleX(-1)}
+/* « l'IA travaille » : la barre se remplit de 0 à 100 % pendant chaque étape (page.js), puis l'étape suivante recommence */
+.ia-pensee{margin:-2px 2px 9px}
+/* barre de chargement HAUTE avec la phrase de l'étape et le pourcentage à l'intérieur (16/10/2026, demande d'Ahmed) */
+.ia-barre{position:relative;height:22px;border-radius:11px;background:rgba(255,255,255,.10);border:1px solid rgba(242,179,61,.45);overflow:hidden;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 9px}
+.ia-barre i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,rgba(185,137,47,.85),rgba(217,164,65,.95));z-index:0}
+html[dir="rtl"] .ia-barre i{inset:0 0 0 auto;background:linear-gradient(270deg,rgba(185,137,47,.85),rgba(217,164,65,.95))}
+.ia-barre i{transition:width .45s ease-out}   /* chaque bond est doux ; le rythme (bonds et pauses) vient de page.js */
+.ia-etape{position:relative;z-index:1;color:#fff;font-size:11.5px;font-weight:700;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.55);white-space:nowrap}
+.ia-etape{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ia-etape::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#7CE0A8;margin-inline-end:6px;
+  vertical-align:1px;animation:ia-pulse 1.1s ease-in-out infinite}
+@keyframes ia-pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ia-etape::before{animation:none}.ia-barre i{width:100%;transition:none}}
+.ia-tuiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}   /* 4 tuiles : Voir N annonces, Prix de vente, Loyer, Rendement */
+/* couleurs choisies par Ahmed (capture du 15/10/2026) : tuile sombre, bord doré fin, titre doré, sous-titre gris-bleu ; léger relief */
+.ia-tuile{display:block;text-align:center;text-decoration:none;border-radius:12px;padding:8px 4px;line-height:1.2;
+  background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.05));border:1px solid rgba(242,179,61,.6);
+  box-shadow:0 2px 0 rgba(0,0,0,.35);-webkit-tap-highlight-color:transparent}
+.ia-tuile b{display:block;color:#FFD978;font-size:13px;font-weight:800}
+.ia-tuile small{display:block;color:#C9D6E2;font-size:11.5px;font-weight:600;margin-top:2px}
+.ia-tuile:active{transform:translateY(1px);box-shadow:none;background:rgba(255,255,255,.18)}
+.ia-tuile:hover{border-color:#FFD978}
+@media (max-width:420px){.ia-tuile{padding:7px 2px}.ia-tuile b{font-size:12px;letter-spacing:-.01em}.ia-tuile small{font-size:10.5px}}   /* 4 tuiles sur 360 px */
+.an-ia{display:flex;gap:7px;align-items:flex-start}
+.an-ia>div{flex:1;min-width:0}
+.an-ia p{margin:0}
+.an-ia-plus{margin-top:4px}
+.an-ia-plus summary{cursor:pointer;font-weight:700;color:var(--terre-f);font-size:13px}
+.an-ia-plus p{margin:6px 0 0;font-size:12.5px}
+.an-ia-plus ul{margin:4px 0 0;padding-inline-start:16px;font-size:12.5px}
+
+/* Pas d'essai gratuit (15/10/2026) : l'exemple complet, bien visible, juste avant « Prendre le Pass » */
+.btn-exemple{display:block;text-align:center;margin:10px 0;padding:12px 16px;border:2px solid #0E5C4A;border-radius:12px;color:#0E5C4A;font-weight:800;text-decoration:none;background:#fff}
+.btn-exemple:hover{background:#EAF5F1}
+.exemple-proprio{margin:14px 0;border:2px dashed #B9892F;border-radius:14px;background:#FFFBF2}
+.exemple-proprio>summary{cursor:pointer;padding:12px 16px;font-weight:800;color:#7A5410}
+.exemple-proprio-corps{position:relative;padding:0 16px 14px}
+.exemple-proprio-corps h3{margin:14px 0 6px;font-size:16px}
+.lien-fictif{color:#888;text-decoration:underline dotted}
+.exemple-proprio-corps{overflow:hidden}
+
+/* Pass Propriétaire : 30 jours offerts si le bien n'est pas encore vendu ou loué (15/10/2026) */
+.pass-garantie{background:#EAF5F1;border-radius:10px;padding:8px 12px;margin:6px 0 10px}
+.pass-offert{background:#FFF6DD;border:1px solid #E7C66B;border-radius:10px;padding:10px 12px}
+
+/* chiffres d'un quartier estimés par l'IA (peu d'annonces, 15/10/2026) */
+.p-ia{color:#6A4FB0;font-weight:700}
+.p-ia-note{background:#F3EFFB;border-radius:8px;padding:6px 10px}
+
+/* atouts du bien (vendre/, louer/ : 15/10/2026) */
+.v-atouts{grid-column:1/-1;border:1px solid #DDD3C6;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.v-atouts legend{font-weight:700;padding:0 4px}
+.case-atout{display:flex;align-items:center;gap:6px;font-weight:500}
+.v-surface-svp{background:#FFF6DD;border-radius:8px;padding:6px 10px}
+
+/* historique de la précision de l'IA (15/10/2026) */
+.ia-histo{margin-top:10px}
+.ia-histo summary{cursor:pointer;font-weight:700}
+/* « J'ai déjà un code Pass » en haut des pages vendre/, louer/, investir/ (15/10/2026 : Ahmed ne trouvait pas où taper son code) */
+.deja-code{display:inline-block;margin-top:12px;padding:10px 16px;border-radius:12px;background:#fff;border:2px solid var(--bleu);color:var(--bleu);font-weight:800;font-size:15px;text-decoration:none;box-shadow:0 2px 0 rgba(44,88,114,.25)}
+/* Page vendre/ et louer/ plus compacte (15/10/2026, Ahmed : « beaucoup de cartes, il faut les rétrécir ») */
+.vendre .comment-marche{padding-top:14px;padding-bottom:14px}
+.vendre .etapes-ico,.investir .etapes-ico{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.vendre .etapes-ico li,.investir .etapes-ico li{gap:4px}
+.vendre .etape-ico,.investir .etape-ico{width:52px;height:52px;border-radius:14px}
+.vendre .etape-ico svg,.investir .etape-ico svg{width:26px;height:26px}
+.vendre .etape-num,.investir .etape-num{width:22px;height:22px;top:-9px;font-size:13px}
+.vendre .etapes-ico h3,.investir .etapes-ico h3{font-size:14px;margin-top:4px;line-height:1.25}
+.vendre .etapes-ico p,.investir .etapes-ico p{display:none}
+.vendre .calc{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.vendre .calc label{font-size:13.5px}
+.vendre .calc select,.vendre .calc input{min-width:0;width:100%;box-sizing:border-box}
+.calc .case-atout{display:inline-flex;white-space:nowrap;width:auto;align-items:center;gap:6px;font-weight:600;font-size:13.5px;padding:6px 10px;border:1px solid var(--ligne);border-radius:999px;background:#fff}
+.calc .case-atout input{margin:0;width:auto}
+.vendre .v-atouts{gap:6px}
+.pass-touchez{margin:8px 0 4px;font-size:13.5px;color:var(--doux)}
+.pass-avantages{display:grid;gap:6px;margin:0 0 8px}
+.pass-avantages li{margin:0}
+.avantage{border:1px solid var(--ligne);border-radius:12px;background:#fff}
+.avantage summary{cursor:pointer;list-style:none;padding:9px 34px 9px 12px;position:relative;font-size:14.5px}
+html[dir="rtl"] .avantage summary{padding:9px 12px 9px 34px}
+.avantage summary::-webkit-details-marker{display:none}
+.avantage summary::after{content:"+";position:absolute;inset-inline-end:12px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--bleu);font-size:18px}
+.avantage[open] summary::after{content:"−"}
+.avantage[open]{border-color:var(--bleu)}
+.avantage p{margin:0;padding:0 12px 10px;font-size:14px;line-height:1.5;color:var(--doux)}
+/* l'estimation est GRATUITE, dit au-dessus du Pass (15/10/2026, demande d'Ahmed) */
+.badge-gratuit{display:inline-block;vertical-align:middle;margin-inline-start:6px;padding:3px 9px;border-radius:999px;background:#2E7D4F;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:12px;font-weight:800;letter-spacing:.04em}
+.note-gratuit{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:#E8F5EC;border:1px solid #9FD3B0;color:#1F5A37;font-size:14px;line-height:1.45}
+/* cartes repliables Estimation gratuite / Pass (15/10/2026) */
+.pliable > summary{cursor:pointer;list-style:none;position:relative;padding-inline-end:34px}
+.pliable > summary::-webkit-details-marker{display:none}
+.pliable > summary h2{margin:0}
+.pliable > summary::after{content:"+";position:absolute;inset-inline-end:2px;top:2px;width:28px;height:28px;border-radius:50%;background:var(--bleu);color:#fff;font-weight:800;font-size:20px;line-height:28px;text-align:center}
+.pliable[open] > summary::after{content:"−"}
+.pli-sous{display:block;margin-top:6px;font-size:14px;color:var(--doux);line-height:1.45}
+.pliable[open] > summary .pli-sous{display:none}
+.pliable[open] > summary{margin-bottom:10px}
+.ia-ligne .indicatif{display:block;margin-top:4px;font-style:italic;color:var(--doux)}
+.pliable[open] > summary .pli-sous-garde{display:none}
+.v-pour{margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#EEF4F8;border:1px solid #C9DAE6;font-size:14px;line-height:1.45}
+/* tampon « EXEMPLE » sur TOUS les exemples (règle générale d'Ahmed, 15/10/2026) */
+.pass-exemple,.aide-images figure{position:relative;overflow:hidden}
+.pass-exemple .tg-tampon{font-size:34px}
+.aide-images .tg-tampon{font-size:26px;top:40%}
+/* où REMPLIR et où LIRE LE RÉSULTAT, bien différents (15/10/2026, demande d'Ahmed) */
+.zone-titre{display:block;margin:14px 0 6px;font-size:15px}
+.zone-titre b{font-weight:800}
+.zone-titre-remplir{color:var(--bleu)}
+.zone-titre-resultat{color:#1F5A37}
+.zone-saisie{background:#fff;border:2px dashed var(--bleu);border-radius:14px;padding:12px}
+.zone-resultat{border:2px solid #2E7D4F!important;box-shadow:0 2px 0 rgba(46,125,79,.18)}
+.analyse-vendeur summary .zone-titre{margin:0 0 4px}
+/* résultat complet verrouillé sans Pass : exemple tamponné (15/10/2026) */
+.verrou{border-style:dashed}
+.verrou-ex{position:relative;overflow:hidden;border:1px dashed #C9A35A;border-radius:12px;padding:10px;margin-bottom:10px;opacity:.92}
+.v-verrou-msg{background:#FFF3D6;border-color:#E7C27A}
+/* formulaire vide au départ + précision qui monte à chaque information (15/10/2026, Ahmed) */
+.ia-vide b{color:#B9AEA4!important}
+.ia-res .v-precision,.v-precision{display:block!important;grid-template-columns:none!important;margin:10px 0 0;padding:8px 10px;border-radius:10px;background:#F4F8F5;font-size:13.5px;line-height:1.45;color:var(--doux)}
+.v-precision .v-precision-titre{display:flex!important;align-items:center;gap:8px;font-weight:800;color:#1F5A37;margin-bottom:3px}
+.v-barre{display:inline-flex;gap:4px}
+.v-barre .pt{width:16px;height:8px;border-radius:4px;background:#D6E4DA}
+.v-barre .pt.plein{background:#2E7D4F}
+/* carte GÉNÉRALE du résultat, en deux parties : gratuit / payant (15/10/2026, Ahmed) */
+.resultat-general{border:2px solid #2E7D4F;background:#F2F8F4;border-radius:var(--r);padding:14px}
+.res-partie .analyse-vendeur summary h2{font-size:17px}
+.resultat-general > h2{margin:0 0 4px;color:#1F5A37}
+.resultat-general > h2 small{display:block;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:13.5px;font-weight:500;color:var(--doux)}
+.res-partie{background:#fff;border-radius:14px;padding:12px;margin-top:12px}
+.res-partie > h3{margin:0 0 8px;font-size:17px}
+.res-gratuit{border:2px solid #9FD3B0}
+.res-payant{border:2px solid #E7C27A;background:#FFFBF2}
+.res-partie .analyse-vendeur{border:0;padding:0;background:none;margin:0;box-shadow:none}
+/* carte du Pass sur le modèle de la carte « Pass Examen » du Code de la route (15/10/2026, Ahmed : règle générale) :
+   carte blanche à bord doré, ruban en haut, prix en grosse tuile */
+.offre-pass{position:relative;background:#fff!important;border:2px solid #F2B33D!important;margin-top:26px}
+.offre-pass .ruban{position:absolute;top:-14px;inset-inline-end:14px;margin:0;background:#F2B33D;color:#3A2A00;font-weight:800;font-size:13px;border-radius:999px;padding:4px 12px;z-index:2;white-space:nowrap}
+.offre-pass .pass-sous-titre{display:block;font-size:15px;color:var(--doux);margin:2px 0 8px}
+.offre-pass .pass-tarif{display:inline-flex;flex-direction:column;align-items:center;min-width:110px;padding:8px 14px;border:1.5px solid #F2B33D;border-radius:14px;background:#FFF8E6}
+.offre-pass .pass-tarif b{font-size:24px;line-height:1.15;color:#8A5A00}
+.offre-pass .pass-tarif > span{font-size:13px;font-weight:700;color:var(--doux)}
+.offre-pass .pliable[open] > summary .pass-tarif{display:none}
+/* carte des prix par quartier (15/10/2026) */
+.cp-choix{display:flex;gap:8px;margin:12px 0}
+.cp-btn{flex:1;font:inherit;font-weight:800;font-size:14.5px;padding:10px 8px;border-radius:12px;border:2px solid var(--bleu);background:#fff;color:var(--bleu);cursor:pointer}
+.cp-btn.actif{background:var(--bleu);color:#fff}
+.cp-carte{height:62vh;min-height:360px;border-radius:var(--r);overflow:hidden;border:1px solid var(--ligne);background:#E8EEF2}
+.cp-legende{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:10px 0 4px;font-size:13px}
+.cp-leg{display:inline-flex;align-items:center;gap:5px}
+.cp-leg i{width:14px;height:14px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px #ccc}
+.cp-c0{background:#2E7D4F}.cp-c1{background:#7FB33D}.cp-c2{background:#F2B33D}.cp-c3{background:#E8793A}.cp-c4{background:#C0392B}
+.cp-unite{font-weight:700;color:var(--doux)}
+.cp-chiffre{font-size:17px;font-weight:800;color:var(--terre-f)}
+/* nouvelle carte en haut de l'accueil et des pages de gouvernorat (remplace l'ancienne, gardée si la carte ne charge pas) */
+.carte-vivante .cp-mini{height:340px;min-height:0;margin:0 0 6px}
+.carte-vivante.petite .cp-mini{height:280px}
+.carte-vivante.charge .carte-secours{display:none}
+.carte-vivante:not(.charge) .cp-mini,.carte-vivante:not(.charge) .cp-choix-mini{display:none}
+.cp-choix-mini{margin:0 0 8px}
+.cp-choix-mini .cp-btn{padding:6px 8px;font-size:13.5px;border-radius:10px}
+.leaflet-marker-icon.cp-gouv{display:flex!important;align-items:center;justify-content:center;border-radius:50%;background:var(--bleu);color:#fff;font-weight:800;font-size:12.5px;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.cp-gouv span{line-height:1}
+.cp-leg i.cp-g{background:var(--bleu)}
+
+
+/* listes longues : 10 visibles, les autres repliées ; tri (15/10/2026, Ahmed) */
+[data-limite] > .en-plus{display:none}
+.voir-plus{display:block;margin:8px auto 0;padding:9px 16px;border:1.5px solid var(--bleu);border-radius:999px;background:#fff;color:var(--bleu);font-weight:700;font-size:14px;cursor:pointer}
+.tri{display:inline-flex;align-items:center;gap:8px;margin:2px 0 8px;font-size:14px;font-weight:700}
+.tri select{padding:6px 10px;border:1.5px solid var(--ligne);border-radius:10px;background:#fff;font:inherit;font-weight:600}
+.tri-aide{display:block;margin:-4px 0 8px;font-size:12.5px;color:var(--doux)}
+/* page du Pass : raccourcis vers chaque partie */
+/* Pass : chaque résultat dans sa carte claire (15/10/2026, Ahmed : plus de boutons en haut) */
+#pass-contenu > .bloc, .pass-analyse > .bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:16px 18px;margin:14px 0 0;box-shadow:0 1px 3px rgba(30,42,48,.06)}
+#pass-contenu > .bloc .pliable > summary h2{font-size:clamp(19px,5vw,24px)}
+#pass-contenu > .bloc .pli-sous{display:block;margin-top:4px;font-size:14px}
+.p-ajout{margin-inline-start:6px;padding:6px 10px;border:1.5px solid var(--bleu);border-radius:999px;background:#fff;color:var(--bleu);font-weight:700;font-size:13px;cursor:pointer}
+.investir .inv-carte{padding:10px 14px}.investir .inv-carte dl{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 8px}.investir .inv-carte dd{font-size:14px}
+.cp-btn:disabled{opacity:.4;cursor:not-allowed}
+.cp-types{margin-top:-4px}.cp-types .cp-btn{border-width:1.5px;font-size:13.5px;padding:7px 6px}
+.cp-voir-type{margin-top:6px;padding:6px 10px;border:1.5px solid var(--bleu);border-radius:999px;background:#fff;color:var(--bleu);font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.cp-leg i.cp-tout{background:#B57E12}
+.cp-types .cp-btn[data-type="tout"]{flex:0 0 auto;padding-inline:12px}
+.cp-choix-mini.cp-types{gap:5px}.cp-choix-mini.cp-types .cp-btn{min-width:0;font-size:12.5px;padding:6px 4px}.cp-choix-mini.cp-types .cp-btn[data-type="tout"]{padding-inline:10px}
+
+/* Rechercher · Effacer · Alerte sur UNE ligne (15/10/2026, Ahmed) ; « IA » à côté du nom du site */
+.actions-recherche{display:grid!important;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important}
+.actions-recherche .btn-chercher{grid-column:auto!important;min-height:46px;font-size:15px;padding:0 8px}
+.actions-recherche .btn-effacer,.actions-recherche .btn-alerte{min-height:46px;padding:6px 6px;font-size:14px}
+.logo-ia{font-family:var(--texte);font-size:.75em;vertical-align:.12em;padding:0 .35em;margin-inline-start:3px}
+.logo-by{font-family:var(--texte);font-size:.62em;font-weight:600;font-style:italic;color:var(--terre,#B5532A);margin-inline-start:2px}   /* « Immobilier Tunisie by IA » (Ahmed, 16/10/2026) */
+/* Haut des pages plus serré (15/10/2026, Ahmed : « Notre IA compare votre bien à 6 777 annonces » sur UNE ligne, sans grand espace
+   au-dessus et au-dessous du bouton « J'ai déjà un code Pass ») */
+.hero-page .intro.une-ligne{white-space:nowrap;font-size:clamp(12px,3.5vw,17px);margin-bottom:8px}
+.hero-page .p-deja-code{margin:0}
+.hero-page .p-deja-code .deja-code{margin-top:0}
+.hero-page > .wrap:not(.hero-grille):has(.p-deja-code){padding-bottom:14px}
+/* Où investir : « 2. Votre résultat » (15/10/2026) */
+#inv-res h4{margin:10px 0 4px;font-size:15.5px}
+#inv-res h4.res-zone small{font-weight:500;color:var(--doux);font-size:13px;margin-inline-start:6px}
+#inv-res .res-top{margin:4px 0 0;padding-inline-start:20px}
+#inv-res .res-top li{margin:4px 0;line-height:1.4}
+#inv-res .res-ligne + .res-ligne{border-top:1px dashed var(--ligne);margin-top:8px;padding-top:4px}
+.res-verrou{list-style:none;padding:0;margin:0 0 10px}
+.res-verrou li{margin:6px 0;line-height:1.4}
+.res-boutons{display:flex;flex-wrap:wrap;gap:8px}
+.res-boutons .btn-exemple,.res-boutons .btn-paie{flex:1 1 150px;text-align:center}
+#inv-res p > b{white-space:nowrap}
+/* Haut de « Où investir ? » : « Mon code Pass » et « Estimer un bien » côte à côte (15/10/2026) */
+.hero-boutons{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.hero-boutons .deja-code,.hero-boutons .ia-court{flex:1 1 140px;margin:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;font-size:14.5px}
+.ia-bandeau.ia-court{margin:0;border-radius:12px}
+.ia-bandeau.ia-court svg{width:20px;height:20px;flex:none}
+.ia-bandeau.ia-court b{display:inline;font-size:14.5px}
+.hero-page .inv-base{margin:0 0 8px;font-size:13.5px}
+/* « Comment ça marche ? » compact sur TOUTES les pages (15/10/2026, Ahmed) : 3 icônes sur une ligne, petits textes */
+.comment-marche{padding-top:14px;padding-bottom:14px}
+.comment-marche h2{margin-bottom:4px}
+.etapes-ico,.etapes-ico{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.etapes-ico li{gap:4px}
+.etape-ico{width:52px;height:52px;border-radius:14px}
+.etape-ico svg{width:26px;height:26px}
+.etape-num{width:22px;height:22px;top:-9px;font-size:13px}
+.etapes-ico h3{font-size:14px;margin-top:4px;line-height:1.25}
+.etapes-ico p{display:none}   /* les titres des 3 étapes suffisent ; le détail est dans la page */
+@media (min-width:700px){.etapes-ico{gap:24px}}
+main > .comment-marche:first-child{margin-top:14px}
+.cp-leg i.cp-gris{background:#98A2A8}
+#liste{scroll-margin-top:84px}   /* sous l'en-tête fixe : le titre « Annonces à … » reste visible */
+.inv-aiguillage{margin:14px 0 0;padding:10px 14px;border-inline-start:4px solid var(--bleu);background:var(--carte);border-radius:var(--r-petit);font-size:15px;line-height:1.45}
+/* 16/10/2026, Ahmed : toutes les cartes du Pass dans UNE grande carte « ⭐ Votre analyse complète… » */
+#pass-contenu > .pass-analyse{background:#FFFBF2;border:2px solid #E7C27A;padding:14px 12px}
+.pass-analyse-titre{margin:0 0 4px;font-size:clamp(19px,5.2vw,24px);color:#7A4A00}
+.pass-analyse > .bloc{margin-top:12px}
+
+/* 16/10/2026 — RÈGLE COMMUNE d'Ahmed : toute cloche d'alerte VIBRE (modèle du bouton Telegram de Prix des Eaux) :
+   5 secousses à l'ouverture, puis de nouveau toutes les 12 s, 3 séries, ensuite immobile ; jamais si « réduire les animations » */
+/* 16/10/2026 (Ahmed : « le bouton doit toujours bouger ») : la cloche sonne EN CONTINU (secousses ~1 s, puis un court repos) */
+.choix-cloche>svg,.btn-alerte svg{transform-origin:50% 12%;animation:cloche-secoue 2.6s ease-in-out .6s infinite}
+@keyframes cloche-secoue{0%,40%,100%{transform:rotate(0)}5%,15%,25%,35%{transform:rotate(14deg)}10%,20%,30%{transform:rotate(-14deg)}}
+/* « Être prévenu des nouvelles annonces » sur UNE ligne, même sur un téléphone de 360 px */
+.choix-cloche b{white-space:nowrap;font-size:min(16.5px,4.3vw)}
+@media (prefers-reduced-motion:reduce){.choix-cloche>svg,.btn-alerte svg{animation:none}}

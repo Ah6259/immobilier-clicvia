@@ -1,0 +1,24 @@
+# Battement de cœur mensuel : un envoi par mois garde ce dépôt public actif (GitHub endort les robots programmés d'un dépôt
+# sans activité depuis 60 jours). Il n'écrit qu'un petit fichier battement.txt, jamais publié dans le code.
+name: battement-de-coeur
+on:
+  schedule:
+    - cron: "41 6 1 * *"
+  workflow_dispatch:
+concurrency:
+  group: publier
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  battement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          date -u +%Y-%m-%dT%H:%M:%SZ > battement.txt
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add battement.txt
+          git commit -m "Battement de cœur mensuel" || true
+          git pull --rebase -q && git push -q

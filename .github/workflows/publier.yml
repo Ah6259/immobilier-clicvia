@@ -1,0 +1,74 @@
+# Publication du site (16/10/2026, décision d'Ahmed : le code est PRIVÉ dans Ah6259/immobilier-tunis, seul le site fabriqué
+# est ici). Toutes les 10 min : si le code privé a changé (robots, Claude, activation d'un Pass), tests + audit de sécurité,
+# puis copie du site par tools/publier.py (qui refuse de publier le moindre fichier de code ou de données internes).
+name: publier
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Republier même si le code n'a pas changé (oui/non)"
+        required: false
+        default: "non"
+concurrency:
+  group: publier
+  cancel-in-progress: false
+permissions:
+  contents: write
+env:
+  TZ: Africa/Tunis
+  PYTHONIOENCODING: utf-8
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: public
+      - uses: actions/checkout@v4
+        with:
+          repository: Ah6259/immobilier-tunis
+          path: moteur
+          ssh-key: ${{ secrets.CLE_MOTEUR }}
+      - name: Nouvelle version du code ?
+        id: v
+        run: |
+          a=$(cat public/.moteur 2>/dev/null || true); b=$(git -C moteur rev-parse HEAD)
+          if [ "$a" = "$b" ] && [ "${{ github.event.inputs.force }}" != "oui" ]; then
+            echo "pub=non" >> "$GITHUB_OUTPUT"; echo "Déjà publié : rien à faire"
+          else
+            echo "pub=oui" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.v.outputs.pub == 'oui'
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        if: steps.v.outputs.pub == 'oui'
+        with: { node-version: "22" }
+      - name: Copier le site (aucun fichier privé, sinon rien n'est publié)
+        if: steps.v.outputs.pub == 'oui'
+        run: python moteur/tools/publier.py public
+      - name: Tests du site et audit de sécurité (rien n'est publié si un test échoue)
+        if: steps.v.outputs.pub == 'oui'
+        working-directory: moteur
+        env:
+          DOSSIER_ROBOTS: ${{ github.workspace }}/public/.github/workflows
+          DOSSIER_PUBLIC: ${{ github.workspace }}/public
+        run: |
+          npm install --no-save --no-package-lock jsdom > /dev/null 2>&1
+          node tools/test_site.mjs > /tmp/test_site.log 2>&1 || { grep -E "ÉCHEC|vérifications" /tmp/test_site.log; exit 1; }
+          tail -1 /tmp/test_site.log
+          node tools/test_securite.mjs
+      - name: Publier
+        if: steps.v.outputs.pub == 'oui'
+        working-directory: public
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && { echo "Rien de nouveau"; exit 0; }
+          git commit -qm "Site publié le $(date +'%d/%m/%Y %H:%M')"
+          for essai in 1 2 3; do git pull --rebase -q && git push -q && exit 0; sleep $((essai * 10)); done
+          exit 1

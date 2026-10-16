@@ -4,13 +4,13 @@
      on donne la référence des annonces semblables.
    - Pass Vendeur (analyse complète) : 3 prix, les annonces de référence (les plus proches, avec leur lien), prix au m², concurrence,
      le calcul expliqué. PAS D'ESSAI (Ahmed, 15/10/2026 : un exemple complet le remplace) ; « Prendre le Pass » donne tout
-     de suite le code VEN-XXXXXX (motif du paiement) ; code payé = empreinte dans
-     investir/pass/acces.json (écrit par le robot privé immobilier-abonnes, même empreinte que assets/pass.js).
+     de suite le code VEN-XXXXXX (motif du paiement) ; code payé = identifiant PBKDF2 dans
+     investir/pass/acces.json (écrit par le robot privé immobilier-abonnes, même calcul que assets/pass.js, 17/10/2026).
    Les annonces viennent de donnees/annonces.js (publiques) : rien n'est envoyé, tout se calcule dans le téléphone. */
 (function () {
   var form = document.getElementById("v-form"), res = document.getElementById("v-res");
   if (!form || !res) return;
-  var CLE = "pass-vendeur", ESSAI = 3, FIN_ESSAIS = "2026-10-15", OFFERTS = 30, SEL = "immobilier-pass", ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+  var CLE = "pass-vendeur", ESSAI = 3, FIN_ESSAIS = "2026-10-15", OFFERTS = 30, ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
   var racine = document.documentElement.getAttribute("data-racine") || "";
   var ACCES = null, etat = lire(), dernier = null;
   // lien personnel vendre/#VEN-XXXXXX (comme investir/pass/#INV-…) : le code s'ouvre sans rien taper (15/10/2026)
@@ -52,14 +52,31 @@
   function plus(d, n) { var x = new Date(d + "T12:00:00"); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); }
   function jfr(d) { return d ? '<bdi dir="ltr">' + d.slice(8, 10) + "/" + d.slice(5, 7) + "/" + d.slice(0, 4) + "</bdi>" : ""; }
 
-  // ---- empreinte d'un code (même calcul que robot/pass_web.py et assets/pass.js)
-  function utf8(s) { return unescape(encodeURIComponent(s)); }
-  function fnv(s) { var h = 0x811c9dc5, b = utf8(s); for (var i = 0; i < b.length; i++) { h ^= b.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
-  function hex8(n) { return ("0000000" + n.toString(16)).slice(-8); }
+  // ---- identifiant d'un code (même calcul que robot/pass_web.py et assets/pass.js). 17/10/2026 (audit après l'étude de 9annas) :
+  // PBKDF2-SHA256, 150 000 tours, au lieu de l'empreinte rapide FNV (1 milliard de codes se testaient en quelques minutes)
+  var ITER = 150000, TE = new TextEncoder();
   function normaliser(c) { c = String(c || "").toUpperCase().replace(/[^A-Z0-9-]/g, "").replace(/^-+|-+$/g, ""); if (c && c.indexOf("VEN-") !== 0) c = "VEN-" + c.replace(/^VEN/, ""); return c; }
-  function empreinte(code) { var c = normaliser(code); return hex8(fnv(SEL + ":" + c)) + hex8(fnv(c + "|" + SEL)); }
+  function hex(u) { var s = ""; for (var i = 0; i < u.length; i++) s += ("0" + u[i].toString(16)).slice(-2); return s; }
+  function pbkdf2(code, sel, bits) {
+    var S = crypto.subtle;
+    return S.importKey("raw", TE.encode(normaliser(code)), "PBKDF2", false, ["deriveBits"]).then(function (k) {
+      return S.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: TE.encode(sel), iterations: ITER }, k, bits);
+    }).then(function (b) { return new Uint8Array(b); });
+  }
+  function identifiant(code) { return pbkdf2(code, "immobilier-pass-v2", 384).then(function (u) { return hex(u.slice(0, 16)); }); }
   // jeton de l'annonce MISE EN AVANT (15/10/2026) : ne révèle pas le code ; même calcul que robot/pass_web.py jeton_avant()
-  function jetonAvant(code) { return hex8(fnv("avant:" + normaliser(code))); }
+  function jetonAvant(code) { return pbkdf2(code, "immobilier-avant-v2", 32).then(hex); }
+  // PAYE : {code, fin} quand le code de ce navigateur est dans acces.json ; JETON : {code, j} (calculés une fois, ils prennent ~0,2 s)
+  var PAYE = null, JETON = null;
+  function verifierCode() {
+    if (!etat || !ACCES || !(window.crypto && crypto.subtle)) return Promise.resolve();
+    var code = etat.code;
+    return Promise.all([identifiant(code), jetonAvant(code)]).then(function (r) {
+      var e = (ACCES.codes || {})[r[0]];
+      PAYE = e && e.fin ? { code: code, fin: e.fin } : null;
+      JETON = { code: code, j: r[1] };
+    }).catch(function () { /* navigateur sans WebCrypto : le Pass ne s'ouvre pas */ }).then(tout);
+  }
   function lire() { try { var v = JSON.parse(localStorage.getItem(CLE) || "null"); return v && typeof v.code === "string" ? v : null; } catch (e) { return null; } }
   function garder() { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) { /* navigation privée */ } }
   function nouveauCode() {
@@ -71,7 +88,7 @@
   function acces() {
     var auj = aujourdhui(), fin = null, quoi = null;
     if (etat && etat.debut && etat.debut < FIN_ESSAIS) { var f = plus(etat.debut, ESSAI - 1); if (f >= auj) { fin = f; quoi = "essai"; } }   // essais commencés avant le 15/10/2026
-    var p = etat && ACCES && ACCES.codes && ACCES.codes[empreinte(etat.code)];
+    var p = etat && PAYE && PAYE.code === etat.code ? PAYE.fin : null;
     if (p && p >= auj && (!fin || p > fin)) { fin = p; quoi = "pass"; }
     // pas encore vendu ou loué au bout des 30 jours payés -> 30 jours de plus offerts, une fois (déclaré par le propriétaire, 15/10/2026)
     if (p && p < auj && etat.offert === p && plus(p, OFFERTS) >= auj) { fin = plus(p, OFFERTS); quoi = "offert"; }
@@ -418,7 +435,7 @@
         : T2("Votre prix est ", "سعرك أقل بـ ") + pc(ecart) + T2(" sous le juste prix : votre bien partira vite, mais vous pourriez demander plus.", " من السعر العادل: سيذهب عقارك بسرعة، لكن يمكنك طلب أكثر.");
       var lv = el("v-l").value, dv = el("v-d").value;
       var q = new URLSearchParams({ t: TL, y: r.t, g: r.g, l: slugV(lv.indexOf("q:") === 0 ? lv.slice(2) : (lv || dv)), px: String(Math.round(p)),
-                                    ti: t.titre, de: t.fr + "\n\n" + t.ar, av: etat ? jetonAvant(etat.code) : "" });
+                                    ti: t.titre, de: t.fr + "\n\n" + t.ar, av: etat && JETON && JETON.code === etat.code ? JETON.j : "" });
       if (r.s) q.set("s", String(Math.round(r.s)));
       if (r.ch !== null && r.ch !== undefined) q.set("c", String(r.ch));
       el("v-publier").href = racine + "deposer/?" + q.toString();
@@ -493,7 +510,7 @@
     afficherAnalyse(r);
     afficherEtat();
   }
-  window.VENDRE_IMMO = { calcul: calcul, empreinte: empreinte, normaliser: normaliser, jetonAvant: jetonAvant, texteAnnonce: texteAnnonce };
+  window.VENDRE_IMMO = { calcul: calcul, identifiant: identifiant, normaliser: normaliser, jetonAvant: jetonAvant, texteAnnonce: texteAnnonce };
 
   form.addEventListener("change", function (e) {
     if (e.target.id === "v-g") quartiers(); else if (e.target.id === "v-d") localites(); else if (e.target.id === "v-l") choisirQuartier();
@@ -501,7 +518,7 @@
   });
   form.addEventListener("input", function () { tout(); });
   el("v-prendre").addEventListener("click", function () {
-    if (!etat) { etat = { code: nouveauCode(), debut: null }; garder(); }
+    if (!etat) { etat = { code: nouveauCode(), debut: null }; garder(); verifierCode(); }
     tout();
     var d = document.querySelector("#pass-vendeur details.paiement"); if (d) ouvrir(d);
     try { el("v-etat").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (x) { /* ancien navigateur */ }
@@ -511,11 +528,14 @@
     var c = normaliser(el("v-code").value);
     if (!/^VEN-[A-Z0-9]{6}$/.test(c)) { el("v-code-msg").textContent = T2("Code inconnu : il ressemble à VEN-ABC234.", "رمز غير معروف: يشبه VEN-ABC234."); return; }
     etat = { code: c, debut: etat && etat.code === c ? etat.debut : null }; garder(); tout();
-    // 15/10/2026 : l'ancien message « Code inconnu » restait affiché après un bon code (Ahmed croyait que ça ne marchait pas)
-    el("v-code-msg").textContent = acces().ok ? T2("✅ Code ouvert : votre analyse complète s’affiche sous l’estimation gratuite.", "✅ فُتح الرمز: يظهر تحليلك الكامل تحت التقدير المجاني.")
-      : ACCES ? T2("Ce code n’est pas encore activé : il s’ouvre dès que le paiement est reçu (dans la journée).", "هذا الرمز غير مفعّل بعد: يُفتح بمجرد وصول الدفع (في نفس اليوم).") : "";
-    if (!acces().ok) return;                     // code ouvert : on montre tout de suite l'analyse (ou le formulaire à remplir)
-    try { el(el("v-analyse").hidden ? "estimer" : "v-analyse").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (x) { /* ancien navigateur */ }
+    el("v-code-msg").textContent = T2("Vérification du code…", "جارٍ التحقق من الرمز…");
+    verifierCode().then(function () {
+      // 15/10/2026 : l'ancien message « Code inconnu » restait affiché après un bon code (Ahmed croyait que ça ne marchait pas)
+      el("v-code-msg").textContent = acces().ok ? T2("✅ Code ouvert : votre analyse complète s’affiche sous l’estimation gratuite.", "✅ فُتح الرمز: يظهر تحليلك الكامل تحت التقدير المجاني.")
+        : ACCES ? T2("Ce code n’est pas encore activé : il s’ouvre dès que le paiement est reçu (dans la journée).", "هذا الرمز غير مفعّل بعد: يُفتح بمجرد وصول الدفع (في نفس اليوم).") : "";
+      if (!acces().ok) return;                   // code ouvert : on montre tout de suite l'analyse (ou le formulaire à remplir)
+      try { el(el("v-analyse").hidden ? "estimer" : "v-analyse").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (x) { /* ancien navigateur */ }
+    });
   });
   document.addEventListener("langue", function () { quartiers(); tout(); });
   quartiers();                                   // délégations et localités tout de suite (listes officielles, sans attendre l'IA)
@@ -523,7 +543,7 @@
   var chargements = [window.IA_IMMO ? IA_IMMO.charger().then(quartiers).catch(function () {}) : Promise.resolve(),
     (typeof fetch === "function" ? fetch(racine + "investir/pass/acces.json", { cache: "no-cache" }).then(function (r) { return r.json(); }) : Promise.reject())
       .then(function (a) { ACCES = a; }).catch(function () { ACCES = { codes: {} }; })];
-  Promise.all(chargements).then(tout);
+  window.VENDRE_IMMO.pret = Promise.all(chargements).then(verifierCode);   // « prêt » : attendu par les tests
   // les annonces (donnees/annonces.js, « defer ») peuvent arriver après ce script
   if (!window.ANNONCES) window.addEventListener("load", tout);
 })();

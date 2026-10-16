@@ -57,8 +57,22 @@
     couche = L.layerGroup().addTo(carte);
     // gouvernorats sans quartier avec un prix : un cercle avec leur nombre d'annonces
     D.g.forEach(function (x) {
-      if (avecPrix[x.g] || !x.n) return;
       var nom = esc(ar() ? x.ar : x.fr);
+      // 17/10/2026 (Ahmed) : CHAQUE gouvernorat garde sa bulle bleu foncé avec son nombre TOTAL d'annonces, même quand ses
+      // quartiers ont des prix (les ronds de prix restent dessus)
+      if (avecPrix[x.g] && x.n) {
+        L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv", html: "<span>" + nb(x.n) + "</span>", iconSize: [38, 38] }), zIndexOffset: -500,
+                        title: nom + " · " + nb(x.n) + T(" annonces", " إعلانًا") })
+          .bindPopup("<b>" + nom + "</b><br>" + nb(x.n) + T(" annonces au total", " إعلانًا في المجموع") + '<br><a href="' + racine + x.g + '/#liste">' +
+                     T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>").addTo(couche);
+        return;
+      }
+      if (!x.n) {                                // 17/10/2026 (Ahmed) : un gouvernorat VIDE invite à publier, au lieu de rester vide
+        L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv cp-vide", html: "<span>+</span>", iconSize: [34, 34] }), title: nom + T(" : soyez le premier à publier ici", ": كن أول من ينشر هنا") })
+          .bindPopup("<b>" + nom + "</b><br>" + T("Aucune annonce pour l’instant.", "لا يوجد إعلان حاليًا.") + '<br><a class="cp-publier" href="' + racine + "deposer/?g=" + encodeURIComponent(x.g) + '">' +
+                     T("➕ Soyez le premier à publier ici (gratuit)", "➕ كن أول من ينشر هنا (مجانًا)") + "</a>").addTo(couche);
+        return;
+      }
       // d'autres types de biens ont des prix ici (Djerba : des maisons, 15/10/2026) : un bouton pour les voir
       var autres = (type === "tout" ? [] : ["appartement", "maison", "terrain"]).filter(function (t) { return t !== type && compter(t, x.g); }).map(function (t) {
         return '<br><button type="button" class="cp-voir-type" data-type="' + t + '" data-g="' + x.g + '">' + T("Voir ", "شاهد ") + NOMS_T[t][ar() ? 1 : 0] +

@@ -973,3 +973,6 @@ main > .comment-marche:first-child{margin-top:14px}
 /* « Être prévenu des nouvelles annonces » sur UNE ligne, même sur un téléphone de 360 px */
 .choix-cloche b{white-space:nowrap;font-size:min(16.5px,4.3vw)}
 @media (prefers-reduced-motion:reduce){.choix-cloche>svg,.btn-alerte svg{animation:none}}
+/* 17/10/2026 (Ahmed) : gouvernorat sans annonce sur la carte -> « + » doré en pointillés : « Soyez le premier à publier ici » */
+.leaflet-marker-icon.cp-gouv.cp-vide{background:#fff;color:#B9892F;border:2px dashed #D9A441;font-size:18px}
+.cp-publier{font-weight:700;color:#B9892F}

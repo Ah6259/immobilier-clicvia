@@ -1,11 +1,20 @@
 {
- "maj": "2026-10-15",
+ "maj": "2026-10-17",
  "codes": {
-  "4110a74bce4e49df": "2026-11-13",
-  "9b890a8bfd253d2f": "2026-10-21",
-  "b5d4f49de317323d": "2026-11-13"
+  "425656cee023b49cefa61b5ed40d29c5": {
+   "fin": "2026-11-13",
+   "k": "klSOPhQoknYJ0K91i45Gk7v46Ik9G9cit+uizUVt6BN1l/xsxvODnKLe4tDgXXIHAjyl62fQ7X0Vdl+y"
+  },
+  "88da310ba583228f3d614a48c7a98f6d": {
+   "fin": "2026-11-13",
+   "k": "VXXLAchwRmIzXShM/bBKXM6RAn+eM6lim3MtoYfcXSfzJBbmRcI7SlHU+4dWCbLHlC/n67qD6n8HJDoG"
+  },
+  "adfaa1bea534822358af50d64ba848dd": {
+   "fin": "2026-10-21",
+   "k": "sGCal7nlVo2xwafOVLaBkN/qW/zB0klt+ZgTTxJT/uk4cgHAUf9UsoU7qWxLGSCvE86uJnPByjShIdJ+"
+  }
  },
  "avant": {
-  "e94a3a12": "2026-11-13"
+  "3a657b28": "2026-11-13"
  }
 }

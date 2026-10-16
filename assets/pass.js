@@ -1,13 +1,14 @@
 /* Pass Investisseur sur la page web investir/pass/ (14/10/2026, demande d'Ahmed : sans Telegram, un lien mis à jour chaque semaine).
    - PAS D'ESSAI GRATUIT depuis le 15/10/2026 (décision d'Ahmed) : « Prendre le Pass » crée tout de suite le code Pass INV-XXXXXX
      (motif du paiement, gardé dans ce navigateur) ; le contenu s'ouvre quand le code est payé (essais commencés avant : honorés).
-   - Code Pass actif (payé) : son empreinte est dans acces.json (écrit par le robot privé).
-   - Le tableau de la semaine (rapport.dat) est brouillé : debrouiller() et empreinte() = mêmes calculs que robot/pass_web.py.
+   - Code Pass actif (payé) : son identifiant et la clé du tableau (chiffrée avec une clé tirée du code) sont dans acces.json
+     (écrit par le robot privé). Le tableau de la semaine (rapport.dat) est CHIFFRÉ (AES-256-GCM) depuis le 17/10/2026 :
+     deriver() et dechiffrer() = mêmes calculs que robot/pass_web.py.
    Rien n'est envoyé : la page ne fait que lire ses deux fichiers. */
 (function () {
   var zone = document.getElementById("pass-web");
   if (!zone) return;
-  var CLE = "pass-immobilier", ESSAI = 7, FIN_ESSAIS = "2026-10-15", SEL = "immobilier-pass", ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+  var CLE = "pass-immobilier", ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
   var R = null, ACCES = null, etat = lire();
   function el(id) { return document.getElementById(id); }
   function ar() { return document.documentElement.lang === "ar"; }
@@ -21,26 +22,30 @@
   function plus(d, n) { var x = new Date(d + "T12:00:00"); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); }
   function jours(a, b) { return Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 864e5); }
 
-  // ---- mêmes calculs que robot/pass_web.py
-  function utf8(s) { return unescape(encodeURIComponent(s)); }
-  function fnv(s) { var h = 0x811c9dc5, b = utf8(s); for (var i = 0; i < b.length; i++) { h ^= b.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
-  function hex8(n) { return ("0000000" + n.toString(16)).slice(-8); }
+  // ---- mêmes calculs que robot/pass_web.py (17/10/2026 : VRAI chiffrement, plus de brouillage — audit après l'étude de 9annas)
+  // Le tableau (rapport.dat) est chiffré en AES-256-GCM ; sa clé n'est donnée, dans acces.json, que chiffrée avec une clé tirée de
+  // chaque CODE PAYÉ (PBKDF2-SHA256, 150 000 tours). Sans un code payé, rien ne s'ouvre ; deviner un code prendrait des années.
+  var ITER = 150000, SEL_CODE = "immobilier-pass-v2", TE = new TextEncoder();
   function normaliser(c) {
     c = String(c || "").toUpperCase().replace(/[^A-Z0-9-]/g, "").replace(/^-+|-+$/g, "");
     if (c && c.indexOf("INV-") !== 0) c = "INV-" + c.replace(/^INV/, "");
     return c;
   }
-  function empreinte(code) { var c = normaliser(code); return hex8(fnv(SEL + ":" + c)) + hex8(fnv(c + "|" + SEL)); }
-  function debrouiller(b64, jour) {
-    var d = atob(b64), x = fnv(SEL + ":" + jour) || 1, out = new Uint8Array(d.length);
-    for (var i = 0; i < d.length; i++) {
-      x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0;
-      out[i] = d.charCodeAt(i) ^ (x & 255);
-    }
-    var s = ""; for (var j = 0; j < out.length; j++) s += String.fromCharCode(out[j]);
-    return decodeURIComponent(escape(s));
+  function octets(b64) { var d = atob(b64), u = new Uint8Array(d.length); for (var i = 0; i < d.length; i++) u[i] = d.charCodeAt(i); return u; }
+  function hex(u) { var s = ""; for (var i = 0; i < u.length; i++) s += ("0" + u[i].toString(16)).slice(-2); return s; }
+  function deriver(code) {      // -> {id : identifiant dans acces.json, kek : clé qui ouvre la clé du tableau}
+    var S = crypto.subtle;
+    return S.importKey("raw", TE.encode(normaliser(code)), "PBKDF2", false, ["deriveBits"]).then(function (k) {
+      return S.deriveBits({name: "PBKDF2", hash: "SHA-256", salt: TE.encode(SEL_CODE), iterations: ITER}, k, 384);
+    }).then(function (b) { var u = new Uint8Array(b); return {id: hex(u.slice(0, 16)), kek: u.slice(16)}; });
   }
-  window.PASS_IMMO = {empreinte: empreinte, debrouiller: debrouiller, normaliser: normaliser};
+  function dechiffrer(cle, b64, contexte) {
+    var u = octets(b64);
+    return crypto.subtle.importKey("raw", cle, "AES-GCM", false, ["decrypt"]).then(function (k) {
+      return crypto.subtle.decrypt({name: "AES-GCM", iv: u.slice(0, 12), additionalData: TE.encode(contexte)}, k, u.slice(12));
+    }).then(function (b) { return new Uint8Array(b); });
+  }
+  window.PASS_IMMO = {normaliser: normaliser, deriver: deriver, dechiffrer: dechiffrer};
 
   // ---- mémoire de ce navigateur (peut être vide ou refusée : la page marche quand même)
   function lire() { try { var v = JSON.parse(localStorage.getItem(CLE) || "null"); return v && typeof v.code === "string" ? v : null; } catch (e) { return null; } }
@@ -59,12 +64,25 @@
   if (/[?&](prendre|essai)\b/.test(location.search) && !etat) { etat = {code: nouveauCode(), debut: null}; garder(); }
 
   // ---- accès
+  // PASS : {code, fin} quand le code de ce navigateur est PAYÉ et que le tableau a pu être déchiffré avec lui (ouvrir())
+  var PASS = null, RAPPORT_CHIFFRE = null;
   function acces() {
-    var auj = aujourdhui(), fin = null, quoi = null;
-    if (etat && etat.debut && etat.debut < FIN_ESSAIS) { var f = plus(etat.debut, ESSAI); if (f >= auj) { fin = f; quoi = "essai"; } }   // essais commencés avant le 15/10/2026
-    var p = etat && ACCES && ACCES.codes && ACCES.codes[empreinte(etat.code)];
-    if (p && p >= auj && (!fin || p > fin)) { fin = p; quoi = "pass"; }
-    return {ok: !!fin, fin: fin, quoi: quoi};
+    var ok = !!(PASS && etat && PASS.code === etat.code && PASS.fin >= aujourdhui());
+    return {ok: ok, fin: ok ? PASS.fin : null, quoi: ok ? "pass" : null};
+  }
+  // un code payé -> sa clé -> la clé du tableau -> le tableau (tout se passe dans ce navigateur, rien n'est envoyé)
+  function ouvrir() {
+    if (!etat || !ACCES || !RAPPORT_CHIFFRE || !(window.crypto && crypto.subtle)) return Promise.resolve();
+    var code = etat.code;
+    return deriver(code).then(function (d) {
+      var e = (ACCES.codes || {})[d.id];
+      if (!e || !e.k || e.fin < aujourdhui()) return null;
+      return dechiffrer(d.kek, e.k, "cle").then(function (cle) {
+        return dechiffrer(cle, RAPPORT_CHIFFRE, "rapport");
+      }).then(function (u) {
+        R = JSON.parse(new TextDecoder().decode(u)); PASS = {code: code, fin: e.fin};
+      });
+    }).catch(function () { /* code faux ou fichier modifié : rien ne s'ouvre */ }).then(tout);
   }
   function lienPerso() { return location.origin + location.pathname + "#" + etat.code; }
 
@@ -228,15 +246,17 @@
     var c = normaliser(el("pass-code-saisi").value);
     if (!/^INV-[A-Z0-9]{4,8}$/.test(c)) { el("pass-code-msg").textContent = T2("Code inconnu : il ressemble à INV-7K3Q.", "رمز غير معروف: يشبه INV-7K3Q."); return; }
     etat = {code: c, debut: etat && etat.code === c ? etat.debut : null}; garder(); tout();
+    el("pass-code-msg").textContent = T2("Vérification du code…", "جارٍ التحقق من الرمز…");
+    ouvrir().then(function () { el("pass-code-msg").textContent = acces().ok ? "" : T2("Ce code n’est pas (encore) payé.", "هذا الرمز غير مدفوع (بعد)."); });
   });
   document.addEventListener("langue", tout);
   tout();
-  Promise.all([
+  window.PASS_IMMO.pret = Promise.all([   // « prêt » : attendu par les tests
     fetch("rapport.dat", {cache: "no-cache"}).then(function (r) { return r.text(); }).then(function (t) {
-      var l = t.split("\n"); R = JSON.parse(debrouiller(l[1].trim(), l[0].trim()));
+      var l = t.split("\n"); if (l[0].trim() === "v2") RAPPORT_CHIFFRE = (l[1] || "").trim();   // tableau chiffré (17/10/2026)
     }),
     fetch("acces.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (a) { ACCES = a; }).catch(function () { ACCES = {codes: {}}; })
-  ]).then(tout).catch(function () {
+  ]).then(ouvrir).catch(function () {
     el("pass-etat").insertAdjacentHTML("beforeend", "<p>" + T2("Le tableau n’a pas pu être chargé. Réessayez dans un instant.", "تعذّر تحميل الجدول. أعد المحاولة بعد لحظة.") + "</p>");
   });
 })();

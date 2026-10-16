@@ -58,6 +58,7 @@ jobs:
           DOSSIER_PUBLIC: ${{ github.workspace }}/public
         run: |
           npm install --no-save --no-package-lock jsdom > /dev/null 2>&1
+          pip install -q pyyaml > /dev/null 2>&1   # contrôle « fichiers des robots lisibles » de l'audit
           node tools/test_site.mjs > /tmp/test_site.log 2>&1 || { grep -E "ÉCHEC|vérifications" /tmp/test_site.log; exit 1; }
           tail -1 /tmp/test_site.log
           node tools/test_securite.mjs

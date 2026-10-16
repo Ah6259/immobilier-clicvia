@@ -124,7 +124,8 @@ jobs:
           git pull --rebase --autostash -q && git push -q
       - name: Sources en panne depuis plus de 2 jours ? (échec = e-mail à Ahmed ; les annonces sont déjà enregistrées)
         if: steps.jour.outputs.oui == '1'
-        run: python tools/sources_en_panne.py > /dev/null 2>&1 || { echo "ÉCHEC : au moins une source est en panne depuis plus de 2 jours (détail dans le dépôt privé)"; exit 1; }   # sans nom de source (audit du 16/10/2026)
+        run: |   # sans nom de source dans le journal public (audit du 16/10/2026)
+          python tools/sources_en_panne.py > /dev/null 2>&1 || { echo "ÉCHEC - au moins une source est en panne depuis plus de 2 jours (détail dans le dépôt privé)"; exit 1; }
       - name: Demander la publication du site
         if: always()
         env:

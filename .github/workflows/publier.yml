@@ -44,6 +44,9 @@ jobs:
       - uses: actions/setup-python@v5
         if: steps.v.outputs.pub == 'oui'
         with: { python-version: "3.12" }
+      - name: Bibliothèque de chiffrement (Pass chiffré, 17/10/2026)
+        if: steps.v.outputs.pub == 'oui'
+        run: pip install -q cryptography
       - uses: actions/setup-node@v4
         if: steps.v.outputs.pub == 'oui'
         with: { node-version: "22" }

@@ -30,6 +30,8 @@ jobs:
           ssh-key: ${{ secrets.CLE_MOTEUR }}
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
+      - name: Bibliothèque de chiffrement (Pass chiffré, 17/10/2026)
+        run: pip install -q cryptography
       - name: Test du robot (sans réseau)
         run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources (audit du 16/10/2026)
       - name: Annonces déposées (seulement cette source)

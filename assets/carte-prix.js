@@ -168,7 +168,11 @@
     }
   }
   function cadrer() {
-    var D = donnees(), g = zone.getAttribute("data-g");
+    var D = donnees(), g = zone.getAttribute("data-g"), q = zone.getAttribute("data-q");
+    // page d'un QUARTIER (17/10/2026, Ahmed : « c'est une ancienne version qui est affichée ») : la carte s'ouvre sur le quartier,
+    // au niveau des bulles des quartiers ; sinon (quartier pas encore placé) sur son gouvernorat
+    var ici = q && D.q.filter(function (x) { return x.g === g && x.q === q; })[0];
+    if (ici) { carte.setView(ici.p, NIV_QUARTIER + 1); return; }
     var pts = D.q.filter(function (x) { return !g || x.g === g; }).map(function (x) { return x.p; });
     if (g) D.g.forEach(function (x) { if (x.g === g) pts.push(x.p); });
     if (!g) D.g.forEach(function (x) { pts.push(x.p); });

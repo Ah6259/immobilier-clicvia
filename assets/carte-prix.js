@@ -114,7 +114,8 @@
     // quartiers qui ont des annonces mais pas encore de prix pour CE choix (15/10/2026, Ahmed : « la bulle d'Ariana Essoghra
     // n'apparaît pas » : 47 annonces, un loyer, mais pas encore de prix de vente au m²) -> bulle GRISE avec le nombre d'annonces,
     // ce qui est connu (loyer…) et le lien ; jamais de couleur de prix inventée
-    var sansPrix = D.q.filter(function (x) { return x.t && x.p && !aUnPrix(x); });
+    // niveau des délégations : les ronds des quartiers attendent qu'on zoome (sinon Tunis est illisible : 18 délégations + 60 quartiers)
+    var sansPrix = niv === 2 ? [] : D.q.filter(function (x) { return x.t && x.p && !aUnPrix(x); });
     sansPrix.forEach(function (x) {
       var nom = esc(ar() && x.ar ? x.ar : x.fr), connus = [["m2", "nv", "appartement", "m2"], ["loyer", "nl", "appartement", "loyer"], ["mm2", "nmv", "maison", "m2"],
         ["ml", "nml", "maison", "loyer"], ["tm2", "ntv", "terrain", "m2"]].filter(function (k) { return x[k[0]]; });
@@ -129,7 +130,7 @@
         : L.circleMarker(x.p, { radius: Math.max(6, Math.min(14, 4 + Math.sqrt(x.t) * 1.2)), color: "#fff", weight: 2, fillColor: "#98A2A8", fillOpacity: 0.8, className: "cp-sans-prix" }))
         .bindPopup(h).bindTooltip(nom + " · " + nb(x.t) + T(" annonces", " إعلانًا")).addTo(couche);
     });
-    pts.forEach(function (x) {
+    (niv === 2 ? [] : pts).forEach(function (x) {
       var n = nombre(x), nom = esc(ar() && x.ar ? x.ar : x.fr), h, bulle;
       // nombre d'annonces dans TOUTES les bulles (Ahmed, 15/10/2026) : toutes celles du quartier, et celles qui donnent le prix
       var tot = x.t ? "<br><small>" + nb(x.t) + T(" annonces dans ce quartier (tous biens)", " إعلانًا في هذا الحي (كل العقارات)") + "</small>" : "";
@@ -152,6 +153,8 @@
         .bindPopup(h).bindTooltip(bulle).addTo(couche);
     });
     var lg = document.getElementById("cp-legende");
+    if (lg && niv === 2) { lg.innerHTML = '<span class="cp-leg"><i class="cp-g"></i>' + legBleu() + '</span><span class="cp-unite">' +
+      T("zoomez sur une délégation pour voir les prix de ses quartiers", "قرّب على معتمدية لرؤية أسعار أحيائها") + "</span>"; return; }
     var legGris = sansPrix.length ? '<span class="cp-leg"><i class="cp-gris"></i>' + T("annonces, prix pas encore connu", "إعلانات، السعر غير معروف بعد") + "</span>" : "";
     if (lg && !pts.length) lg.innerHTML = '<span class="cp-unite">' + T("Pas encore assez d’annonces pour ce choix.", "لا توجد بعد إعلانات كافية لهذا الاختيار.") + "</span>";
     if (lg && pts.length && !f) lg.innerHTML = COULEURS.map(function (c, i) { return '<span class="cp-leg"><i class="cp-c' + i + '"></i></span>'; }).join("") +

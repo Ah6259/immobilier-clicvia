@@ -39,6 +39,7 @@
     var m = M && M.modeles && M.modeles[tr], pr = m && m.precision && m.precision[t];
     if (!m || m.niveaux.base[t] === undefined || !pr || !pr.fiable) return null;
     if (!s && (M.surface_obligatoire || []).indexOf(t) >= 0) return null;     // maisons et terrains : seulement avec leur surface
+    if (m.gt && (m.gt[g + "|" + t] || 0) < (m.min_gt || 10)) return null;     // trop peu d'annonces de ce type dans ce gouvernorat (18/10/2026)
     var p = predireLieu(m, t, g, q || "", s, (t === "appartement" || t === "maison") ? ch : null, extras(at, et));
     return [Math.exp(p), Math.exp(p + pr.bas), Math.exp(p + pr.haut), pr];
   }

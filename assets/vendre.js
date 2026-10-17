@@ -504,6 +504,7 @@
   }
 
   function tout() {
+    if (typeof document === "undefined" || !document) return;   // calcul du Pass (PBKDF2) fini après la fermeture de la page
     var r = calcul();
     dernier = r;
     afficherGratuit(r);

@@ -126,12 +126,6 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
         '<p>' + T("Site indépendant et non officiel, informations indicatives : vérifiez toujours auprès du vendeur. Les noms et marques appartiennent à leurs propriétaires.",
                   "موقع مستقل وغير رسمي، معلومات للإرشاد: تحقق دائمًا مع البائع. الأسماء والعلامات ملك لأصحابها.") + '</p>' +
         '<p>© 2026 ' + T("Immobilier Tunisie — tous droits réservés.", "عقارات تونس — جميع الحقوق محفوظة.") + '</p>' +
-        // crédits des 4 photos du bandeau de l'accueil (licences CC : auteur + licence ; déplacés ici le 11/10/2026, demande d'Ahmed)
-        '<p class="pied-credits">' + T("Photos de l’accueil (Wikimedia Commons) : ", "صور الصفحة الرئيسية (ويكيميديا كومنز): ") +
-          [["Belle_villa_hammam_chatt_tunisie_-_panoramio.jpg", "oulad ali abdelrazak", "CC BY-SA 3.0"], ["QuatierLac1_TunisSep2012.jpg", "Citizen59", "CC BY 3.0"],
-           ["PortRades_2.jpg", "Citizen59", "CC BY-SA 3.0"], ["Cap_Bon_olive_groves.JPG", "Nicholas.gosse", "CC BY-SA 4.0"]].map(function (x) {
-            return '<a href="https://commons.wikimedia.org/wiki/File:' + x[0] + '" rel="noopener" target="_blank">' + x[1] + '</a> (' + x[2] + ')';
-          }).join(" · ") + '</p>' +
       '</div>';
     var b = document.querySelectorAll(".langue");
     for (var i = 0; i < b.length; i++) b[i].addEventListener("click", function () { appliquer(html.lang === "ar" ? "fr" : "ar"); });

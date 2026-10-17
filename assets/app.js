@@ -64,7 +64,9 @@
       : m2 ? ann + ou + L(", au m² (la moitié entre ", "، بالمتر المربع (نصفها بين ") + dm2(m2[2]) + L(" et ", " و") + dm2(m2[3]) + ")"
       : ann + ou + " (" + L("de ", "من ") + dt(x.lo) + L(" à ", " إلى ") + dt(x.hi) + ")";
     var quoi = loc ? ["Loyer", "الكراء"] : ["Prix", "السعر"], t, pre = m2 ? dm2(m2[0]) + L(", ", "، ") : "";
-    if (x.x) t = L("Avis partagé", "رأي متباين") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(" : comparé à ", ": مقارنة بـ ") + sembl +
+    // modèle seul et prix très dispersés (17/10/2026) : pas de verdict, seulement l'estimation
+    if (x.i) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + L(" ; les prix sont trop différents dans ce secteur pour dire si c’est cher ou une bonne affaire : comparez avec soin", "؛ الأسعار متفاوتة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة: قارن بعناية");
+    else if (x.x) t = L("Avis partagé", "رأي متباين") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(" : comparé à ", ": مقارنة بـ ") + sembl +
       L(", mais notre modèle d’IA l’estime à ≈ ", "، لكن نموذجنا يقدّره بـ ≈ ") + dt(x.e) + L(" : comparez avec soin", ": قارن بعناية");   // annonces semblables et modèle pas d'accord
     else if (x.v === "n") t = L(quoi[0] + " dans la norme", quoi[1] + " في المعدّل") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl;
     else if (x.v === "b") t = pre + L(Math.abs(x.p) + " % sous ", iso(Math.abs(x.p)) + " % أقل من ") + sembl + L(" : peut-être une bonne affaire, vérifiez l’état du bien", ": ربما صفقة جيدة، تحقّق من حالة العقار");
@@ -162,7 +164,12 @@
     function slug(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
     function delegDe(a) { if (a.dl) return a.dl; var o = a.l && OF[a.g + "/" + a.l]; return o ? o[0] : ""; }   // a.dl / a.lo : annonces déposées
     function locDe(a) { if (a.lo) return a.lo; var o = a.l && OF[a.g + "/" + a.l]; return o ? o[1] : ""; }
-    function dansLoc(a, v) { return a.l === v || (locDe(a) && slug(locDe(a)) === v); }
+    // 18/10/2026 (retour d'un visiteur : « Ennasr 2, S+5 : aucune annonce, alors que la carte en montre à Ennasr ») : beaucoup d'annonces
+    // disent seulement « Ennasr » (sans 1 ou 2). Elles comptent pour « Cité Ennasr 1 » ET « Cité Ennasr 2 » : on ne devine pas lequel,
+    // on ne les cache pas non plus (même délégation exigée par le filtre de délégation)
+    function dansLoc(a, v) { return a.l === v || (locDe(a) && slug(locDe(a)) === v) || (!locDe(a) && memeNom(a.l, v)); }
+    // « ennasr » et « cite-ennasr-2 » : même nom, seuls « cité / résidence » et le numéro changent (jamais « ariana » / « ariana-essoughra »)
+    function memeNom(l, v) { if (!l) return false; var w = "-" + v + "-", k = "-" + l + "-"; return w.indexOf(k) >= 0 && /^-(cite-|residence-|hay-)?(\d+-)?$/.test(w.replace(k, "-")); }
     function gCourant() { return gFixe || (selG ? selG.value : ""); }
     function delegs(g) {            // [[nom, nom arabe, [[localité, arabe], …]], …] : officielles + quartiers sans rattachement sûr
       var liste = (DEC[g] || []).slice(), vus = {};

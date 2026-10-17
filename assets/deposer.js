@@ -64,6 +64,14 @@
     });
   }
 
+  // titre fait tout seul pour un lien Facebook : « Appartement S+2 à louer — Ennasr »
+  function titreFb(form) {
+    var v = function (n) { var c = form.querySelector('[name="' + n + '"]:checked') || form.querySelector('[name="' + n + '"]'); return c ? c.value : ""; };
+    var ty = form.querySelector('[name="type"]'), tyt = ty && ty.selectedOptions && ty.selectedOptions[0] ? ty.selectedOptions[0].textContent.split(" · ")[0] : "Bien";
+    var ch = v("chambres"), tr = v("transaction"), lieu = v("localite") && v("localite") !== AUTRE ? v("localite") : v("lieu");
+    return (tyt + (ch !== "" && /^\d+$/.test(ch) ? " S+" + ch : "") + (tr === "vente" ? " à vendre" : " à louer") + (lieu ? " — " + lieu : "")).slice(0, 70);
+  }
+
   function demarrer() {
     var form = document.getElementById("depot-form");
     if (!form) return;
@@ -111,6 +119,29 @@
     if (q.get("ref") && /^[a-z]{2}-[\w-]{1,40}$/.test(q.get("ref"))) {
       var h = document.createElement("input"); h.type = "hidden"; h.name = "ref"; h.value = q.get("ref"); form.appendChild(h);
     }
+    // MODE « Ajouter un lien Facebook » (18/10/2026, demande d'Ahmed) : deposer/?fb=1. Ahmed colle le lien d'une annonce vue sur
+    // Facebook et tape les faits (prix, lieu, type) ; rien n'est lu sur Facebook. Pas de nom, d'e-mail ni de numéro : le visiteur
+    // les verra sur Facebook (bouton « Voir l'annonce sur Facebook »). Le lien part à la fin du texte (« #fb:… », robot/sources/depot.py).
+    var fb = q.get("fb") === "1" ? document.createElement("input") : null;
+    if (fb) {
+      fb.name = "lien_facebook"; fb.type = "url"; fb.required = true; fb.maxLength = 220; fb.className = "lien-facebook";
+      fb.pattern = "https://(www\\.|m\\.|web\\.)?facebook\\.com/.+";
+      fb.placeholder = "https://www.facebook.com/…";
+      var lab = document.createElement("label"); lab.className = "champ champ-fb";
+      lab.innerHTML = "<span>" + T("Lien de l’annonce sur Facebook", "رابط الإعلان على فيسبوك") + "</span>";
+      lab.appendChild(fb);
+      var aide = document.createElement("p"); aide.className = "depot-fb";
+      aide.textContent = T("📘 Ajouter une annonce vue sur Facebook : collez son lien, puis le prix, le lieu et le type. Le site montrera « Voir l’annonce sur Facebook » ; aucun nom ni numéro n’est copié. Prix total pour une vente, par mois pour une location, par nuit pour une location de vacances.",
+                           "📘 إضافة إعلان شاهدته على فيسبوك: الصق الرابط، ثم السعر والمكان والنوع. سيعرض الموقع « عرض الإعلان على فيسبوك »؛ لا يُنسخ أي اسم أو رقم.");
+      form.insertBefore(lab, form.firstChild); form.insertBefore(aide, form.firstChild);
+      ["nom", "email", "telephone", "portable", "adresse", "afficher_telephone"].forEach(function (n) {
+        var c = form.querySelector('[name="' + n + '"]'); if (!c) return;
+        c.required = false; c.value = n === "email" ? "facebook@immobilier.clicvia.com" : "";
+        var l = c.closest("label") || c.parentNode; if (l) l.hidden = true;
+      });
+      var cond = form.querySelector('[name="conditions"]'); if (cond) { cond.checked = true; }
+      var ti = form.querySelector('[name="titre"]'); if (ti) { ti.required = false; ti.placeholder = T("(facultatif : fait tout seul)", "(اختياري)"); }
+    }
     var ouvert = !!DEPOT_URL;
     document.getElementById("depot-champs").disabled = !ouvert;
     var tampon = document.getElementById("tampon-depot"); if (tampon) tampon.hidden = ouvert;
@@ -125,6 +156,9 @@
         if (!c || !CHAMPS[k]) return;
         if (c.type === "checkbox") { if (c.checked) d.append(CHAMPS[k], c.value); }
         else if (k === "localite" && c.value === AUTRE) d.append(CHAMPS[k], autre.value.trim());
+        else if (k === "description" && fb) d.append(CHAMPS[k], c.value.trim() + "\n#fb:" + fb.value.trim());
+        else if (k === "titre" && fb && c.value.trim().length < 5) d.append(CHAMPS[k], titreFb(form));
+        else if (k === "email" && fb) d.append(CHAMPS[k], "facebook@immobilier.clicvia.com");
         else if (k === "description" && avant) d.append(CHAMPS[k], c.value.trim() + "\n#avant-" + avant);
         else d.append(CHAMPS[k], c.value);
       });

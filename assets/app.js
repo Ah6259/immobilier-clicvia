@@ -127,6 +127,8 @@
   function actions(a, racine) {
     var url = U(a.u);
     var origine = '<a class="an-contact" href="' + url + '" target="_blank" rel="noopener nofollow">' + ICO.tel + L("Voir le numéro", "عرض الرقم") + ICO.lien + '</a>';
+    // annonce vue sur Facebook, ajoutée par Ahmed (18/10/2026) : un seul bouton, vers Facebook (nom et numéro y sont, pas chez nous)
+    if (/^https:\/\/(www\.|m\.|web\.)?facebook\.com\//.test(a.u || "")) return '<a class="an-contact an-fb" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce sur Facebook", "عرض الإعلان على فيسبوك") + ICO.lien + '</a>';
     if (a.v === "a") {
       if (!a.tel) return origine;
       return '<div class="an-actions"><a class="an-appel" href="tel:' + E(a.tel.replace(/ /g, "")) + '" data-num="' + E(a.tel) + '">' + ICO.tel + L("Appeler l’agence", "اتصل بالوكالة") + '</a>' +

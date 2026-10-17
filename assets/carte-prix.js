@@ -192,8 +192,28 @@
     }
     var f = zone.closest && zone.closest(".carte-vivante");
     if (f) f.classList.add("charge");          // la nouvelle carte remplace l'ancienne (gardée seulement si la carte ne charge pas)
+    // petite carte sans boutons (18/10/2026) : elle part de l'état de la recherche (lien ?t=l&y=maison…)
+    var fs = document.getElementById("recherche");
+    if (fs && !document.querySelector(".cp-btn[data-mode]")) {
+      var rc0 = fs.querySelector('input[name="t"]:checked'), y0 = document.getElementById("f-y");
+      if (rc0 && rc0.value === "l") mode = "loyer";
+      if (y0 && { appartement: 1, maison: 1, terrain: 1 }[y0.value]) type = y0.value;
+      if (type === "terrain") mode = "m2";
+    }
     carte.invalidateSize();
     cadrer();                                  // cadrer AVANT de dessiner : le niveau (gouvernorats, délégations, quartiers) dépend du zoom
+    // 18/10/2026 (capture d'Ahmed : la carte montrait l'Italie) : la taille de la carte change après son ouverture (recherche, polices
+    // qui arrivent) -> Leaflet recalcule sa taille ; tant que le visiteur n'a pas bougé la carte, elle est recadrée sur la Tunisie
+    var touchee = false;
+    carte.on("dragstart zoomstart", function (e) { if (e && e.hard !== true && !cadrage) touchee = true; });
+    var cadrage = false, dernier = [zone.clientWidth, zone.clientHeight];
+    var recadrer = function () {
+      if (zone.clientWidth === dernier[0] && zone.clientHeight === dernier[1]) return;
+      dernier = [zone.clientWidth, zone.clientHeight];
+      carte.invalidateSize();
+      if (!touchee) { cadrage = true; cadrer(); cadrage = false; }
+    };
+    if (window.ResizeObserver) new ResizeObserver(recadrer).observe(zone); else window.addEventListener("resize", recadrer);
     dessiner();
     var dernierNiv = niveau();
     carte.on("zoomend", function () { if (niveau() !== dernierNiv) { dernierNiv = niveau(); dessiner(); } });
@@ -239,7 +259,8 @@
     if (form) form.addEventListener("change", function (e) {   // la recherche change -> la carte suit
       if (lien) return;
       var t = e.target;
-      if (t.name === "t" && t.value) { mode = t.value === "l" ? "loyer" : "m2"; if (type === "terrain" && mode === "loyer") type = "tout"; }
+      // onglet Acheter / Louer (un 2e toucher le désélectionne : alors achat, comme au départ)
+      if (t.name === "t") { var rc = form.querySelector('input[name="t"]:checked'); mode = rc && rc.value === "l" ? "loyer" : "m2"; if (type === "terrain" && mode === "loyer") type = "tout"; }
       else if (t.id === "f-y") type = TYPES_CARTE[t.value] ? t.value : "tout";
       else if (t.id === "f-g" && carte) { if (t.value) zone.setAttribute("data-g", t.value); else zone.removeAttribute("data-g"); }
       else return;

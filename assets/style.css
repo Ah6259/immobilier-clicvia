@@ -976,7 +976,7 @@ main > .comment-marche:first-child{margin-top:14px}
 .choix-cloche>svg,.btn-alerte svg{transform-origin:50% 12%;animation:cloche-secoue 2.6s ease-in-out .6s infinite}
 @keyframes cloche-secoue{0%,40%,100%{transform:rotate(0)}5%,15%,25%,35%{transform:rotate(14deg)}10%,20%,30%{transform:rotate(-14deg)}}
 /* « Être prévenu des nouvelles annonces » sur UNE ligne, même sur un téléphone de 360 px */
-.choix-cloche b{white-space:nowrap;font-size:min(16.5px,3.6vw)}
+.choix-cloche b{white-space:nowrap;font-size:min(16.5px,3.4vw)}
 @media (prefers-reduced-motion:reduce){.choix-cloche>svg,.btn-alerte svg{animation:none}}
 /* 17/10/2026 (Ahmed) : gouvernorat sans annonce sur la carte -> « + » doré en pointillés : « Soyez le premier à publier ici » */
 .leaflet-marker-icon.cp-gouv.cp-vide{background:#fff;color:#B9892F;border:2px dashed #D9A441;font-size:18px}
@@ -985,7 +985,7 @@ main > .comment-marche:first-child{margin-top:14px}
 /* Recherche simple « comme SeLoger » (18/10/2026, Ahmed) : onglets Acheter / Louer / Estimer, un champ « Où ? », un gros bouton ;
    le reste dans « + Plus de filtres » */
 .recherche-simple{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:6px 14px 14px;box-shadow:0 6px 18px rgba(30,42,48,.08)}
-.onglets{display:grid;grid-template-columns:repeat(3,1fr);margin:0 -14px 12px;border-bottom:1px solid var(--ligne)}
+.onglets{display:grid;grid-template-columns:repeat(4,1fr);margin:0 -14px 12px;border-bottom:1px solid var(--ligne)}
 .onglet{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px 9px;cursor:pointer;background:none;border:0;
   border-bottom:3px solid transparent;font:inherit;font-size:15.5px;color:var(--doux);position:relative}
 .onglet input{position:absolute;opacity:0;width:1px;height:1px}
@@ -1013,3 +1013,6 @@ main > .comment-marche:first-child{margin-top:14px}
 .lien-comment a{color:var(--terre);font-weight:600}
 .a-propos .q-faq{border-bottom:1px solid var(--ligne);padding:8px 0}
 .a-propos .q-faq h3{font-size:16.5px;margin:0}
+.onglet-investir{text-decoration:none}
+@media (max-width:360px){.onglet{font-size:14px}.onglet svg{width:23px;height:23px}}
+.choix-accueil ul{grid-template-columns:minmax(0,1fr)}.choix-accueil li{min-width:0}.choix-cloche span{min-width:0}.choix-cloche b{overflow:hidden;text-overflow:ellipsis}

@@ -50,6 +50,9 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
         // 16/10/2026 (demande d'Ahmed) : barre qui avance + phrase qui change -> le visiteur comprend tout de suite que l'IA travaille
         // 16/10/2026 (Ahmed) : la phrase de l'étape est DANS la barre (impression d'un chargement) ; pas de pourcentage (retiré à sa demande)
         '<div class="ia-pensee" aria-hidden="true"><div class="ia-barre"><i></i><small class="ia-etape"></small></div></div>' +
+        // 18/10/2026 (Ahmed : « ça sert à rien de faire les mêmes boutons deux fois ») : là où la recherche simple existe (onglets
+        // Acheter / Louer / Estimer / Investir), les tuiles ne sont plus répétées ici
+        (document.getElementById("recherche") ? "" :
         '<div class="ia-tuiles">' +
           // 16/10/2026 (Ahmed) : « Voir N annonces » (nombre mis à jour à chaque relevé, data-nb de la page) à côté du prix de vente ;
           // il remplace la carte « Voir les annonces : acheter ou louer » de l'accueil
@@ -58,7 +61,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
           tuile("vendre/", "Prix de vente", "سعر البيع", "de votre bien", "لعقارك") +
           tuile("louer/", "Loyer", "الكراء", "pour votre bien", "لعقارك") +
           tuile("investir/", "Rendement", "المردود", "où investir", "أين تستثمر") +
-        "</div>";
+        "</div>");
     }
     var etape = bia && bia.querySelector(".ia-etape");
     if (etape) {

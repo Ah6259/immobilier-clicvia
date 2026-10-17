@@ -1023,3 +1023,15 @@ main > .comment-marche:first-child{margin-top:14px}
 .etapes-mini b{font-weight:700}
 .etapes-mini span:last-child{color:var(--doux)}
 .etapes-mini b{color:var(--encre)}
+/* 18/10/2026 (Ahmed : « simplifie et compacte ») : « Comment ça marche ? » partout sur UNE ligne de petites icônes */
+.etapes-ico{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-top:8px}
+.etapes-ico.etapes-4{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.etapes-ico.etapes-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.etapes-ico li{gap:4px}
+.etape-ico{width:52px;height:52px;border-radius:14px}
+.etape-ico svg{width:26px;height:26px}
+.etape-num{width:22px;height:22px;top:-9px;font-size:13px}
+.etapes-ico h3{font-size:13.5px;margin-top:4px;line-height:1.25}
+.etapes-ico p{display:none}
+.etapes-note{margin:8px 0 0;text-align:center;font-size:13px;color:var(--doux)}
+.comment-marche h2{margin-bottom:4px}

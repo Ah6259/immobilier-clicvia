@@ -305,3 +305,59 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     try { navigator.serviceWorker.register(BASE_SITE + "sw.js", { scope: BASE_SITE }).catch(function () {}); } catch (e) {}
   });
 }
+
+// ------------------------------------------------------------------ liste « Type de bien » en couleurs (19/10/2026, Ahmed)
+// La liste native du téléphone ignore les couleurs : pour les <select data-joli>, notre propre liste s'ouvre à la place
+// (catégories en bandeau bleu, types en blanc). La liste native reste dans la page (cachée) : la recherche, les alertes et les
+// liens lisent toujours sa valeur ; un choix ici change sa valeur et déclenche « change ».
+(function () {
+  function joli(sel) {
+    if (sel.getAttribute("data-joli-fait")) return;
+    sel.setAttribute("data-joli-fait", "1");
+    sel.classList.add("sj-cache");
+    sel.setAttribute("tabindex", "-1");
+    sel.setAttribute("aria-hidden", "true");
+    var bloc = document.createElement("div"); bloc.className = "sj";
+    var bouton = document.createElement("button"); bouton.type = "button"; bouton.className = "sj-bouton"; bouton.setAttribute("aria-haspopup", "listbox"); bouton.setAttribute("aria-expanded", "false");
+    var panneau = document.createElement("div"); panneau.className = "sj-panneau"; panneau.setAttribute("role", "listbox"); panneau.hidden = true;
+    bloc.appendChild(bouton); bloc.appendChild(panneau);
+    sel.parentNode.insertBefore(bloc, sel.nextSibling);
+    function texte() { var o = sel.options[sel.selectedIndex]; bouton.textContent = o ? o.textContent : ""; }
+    function fermer() { panneau.hidden = true; bouton.setAttribute("aria-expanded", "false"); }
+    function choisir(v) {
+      if (sel.value !== v) { sel.value = v; sel.dispatchEvent(new Event("change", { bubbles: true })); sel.dispatchEvent(new Event("input", { bubbles: true })); }
+      texte(); fermer(); bouton.focus();
+    }
+    function remplir() {
+      panneau.innerHTML = "";
+      [].forEach.call(sel.children, function (x) {
+        if (x.tagName === "OPTGROUP") {
+          var t = document.createElement("div"); t.className = "sj-groupe"; t.textContent = x.label; panneau.appendChild(t);
+          [].forEach.call(x.children, function (o) { ajouter(o, true); });
+        } else ajouter(x, false);
+      });
+    }
+    function ajouter(o, dansGroupe) {
+      if (o.disabled || o.hidden) return;
+      var b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option");
+      b.className = "sj-choix" + (dansGroupe ? " sj-dans" : "") + (o.value === sel.value ? " actif" : "");
+      b.setAttribute("aria-selected", o.value === sel.value ? "true" : "false");
+      b.textContent = o.textContent; b.setAttribute("data-v", o.value);
+      b.addEventListener("click", function () { choisir(o.value); });
+      panneau.appendChild(b);
+    }
+    bouton.addEventListener("click", function () {
+      if (!panneau.hidden) { fermer(); return; }
+      remplir(); panneau.hidden = false; bouton.setAttribute("aria-expanded", "true");
+      var a = panneau.querySelector(".actif"); if (a && a.scrollIntoView) a.scrollIntoView({ block: "nearest" });
+    });
+    document.addEventListener("click", function (e) { if (!bloc.contains(e.target)) fermer(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") fermer(); });
+    sel.addEventListener("change", texte);
+    if (sel.form) sel.form.addEventListener("reset", function () { setTimeout(texte, 0); });
+    texte();
+    setInterval(texte, 800);   // valeur changée par le programme (adresse, langue, bouton Effacer) : le bouton suit
+  }
+  function tous() { [].forEach.call(document.querySelectorAll("select[data-joli]"), joli); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tous); else tous();
+})();

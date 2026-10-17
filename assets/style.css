@@ -1035,3 +1035,17 @@ main > .comment-marche:first-child{margin-top:14px}
 .etapes-ico p{display:none}
 .etapes-note{margin:8px 0 0;text-align:center;font-size:13px;color:var(--doux)}
 .comment-marche h2{margin-bottom:4px}
+/* 19/10/2026 (Ahmed) : liste « Type de bien » en couleurs — catégories en bandeau bleu, types en blanc (page.js, select[data-joli]) */
+.sj-cache{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;overflow:hidden}
+.sj{position:relative;width:100%}
+.sj-bouton{width:100%;min-height:44px;text-align:start;padding:10px 34px 10px 12px;border:1px solid var(--ligne);border-radius:10px;background:#fff;color:var(--encre);font:inherit;font-size:15px;cursor:pointer;position:relative}
+.sj-bouton::after{content:"";position:absolute;inset-inline-end:14px;top:50%;width:8px;height:8px;border-right:2px solid var(--doux);border-bottom:2px solid var(--doux);transform:translateY(-70%) rotate(45deg)}
+.sj-panneau{position:absolute;z-index:50;inset-inline:0;top:calc(100% + 4px);max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--ligne);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.sj-groupe{position:sticky;top:0;background:var(--bleu);color:#fff;font-weight:700;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:7px 12px}
+.sj-choix{display:block;width:100%;text-align:start;background:#fff;color:var(--encre);border:0;border-bottom:1px solid var(--ligne);padding:11px 14px;font:inherit;font-size:15px;cursor:pointer}
+.sj-choix.sj-dans{padding-inline-start:22px}
+.sj-choix:not(.sj-dans){font-weight:600;color:var(--bleu)}
+.sj-choix.actif{background:var(--bleu-clair);font-weight:700}
+.sj-choix:hover{background:var(--sable)}
+.sj-panneau{inset-inline:auto;inset-inline-start:0;width:max(100%,min(330px,calc(100vw - 32px)))}
+.sj-choix{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

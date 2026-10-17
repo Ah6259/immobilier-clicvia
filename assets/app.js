@@ -53,7 +53,7 @@
     var x = a.ia, LX = window.LIEUX || { g: {}, l: {} }, dt = function (v) { return L(nb(v) + " DT", iso(nb(v)) + " دينار"); };
     var li = a.l && LX.l[a.g + "/" + a.l], g = LX.g[a.g] || [a.g, a.g];
     // jamais tout le gouvernorat (règle d'Ahmed, 15/10/2026) : même quartier, ou même délégation officielle (x.dl = [FR, AR])
-    var ou = x.z === "q" ? L(" à " + E(li ? li[0] : (a.n || g[0])), " في " + (li ? li[1] : g[1])) : L(" dans la délégation de " + E((x.dl || [""])[0]), " في معتمدية " + E((x.dl || ["", ""])[1] || (x.dl || [""])[0]));
+    var ou = x.pr ? L(" à moins de 1,5 km", " على أقل من 1,5 كم") : x.z === "q" ? L(" à " + E(li ? li[0] : (a.n || g[0])), " في " + (li ? li[1] : g[1])) : L(" dans la délégation de " + E((x.dl || [""])[0]), " في معتمدية " + E((x.dl || ["", ""])[1] || (x.dl || [""])[0]));
     // comparaison AU M² quand la surface est connue (15/10/2026) : x.m2 = [ce bien, médiane, bas, haut] en DT/m²
     var m2 = x.m2, m2t = function (v) { return v < 100 ? String(v).replace(".", ",") : nb(v); },
       dm2 = function (v) { return L(m2t(v) + " DT/m²", iso(m2t(v)) + " دينار/م²"); };

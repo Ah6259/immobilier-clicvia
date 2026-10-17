@@ -43,16 +43,18 @@
     var p = predireLieu(m, t, g, q || "", s, (t === "appartement" || t === "maison") ? ch : null, extras(at, et));
     return [Math.exp(p), Math.exp(p + pr.bas), Math.exp(p + pr.haut), pr];
   }
+  // écart propre au quartier appris par le robot (correction() de robot/modele_ia.py, 18/10/2026)
+  function corr(nv, g, q, t) { return (q && nv.cal && nv.cal[g + "|" + q + "|" + t]) || 0; }
   function predire(m, x) { var p = m.depart; for (var i = 0; i < m.arbres.length; i++) p += arbre(m.arbres[i], x); return p; }
   // « Tout le gouvernorat » : moyenne des quartiers pondérée par leur nombre d'annonces (comme predire_lieu du robot)
   function predireLieu(m, t, g, q, s, ch, x) {
     var nv = m.niveaux;
     if (!q || !nv.q[g + "|" + q]) {
       var ks = Object.keys(nv.q).filter(function (k) { return k.split("|")[0] === g; }).sort(), tot = 0, som = 0;
-      ks.forEach(function (k) { var n = nv.q[k][1]; tot += n; som += predire(m, variables(t, g, k.slice(g.length + 1), s, ch, nv, x)) * n; });
+      ks.forEach(function (k) { var n = nv.q[k][1]; tot += n; som += (predire(m, variables(t, g, k.slice(g.length + 1), s, ch, nv, x)) + corr(nv, g, k.slice(g.length + 1), t)) * n; });
       if (ks.length) return som / tot;
     }
-    return predire(m, variables(t, g, q, s, ch, nv, x));
+    return predire(m, variables(t, g, q, s, ch, nv, x)) + corr(nv, g, q, t);
   }
   var promesse = (typeof fetch === "function" ? fetch(racine + "donnees/modele-ia.json", {cache: "no-cache"}).then(function (r) { return r.json(); })
     : Promise.reject(new Error("fetch"))).then(function (m) { M = m; return m; });
@@ -71,7 +73,8 @@
         ch = el("ia-p").value === "" ? null : parseInt(el("ia-p").value, 10);
     s = isFinite(s) && s >= 8 ? s : null;
     el("ia-p-l").hidden = !(t === "appartement" || t === "maison");
-    var v = estimer("vente", t, g, q, s, ch), l = estimer("location", t, g, q, s, ch), h = "";
+    // bien ordinaire (aucun atout coché, comme le formulaire Vendre / Louer) : « atouts inconnus » estimait trop haut (18/10/2026)
+    var v = estimer("vente", t, g, q, s, ch, []), l = estimer("location", t, g, q, s, ch, []), h = "";
     var pas = '<span class="ia-pas">' + T2("pas encore assez fiable pour ce bien (le modèle apprend à chaque relevé des annonces)", "غير موثوق بعد لهذا العقار (يتعلّم النموذج مع كل تحديث للإعلانات)") + "</span>";
     h += '<p class="ia-ligne"><span>' + T2("Prix de vente estimé", "سعر البيع التقديري") + "</span>" + (v ? "<b>" + dt(v[0]) + "</b><small>" +
          T2("entre ", "بين ") + dt(v[1]) + T2(" et ", " و") + dt(v[2]) + "</small>" : pas) + "</p>";

@@ -17,12 +17,21 @@
   function ar() { return document.documentElement.lang === "ar"; }
   function T(fr, a) { return ar() ? a : fr; }
   function nb(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[  ]/g, " "); }
+  // bulle des gouvernorats (17/10/2026, choix d'Ahmed) : 1 000 et plus -> « 2,9 k », « 16 k » (sur une ligne, lisible) ;
+  // le nombre exact reste dans l'infobulle et la fenêtre
+  function court(x) {
+    x = Math.round(x);
+    if (x < 1000) return String(x);
+    return (x < 9950 ? (Math.round(x / 100) / 10).toFixed(1).replace(".", ",") : String(Math.round(x / 1000))) + " k";
+  }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function bornes(v) {                       // 5 classes de même effectif (quantiles)
     v = v.slice().sort(function (a, b) { return a - b; });
     return [0.2, 0.4, 0.6, 0.8].map(function (f) { return v[Math.min(v.length - 1, Math.floor(v.length * f))]; });
   }
   function classe(x, b) { var i = 0; while (i < b.length && x > b[i]) i++; return i; }
+  function legBleu() { return [T("annonces du gouvernorat (zoomez : délégations, puis quartiers)", "إعلانات الولاية (قرّب: المعتمديات ثم الأحياء)"),
+    T("annonces de la délégation (zoomez : quartiers)", "إعلانات المعتمدية (قرّب: الأحياء)"), T("nombre d’annonces du quartier, couleur = prix", "عدد إعلانات الحي، اللون = السعر")][niveau() - 1]; }
   function unite() { return mode === "m2" ? T(" DT/m²", " دينار/م²") : T(" DT/mois", " دينار/شهر"); }
   // nombre de quartiers avec un prix pour un type de bien (tous modes), dans un gouvernorat (ou partout)
   function compter(t, g) {
@@ -41,7 +50,9 @@
     [].forEach.call(document.querySelectorAll(".cp-btn[data-type]"), function (x) { x.classList.toggle("actif", x.getAttribute("data-type") === type); });
   }
   function nomType() { return { appartement: T("appartements", "شقق"), maison: T("maisons", "منازل"), terrain: T("terrains", "أراضٍ"), tout: T("tous types", "كل الأنواع") }[type]; }
-  function donnees() { var D = window.CARTE_PRIX || {}; return { q: D.q || (Array.isArray(D) ? D : []), g: D.g || [] }; }
+  function donnees() { var D = window.CARTE_PRIX || {}; return { q: D.q || (Array.isArray(D) ? D : []), g: D.g || [], d: D.d || [] }; }
+  var NIV_DELEG = 9, NIV_QUARTIER = 12;     // zoom à partir duquel on voit les délégations, puis les quartiers
+  function niveau() { var z = carte ? carte.getZoom() : 0; return z >= NIV_QUARTIER ? 3 : z >= NIV_DELEG && donnees().d.length ? 2 : 1; }
 
   function dessiner() {
     var D = donnees(), f = champ(), pts = D.q.filter(aUnPrix);
@@ -55,15 +66,33 @@
     pts.forEach(function (x) { avecPrix[x.g] = 1; });
     if (couche) couche.remove();
     couche = L.layerGroup().addTo(carte);
+    // TROIS NIVEAUX selon le zoom (17/10/2026, demande d'Ahmed) : toute la carte -> bulles des GOUVERNORATS ; on zoome -> bulles des
+    // DÉLÉGATIONS ; on zoome encore -> bulles des QUARTIERS (nombre d'annonces, couleur = prix)
+    var niv = niveau(), avecDeleg = {};
+    if (niv === 2) D.d.forEach(function (x) { avecDeleg[x.g] = 1; });
+    if (niv === 2) D.d.forEach(function (x) {
+      var nom = esc(ar() && x.ar ? x.ar : x.fr), lien = racine + x.g + "/?d=" + encodeURIComponent(x.s) + "#liste";
+      if (!x.n) {
+        L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv cp-deleg cp-vide", html: "<span>+</span>", iconSize: [28, 28] }), title: nom + T(" : soyez le premier à publier ici", ": كن أول من ينشر هنا") })
+          .bindPopup("<b>" + T("Délégation ", "معتمدية ") + nom + "</b><br>" + T("Aucune annonce pour l’instant.", "لا يوجد إعلان حاليًا.") + '<br><a class="cp-publier" href="' + racine + "deposer/?g=" + encodeURIComponent(x.g) + '">' +
+                     T("➕ Soyez le premier à publier ici (gratuit)", "➕ كن أول من ينشر هنا (مجانًا)") + "</a>").addTo(couche);
+        return;
+      }
+      L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv cp-deleg", html: "<span>" + court(x.n) + "</span>", iconSize: [34, 34] }), zIndexOffset: -500,
+                      title: nom + " · " + nb(x.n) + T(" annonces", " إعلانًا") })
+        .bindPopup("<b>" + T("Délégation ", "معتمدية ") + nom + "</b><br>" + nb(x.n) + T(" annonces", " إعلانًا") + "<br><small>" + T("Zoomez pour voir les quartiers.", "قرّب لرؤية الأحياء.") + "</small>" +
+                   '<br><a href="' + lien + '">' + T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>").addTo(couche);
+    });
     // gouvernorats sans quartier avec un prix : un cercle avec leur nombre d'annonces
     D.g.forEach(function (x) {
+      if (niv === 3 || (niv === 2 && avecDeleg[x.g])) return;     // remplacées par les délégations, puis par les quartiers
       var nom = esc(ar() ? x.ar : x.fr);
       // 17/10/2026 (Ahmed) : CHAQUE gouvernorat garde sa bulle bleu foncé avec son nombre TOTAL d'annonces, même quand ses
       // quartiers ont des prix (les ronds de prix restent dessus)
       if (avecPrix[x.g] && x.n) {
-        L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv", html: "<span>" + nb(x.n) + "</span>", iconSize: [38, 38] }), zIndexOffset: -500,
+        L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv", html: "<span>" + court(x.n) + "</span>", iconSize: [38, 38] }), zIndexOffset: -500,
                         title: nom + " · " + nb(x.n) + T(" annonces", " إعلانًا") })
-          .bindPopup("<b>" + nom + "</b><br>" + nb(x.n) + T(" annonces au total", " إعلانًا في المجموع") + '<br><a href="' + racine + x.g + '/#liste">' +
+          .bindPopup("<b>" + nom + "</b><br>" + nb(x.n) + T(" annonces au total", " إعلانًا في المجموع") + "<br><small>" + T("Zoomez pour voir les délégations.", "قرّب لرؤية المعتمديات.") + "</small>" + '<br><a href="' + racine + x.g + '/#liste">' +
                      T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>").addTo(couche);
         return;
       }
@@ -78,7 +107,7 @@
         return '<br><button type="button" class="cp-voir-type" data-type="' + t + '" data-g="' + x.g + '">' + T("Voir ", "شاهد ") + NOMS_T[t][ar() ? 1 : 0] +
           " (" + compter(t, x.g) + (compter(t, x.g) === 1 ? T(" quartier)", " حي)") : T(" quartiers)", " أحياء)")) + "</button>";
       }).join("");
-      L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv", html: "<span>" + nb(x.n) + "</span>", iconSize: [38, 38] }), title: nom + " · " + nb(x.n) + T(" annonces", " إعلانًا") })
+      L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv", html: "<span>" + court(x.n) + "</span>", iconSize: [38, 38] }), title: nom + " · " + nb(x.n) + T(" annonces", " إعلانًا") })
         .bindPopup("<b>" + nom + "</b><br>" + nb(x.n) + T(" annonces", " إعلانًا") + "<br><small>" + T("Pas encore assez de prix pour ", "لا توجد بعد أسعار كافية لـ") + NOMS_T[type][ar() ? 1 : 0] +
                    ".</small>" + autres + '<br><a href="' + racine + x.g + '/#liste">' + T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>").addTo(couche);
     });
@@ -96,7 +125,8 @@
             "</b> <small>(" + T("calculé sur ", "على ") + x[k[1]] + T(" annonces", " إعلانًا") + ")</small>";
         }).join("") +
         '<br><a href="' + racine + x.g + "/" + (x.page ? x.q + "/" : "") + '#liste">' + T("Voir les " + nb(x.t) + " annonces", "شاهد " + nb(x.t) + " إعلانًا") + "</a>";
-      L.circleMarker(x.p, { radius: Math.max(6, Math.min(14, 4 + Math.sqrt(x.t) * 1.2)), color: "#fff", weight: 2, fillColor: "#98A2A8", fillOpacity: 0.8, className: "cp-sans-prix" })
+      (niv === 3 ? L.marker(x.p, { icon: L.divIcon({ className: "cp-q cp-qgris", html: "<span>" + court(x.t) + "</span>", iconSize: [30, 30] }) })
+        : L.circleMarker(x.p, { radius: Math.max(6, Math.min(14, 4 + Math.sqrt(x.t) * 1.2)), color: "#fff", weight: 2, fillColor: "#98A2A8", fillOpacity: 0.8, className: "cp-sans-prix" }))
         .bindPopup(h).bindTooltip(nom + " · " + nb(x.t) + T(" annonces", " إعلانًا")).addTo(couche);
     });
     pts.forEach(function (x) {
@@ -116,7 +146,9 @@
         bulle = nom + (x.t ? " · " + nb(x.t) + T(" annonces", " إعلانًا") : "");
       }
       h += '<br><a href="' + racine + x.g + "/" + (x.page ? x.q + "/" : "") + '#liste">' + (x.t && x.page ? T("Voir les " + nb(x.t) + " annonces", "شاهد " + nb(x.t) + " إعلانًا") : T("Voir les annonces", "شاهد الإعلانات")) + "</a>";
-      L.circleMarker(x.p, { radius: Math.max(7, Math.min(18, 5 + Math.sqrt(n) * 1.6)), color: "#fff", weight: 2, fillColor: c, fillOpacity: 0.85 })
+      // niveau 3 : bulle du QUARTIER avec son nombre d'annonces, couleur = son prix (classes : la CSP refuse les styles dans la page)
+      (niv === 3 ? L.marker(x.p, { icon: L.divIcon({ className: "cp-q cp-qc" + COULEURS.indexOf(c), html: "<span>" + court(x.t || n) + "</span>", iconSize: [30, 30] }) })
+        : L.circleMarker(x.p, { radius: Math.max(7, Math.min(18, 5 + Math.sqrt(n) * 1.6)), color: "#fff", weight: 2, fillColor: c, fillOpacity: 0.85 }))
         .bindPopup(h).bindTooltip(bulle).addTo(couche);
     });
     var lg = document.getElementById("cp-legende");
@@ -124,12 +156,12 @@
     if (lg && !pts.length) lg.innerHTML = '<span class="cp-unite">' + T("Pas encore assez d’annonces pour ce choix.", "لا توجد بعد إعلانات كافية لهذا الاختيار.") + "</span>";
     if (lg && pts.length && !f) lg.innerHTML = COULEURS.map(function (c, i) { return '<span class="cp-leg"><i class="cp-c' + i + '"></i></span>'; }).join("") +
       '<span class="cp-unite">' + T("du moins cher au plus cher, comparé aux quartiers du même type de bien ; touchez un rond pour les prix", "من الأرخص إلى الأغلى، مقارنة بأحياء نفس نوع العقار؛ المس دائرة للأسعار") +
-      '</span><span class="cp-leg"><i class="cp-g"></i>' + T("annonces du gouvernorat", "إعلانات الولاية") + "</span>" + legGris;
+      '</span><span class="cp-leg"><i class="cp-g"></i>' + legBleu() + "</span>" + legGris;
     if (lg && pts.length && f) {
       var v = pts.map(function (x) { return x[f]; }), lim = [Math.min.apply(null, v)].concat(b).concat([Math.max.apply(null, v)]);
       lg.innerHTML = COULEURS.map(function (c, i) {
         return '<span class="cp-leg"><i class="cp-c' + i + '"></i>' + nb(lim[i]) + "–" + nb(lim[i + 1]) + "</span>";   // classes : la CSP refuse les styles écrits dans la page
-      }).join("") + '<span class="cp-unite">' + unite() + '</span><span class="cp-leg"><i class="cp-g"></i>' + T("annonces du gouvernorat", "إعلانات الولاية") + "</span>" + legGris;
+      }).join("") + '<span class="cp-unite">' + unite() + '</span><span class="cp-leg"><i class="cp-g"></i>' + legBleu() + "</span>" + legGris;
     }
   }
   function cadrer() {
@@ -154,8 +186,10 @@
     var f = zone.closest && zone.closest(".carte-vivante");
     if (f) f.classList.add("charge");          // la nouvelle carte remplace l'ancienne (gardée seulement si la carte ne charge pas)
     carte.invalidateSize();
+    cadrer();                                  // cadrer AVANT de dessiner : le niveau (gouvernorats, délégations, quartiers) dépend du zoom
     dessiner();
-    cadrer();
+    var dernierNiv = niveau();
+    carte.on("zoomend", function () { if (niveau() !== dernierNiv) { dernierNiv = niveau(); dessiner(); } });
   }
   // audit de sécurité (16/10/2026) : une bibliothèque venue d'un autre site est vérifiée par son empreinte officielle (SRI) :
   // si le fichier de cdnjs était modifié, le navigateur refuserait de l'exécuter

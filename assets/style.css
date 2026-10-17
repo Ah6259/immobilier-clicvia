@@ -175,6 +175,7 @@ html[lang="ar"] .an-titre{font-family:var(--arabe)}
 .an-prix .dt{font-weight:700;font-size:14px;color:var(--encre)}
 .an-prix-note{font-size:12.5px;color:var(--doux);margin-inline-start:auto}
 .an-prix.sans{font-size:14px;font-weight:500;color:var(--doux);font-style:italic}
+.an-ancienne{margin:8px 0 0;padding:6px 10px;border-radius:8px;background:#FFF4DC;color:#6B4A00;font-size:13px;line-height:1.4}
 .an-faits{list-style:none;display:flex;flex-wrap:wrap;gap:6px 14px;padding:0;margin:0;font-size:13.5px;color:#46535a}
 .an-faits li{display:inline-flex;align-items:center;gap:5px}
 .an-contact{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;font-weight:600;font-size:15px;color:var(--terre-f);background:var(--terre-voile);border:1.5px solid var(--terre-clair);border-radius:var(--r-petit);padding:10px 12px}
@@ -891,7 +892,11 @@ html[dir="rtl"] .avantage summary{padding:9px 12px 9px 34px}
 .cp-choix-mini{margin:0 0 8px}
 .cp-choix-mini .cp-btn{padding:6px 8px;font-size:13.5px;border-radius:10px}
 .leaflet-marker-icon.cp-gouv{display:flex!important;align-items:center;justify-content:center;border-radius:50%;background:var(--bleu);color:#fff;font-weight:800;font-size:12.5px;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
-.cp-gouv span{line-height:1}
+.cp-gouv span{line-height:1;white-space:nowrap;letter-spacing:-.3px}
+.leaflet-marker-icon.cp-deleg{font-size:11.5px;border-width:2px}
+.leaflet-marker-icon.cp-q{display:flex!important;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-weight:800;font-size:11px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);text-shadow:0 0 2px rgba(0,0,0,.45)}
+.cp-q span{line-height:1;white-space:nowrap;letter-spacing:-.3px}
+.cp-qc0{background:#2E7D4F}.cp-qc1{background:#7FB33D}.cp-qc2{background:#F2B33D}.cp-qc3{background:#E8793A}.cp-qc4{background:#C0392B}.cp-qgris{background:#98A2A8}
 .cp-leg i.cp-g{background:var(--bleu)}
 
 

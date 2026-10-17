@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=34ee7ef147">
-<script src="../../assets/page.js?v=34ee7ef147"></script>
+<link rel="stylesheet" href="../../assets/style.css?v=1a2c9e5c8d">
+<script src="../../assets/page.js?v=1a2c9e5c8d"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://immobilier.clicvia.com/"}, {"@type": "ListItem", "position": 2, "name": "Nabeul", "item": "https://immobilier.clicvia.com/nabeul/"}, {"@type": "ListItem", "position": 3, "name": "El Maamoura", "item": "https://immobilier.clicvia.com/nabeul/el-maamoura/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Combien d’annonces immobilières à El Maamoura ?", "acceptedAnswer": {"@type": "Answer", "text": "11 annonces au 17 octobre 2026 : 11 à vendre et 0 à louer."}}]}</script>
@@ -54,11 +54,16 @@
   </div>
 </section>
 <main class="wrap">
-<form class="recherche" id="recherche" role="search" action="#liste" data-gouv="nabeul" data-lieu="el-maamoura">
-  <div class="bascule" role="radiogroup" aria-label="Acheter ou louer">
-    <label><input type="radio" name="t" value="" checked><span><span data-l="fr">Tout</span><span data-l="ar">الكل</span></span></label>
-    <label><input type="radio" name="t" value="v"><span><span data-l="fr">Acheter</span><span data-l="ar">شراء</span></span></label>
-    <label><input type="radio" name="t" value="l"><span><span data-l="fr">Louer</span><span data-l="ar">كراء</span></span></label>
+<form class="recherche recherche-simple" id="recherche" role="search" action="#liste" data-gouv="nabeul" data-lieu="el-maamoura">
+  <div class="onglets" role="radiogroup" aria-label="Acheter, louer ou estimer">
+    <label class="onglet"><input type="radio" name="t" value="v"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span><span data-l="fr">Acheter</span><span data-l="ar">شراء</span></span></label>
+    <label class="onglet"><input type="radio" name="t" value="l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg><span><span data-l="fr">Louer</span><span data-l="ar">كراء</span></span></label>
+    <button type="button" class="onglet onglet-estimer" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2M8 18h2M12 18h4"/></svg><span><span data-l="fr">Estimer</span><span data-l="ar">تقدير</span></span></button>
+  </div>
+  <div class="panneau-estimer" hidden>
+    <p><span data-l="fr">Combien vaut votre bien ? Notre IA l’estime à partir des annonces semblables de votre quartier.</span><span data-l="ar">كم يساوي عقارك؟ يقدّره ذكاؤنا الاصطناعي انطلاقًا من الإعلانات المشابهة في حيّك.</span></p>
+    <a class="btn-chercher" href="../../vendre/"><span data-l="fr">Prix de vente de mon bien</span><span data-l="ar">سعر بيع عقاري</span></a>
+    <a class="btn-estimer-loyer" href="../../louer/"><span data-l="fr">Loyer de mon bien</span><span data-l="ar">كراء عقاري</span></a>
   </div>
   <div class="champ champ-ou">
     <label for="f-ou"><span data-l="fr">Où ? Ville, délégation ou quartier</span><span data-l="ar">أين؟ مدينة أو معتمدية أو حي</span></label>
@@ -66,28 +71,28 @@
       placeholder="ex. La Marsa, Petite Ariana, Ennasr…" data-ph-fr="ex. La Marsa, Petite Ariana, Ennasr…" data-ph-ar="مثال: المرسى، أريانة الصغرى…"></div>
     <ul class="ou-suggestions" id="ou-suggestions" role="listbox" hidden></ul>
   </div>
-  <div class="champs">
-    <label class="champ"><span><span data-l="fr">Type de bien</span><span data-l="ar">نوع العقار</span></span><select name="y" id="f-y"><option value="" data-fr="Tous les biens" data-ar="كل العقارات">Tous les biens</option><optgroup label="Habitation" data-fr="Habitation" data-ar="سكن"><option value="maison" data-fr="Maison / villa (5)" data-ar="منزل / فيلا (5)">Maison / villa (5)</option></optgroup><optgroup label="Terrains" data-fr="Terrains" data-ar="أراضٍ"><option value="terrain" data-fr="Terrain à bâtir (3)" data-ar="أرض للبناء (3)">Terrain à bâtir (3)</option><option value="agricole" data-fr="Terrain agricole / ferme (1)" data-ar="أرض فلاحية / ضيعة (1)">Terrain agricole / ferme (1)</option></optgroup><optgroup label="Autres" data-fr="Autres" data-ar="أخرى"><option value="autre" data-fr="Autre bien (immeuble, hôtel…) (2)" data-ar="عقار آخر (عمارة، نزل…) (2)">Autre bien (immeuble, hôtel…) (2)</option></optgroup></select></label>
-    
-    <label class="champ"><span><span data-l="fr">Délégation</span><span data-l="ar">المعتمدية</span></span><select name="d" id="f-d"><option value="" data-fr="Toutes" data-ar="الكل">Toutes</option></select></label>
-    <label class="champ"><span><span data-l="fr">Localité / quartier</span><span data-l="ar">المنطقة / الحي</span></span><select name="l" id="f-l"><option value="" data-fr="Toutes" data-ar="الكل">Toutes</option></select></label>
-    <label class="champ"><span><span data-l="fr">Pièces</span><span data-l="ar">الغرف</span></span><select name="c" id="f-c"><option value="" data-fr="Indifférent" data-ar="لا يهم">Indifférent</option><option value="1">S+1</option><option value="2">S+2</option><option value="3">S+3</option><option value="4">S+4</option><option value="5" data-fr="S+5 et plus" data-ar="S+5 وأكثر">S+5 et plus</option></select></label>
+  <div class="actions-recherche">
+    <button class="btn-chercher" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span data-l="fr">Voir les annonces</span><span data-l="ar">عرض الإعلانات</span></button>
   </div>
   <details class="plus-filtres">
-    <summary><span data-l="fr">Plus de filtres : prix, surface, vendeur</span><span data-l="ar">فلاتر أخرى: السعر، المساحة، البائع</span></summary>
+    <summary><span data-l="fr">Plus de filtres</span><span data-l="ar">فلاتر أخرى</span> <span class="nb-filtres" hidden></span></summary>
     <div class="champs">
+      <label class="champ"><span><span data-l="fr">Type de bien</span><span data-l="ar">نوع العقار</span></span><select name="y" id="f-y"><option value="" data-fr="Tous les biens" data-ar="كل العقارات">Tous les biens</option><optgroup label="Habitation" data-fr="Habitation" data-ar="سكن"><option value="maison" data-fr="Maison / villa (5)" data-ar="منزل / فيلا (5)">Maison / villa (5)</option></optgroup><optgroup label="Terrains" data-fr="Terrains" data-ar="أراضٍ"><option value="terrain" data-fr="Terrain à bâtir (3)" data-ar="أرض للبناء (3)">Terrain à bâtir (3)</option><option value="agricole" data-fr="Terrain agricole / ferme (1)" data-ar="أرض فلاحية / ضيعة (1)">Terrain agricole / ferme (1)</option></optgroup><optgroup label="Autres" data-fr="Autres" data-ar="أخرى"><option value="autre" data-fr="Autre bien (immeuble, hôtel…) (2)" data-ar="عقار آخر (عمارة، نزل…) (2)">Autre bien (immeuble, hôtel…) (2)</option></optgroup></select></label>
+      
+      <label class="champ"><span><span data-l="fr">Délégation</span><span data-l="ar">المعتمدية</span></span><select name="d" id="f-d"><option value="" data-fr="Toutes" data-ar="الكل">Toutes</option></select></label>
+      <label class="champ"><span><span data-l="fr">Localité / quartier</span><span data-l="ar">المنطقة / الحي</span></span><select name="l" id="f-l"><option value="" data-fr="Toutes" data-ar="الكل">Toutes</option></select></label>
+      <label class="champ"><span><span data-l="fr">Pièces</span><span data-l="ar">الغرف</span></span><select name="c" id="f-c"><option value="" data-fr="Indifférent" data-ar="لا يهم">Indifférent</option><option value="1">S+1</option><option value="2">S+2</option><option value="3">S+3</option><option value="4">S+4</option><option value="5" data-fr="S+5 et plus" data-ar="S+5 وأكثر">S+5 et plus</option></select></label>
       <label class="champ"><span><span data-l="fr">Prix min (DT)</span><span data-l="ar">أدنى سعر (د.ت)</span></span><input name="pmin" id="f-pmin" type="number" inputmode="numeric" min="0" step="50" placeholder="min"></label>
       <label class="champ"><span><span data-l="fr">Prix max (DT)</span><span data-l="ar">أقصى سعر (د.ت)</span></span><input name="p" id="f-p" type="number" inputmode="numeric" min="0" step="50" placeholder="max"></label>
       <label class="champ"><span><span data-l="fr">Surface min (m²)</span><span data-l="ar">أدنى مساحة (م²)</span></span><input name="smin" id="f-smin" type="number" inputmode="numeric" min="0" step="10" placeholder="min"></label>
       <label class="champ"><span><span data-l="fr">Surface max (m²)</span><span data-l="ar">أقصى مساحة (م²)</span></span><input name="smax" id="f-smax" type="number" inputmode="numeric" min="0" step="10" placeholder="max"></label>
       <label class="champ"><span><span data-l="fr">Vendeur</span><span data-l="ar">البائع</span></span><select name="v" id="f-v"><option value="" data-fr="Indifférent" data-ar="لا يهم">Indifférent</option><option value="a" data-fr="Agence" data-ar="وكالة">Agence</option><option value="p" data-fr="Particulier" data-ar="خاص">Particulier</option></select></label>
     </div>
+    <div class="actions-filtres">
+      <button class="btn-effacer" type="reset" title="Effacer les filtres"><span data-l="fr">Effacer</span><span data-l="ar">مسح</span></button>
+      <button class="btn-alerte" type="button" aria-haspopup="dialog" title="Créer une alerte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span data-l="fr">Alerte</span><span data-l="ar">تنبيه</span></button>
+    </div>
   </details>
-  <div class="champs actions-recherche">
-    <button class="btn-chercher" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span data-l="fr">Rechercher</span><span data-l="ar">ابحث</span></button>
-    <button class="btn-effacer" type="reset" title="Effacer les filtres"><span data-l="fr">Effacer</span><span data-l="ar">مسح</span></button>
-    <button class="btn-alerte" type="button" aria-haspopup="dialog" title="Créer une alerte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span data-l="fr">Alerte</span><span data-l="ar">تنبيه</span></button>
-  </div>
 </form>
 <section class="bloc" id="liste" aria-live="polite">
   <div class="bloc-tete"><div><h2><span data-l="fr">Annonces à El Maamoura</span><span data-l="ar">إعلانات المعمورة</span></h2></div>
@@ -107,8 +112,8 @@
 <script src="../../donnees/lieux.js?v=2026-10-17" defer></script>
 <script src="../../donnees/decoupage.js?v=e690739193" defer></script>
 <script src="../../donnees/annonces.js?v=cdf20db931" defer></script>
-<script src="../../assets/app.js?v=34ee7ef147" defer></script>
-<script src="../../assets/carte-prix.js?v=34ee7ef147" defer></script>
-<script src="../../assets/alerte.js?v=34ee7ef147" defer></script>
+<script src="../../assets/app.js?v=1a2c9e5c8d" defer></script>
+<script src="../../assets/carte-prix.js?v=1a2c9e5c8d" defer></script>
+<script src="../../assets/alerte.js?v=1a2c9e5c8d" defer></script>
 </body>
 </html>

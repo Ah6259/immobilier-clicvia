@@ -115,7 +115,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
           '<a href="' + racine + 'prix/">' + T("Carte des prix par quartier", "خريطة الأسعار حسب الحي") + '</a>' +
           '<a href="' + racine + 'vendre/">' + T("Vendre : estimer mon bien (IA)", "البيع: قدّر عقاري (ذكاء اصطناعي)") + '</a>' +
           '<a href="' + racine + 'alertes/">' + T("Alertes gratuites", "تنبيهات مجانية") + '</a>' +
-          '<a href="' + racine + 'a-propos/">' + T("À propos et méthode", "من نحن والمنهجية") + '</a>' +
+          '<a href="' + racine + 'a-propos/">' + T("Comment fonctionne le site ?", "كيف يعمل الموقع؟") + '</a>' +
           '<a href="' + racine + '#avis">' + T("Votre avis", "رأيك") + '</a>' +
           '<a href="' + racine + 'video/">' + T("Vidéo de présentation", "الفيديو التقديمي") + '</a>' +
         '<a href="https://clicvia.com/" rel="noopener" target="_blank">' + T("Tous nos services", "كل خدماتنا") + '</a>' +

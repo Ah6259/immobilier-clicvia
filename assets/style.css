@@ -976,8 +976,40 @@ main > .comment-marche:first-child{margin-top:14px}
 .choix-cloche>svg,.btn-alerte svg{transform-origin:50% 12%;animation:cloche-secoue 2.6s ease-in-out .6s infinite}
 @keyframes cloche-secoue{0%,40%,100%{transform:rotate(0)}5%,15%,25%,35%{transform:rotate(14deg)}10%,20%,30%{transform:rotate(-14deg)}}
 /* « Être prévenu des nouvelles annonces » sur UNE ligne, même sur un téléphone de 360 px */
-.choix-cloche b{white-space:nowrap;font-size:min(16.5px,4.3vw)}
+.choix-cloche b{white-space:nowrap;font-size:min(16.5px,3.6vw)}
 @media (prefers-reduced-motion:reduce){.choix-cloche>svg,.btn-alerte svg{animation:none}}
 /* 17/10/2026 (Ahmed) : gouvernorat sans annonce sur la carte -> « + » doré en pointillés : « Soyez le premier à publier ici » */
 .leaflet-marker-icon.cp-gouv.cp-vide{background:#fff;color:#B9892F;border:2px dashed #D9A441;font-size:18px}
 .cp-publier{font-weight:700;color:#B9892F}
+
+/* Recherche simple « comme SeLoger » (18/10/2026, Ahmed) : onglets Acheter / Louer / Estimer, un champ « Où ? », un gros bouton ;
+   le reste dans « + Plus de filtres » */
+.recherche-simple{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);padding:6px 14px 14px;box-shadow:0 6px 18px rgba(30,42,48,.08)}
+.onglets{display:grid;grid-template-columns:repeat(3,1fr);margin:0 -14px 12px;border-bottom:1px solid var(--ligne)}
+.onglet{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px 9px;cursor:pointer;background:none;border:0;
+  border-bottom:3px solid transparent;font:inherit;font-size:15.5px;color:var(--doux);position:relative}
+.onglet input{position:absolute;opacity:0;width:1px;height:1px}
+.onglet svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.onglet:has(input:checked),.onglet[aria-pressed="true"]{color:var(--encre);font-weight:700;border-bottom-color:var(--terre)}
+.onglet:has(input:focus-visible),.onglet:focus-visible{outline:3px solid var(--or);outline-offset:-3px}
+.recherche-simple .champ-ou{margin-bottom:10px}
+.recherche-simple .actions-recherche{display:block!important;margin-top:0}
+.recherche-simple .actions-recherche .btn-chercher{width:100%;min-height:52px;font-size:17px;border-radius:999px;padding:0 16px}
+.recherche-simple .plus-filtres{margin-top:12px;border-top:0;padding-top:0;text-align:center}
+.recherche-simple .plus-filtres > summary{display:inline-block;padding:8px 16px;border:1px solid var(--ligne);border-radius:999px;background:var(--sable)}
+.recherche-simple .plus-filtres[open] > summary{margin-bottom:6px}
+.recherche-simple .plus-filtres .champs{text-align:start;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:760px){ .recherche-simple .plus-filtres .champs{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.nb-filtres{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--terre);color:#fff;font-size:12.5px;line-height:20px}
+.actions-filtres{display:flex;gap:10px;justify-content:center;margin-top:12px}
+.panneau-estimer{text-align:center;padding:2px 0 4px}
+.panneau-estimer p{margin:0 0 12px;color:var(--doux);font-size:15px}
+.panneau-estimer .btn-chercher{width:100%;min-height:52px;border-radius:999px;text-decoration:none;font-size:17px;margin-bottom:10px}
+.btn-estimer-loyer{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border-radius:999px;border:2px solid var(--terre);
+  color:var(--terre);font-weight:700;text-decoration:none;font-size:16px}
+.mode-estimer .champ-ou,.mode-estimer .actions-recherche,.mode-estimer .plus-filtres{display:none!important}
+.choix-cloche{box-sizing:border-box;max-width:100%}
+.lien-comment{margin:10px 0 0;text-align:center;font-size:14.5px}
+.lien-comment a{color:var(--terre);font-weight:600}
+.a-propos .q-faq{border-bottom:1px solid var(--ligne);padding:8px 0}
+.a-propos .q-faq h3{font-size:16.5px;margin:0}

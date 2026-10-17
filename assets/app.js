@@ -337,7 +337,35 @@
     var qd = q.get("d") || (q.get("l") ? delegDeLoc(gCourant(), q.get("l")) : "");
     if (selD && qd) { selD.value = qd; suivreGouv(); }
     if (selL && q.get("l")) selL.value = q.get("l");
-    if (["pmin", "smin", "smax", "v"].some(function (k) { return q.get(k); })) { var dt = form.querySelector(".plus-filtres"); if (dt) dt.open = true; }
+    // recherche simple (18/10/2026, « comme SeLoger ») : « + Plus de filtres » s'ouvre seul si l'adresse contient un de ses filtres,
+    // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
+    // « Estimer » montre les deux estimations (prix de vente, loyer)
+    var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
+    var CLES_F = ["y", "d", "l", "c", "pmin", "p", "smin", "smax", "v"].concat(gFixe ? [] : ["g"]);
+    function compterFiltres() {
+      var n = CLES_F.filter(function (k) { var c = form.querySelector('[name="' + k + '"]'); return c && c.value; }).length;
+      if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
+      return n;
+    }
+    if (plusF && (CLES_F.some(function (k) { return q.get(k); }) || compterFiltres())) plusF.open = true;
+    form.addEventListener("change", compterFiltres); form.addEventListener("input", compterFiltres);
+    form.addEventListener("reset", function () { setTimeout(compterFiltres, 0); });
+    [].forEach.call(form.querySelectorAll('.onglet input[name="t"]'), function (r) {
+      var avant = false;
+      r.parentNode.addEventListener("pointerdown", function () { avant = r.checked; });
+      r.addEventListener("click", function () {
+        if (avant) { r.checked = false; avant = false; r.dispatchEvent(new Event("change", { bubbles: true })); }
+        form.classList.remove("mode-estimer");
+        var b = form.querySelector(".onglet-estimer"), pe = form.querySelector(".panneau-estimer");
+        if (b) b.setAttribute("aria-pressed", "false"); if (pe) pe.hidden = true;
+      });
+    });
+    var bEst = form.querySelector(".onglet-estimer");
+    if (bEst) bEst.addEventListener("click", function () {
+      var on = bEst.getAttribute("aria-pressed") !== "true", pe = form.querySelector(".panneau-estimer");
+      bEst.setAttribute("aria-pressed", on ? "true" : "false"); form.classList.toggle("mode-estimer", on); if (pe) pe.hidden = !on;
+      if (on) [].forEach.call(form.querySelectorAll('input[name="t"]'), function (r) { r.checked = false; });
+    });
     form.addEventListener("reset", function () { setTimeout(function () { dernierG = null; dernierD = null; suivreGouv(); memoriser(filtrer()); }, 0); });
     if (q.get("tri") && tri) tri.value = q.get("tri");
 

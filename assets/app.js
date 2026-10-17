@@ -237,7 +237,8 @@
         delegs(g).forEach(function (d) {
           var sd = slug(d[0]);
           INDEX.push({ g: g, d: sd, l: "", fr: d[0], ar: d[1], sous: [G[0], G[1]], k: cle(d[0] + " " + d[1]), r: 1 });
-          d[2].forEach(function (l) { INDEX.push({ g: g, d: sd, l: slug(l[0]), fr: l[0], ar: l[1], sous: [d[0] + " · " + G[0], d[1] + " · " + G[1]], k: cle(l[0] + " " + l[1]), r: 2 }); });
+          // code postal de La Poste (18/10/2026, idée d'Ahmed) : taper « 1000 » ou « 2045 » trouve aussi la localité
+          d[2].forEach(function (l) { var cp = l[2] ? " · " + l[2] : ""; INDEX.push({ g: g, d: sd, l: slug(l[0]), fr: l[0], ar: l[1], sous: [d[0] + " · " + G[0] + cp, d[1] + " · " + G[1] + cp], k: cle(l[0] + " " + l[1] + " " + (l[2] || "")), r: 2 }); });
         });
         Object.keys(LX.l).forEach(function (k) {            // nos quartiers (ex. Chotrana, Ennasr), avec leur délégation
           if (k.split("/")[0] !== g) return;

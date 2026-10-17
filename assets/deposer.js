@@ -49,7 +49,7 @@
     var sel = form.querySelector('[name="localite"]'), autre = form.querySelector('[name="localite_autre"]');
     var deleg = (D[g] || []).filter(function (x) { return x[0] === d; })[0];
     sel.innerHTML = '<option value="">' + (deleg ? T("— Non précisée —", "— غير محددة —") : T("Choisissez d’abord la délégation", "اختر المعتمدية أولًا")) + '</option>' +
-      (deleg ? deleg[2].map(function (l) { return opt(l[0], l[0], l[1]); }).join("") + opt(AUTRE, T("Autre (à écrire)", "أخرى (اكتبها)"), "") : "");
+      (deleg ? deleg[2].map(function (l) { return opt(l[0], l[0] + (l[2] ? " (" + l[2] + ")" : ""), l[1] + (l[2] ? " (" + l[2] + ")" : "")); }).join("") + opt(AUTRE, T("Autre (à écrire)", "أخرى (اكتبها)"), "") : "");
     sel.disabled = !deleg;
     if (autre) { autre.hidden = true; autre.value = ""; }
   }

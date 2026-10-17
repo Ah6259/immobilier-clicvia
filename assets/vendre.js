@@ -130,7 +130,7 @@
     var g = el("v-g").value, dv = el("v-d").value, sl = el("v-l"), garde = sl.value;
     var d = dv ? delegsV(g).filter(function (x) { return x[0] === dv; })[0] : null, items = [], vus = {};
     if (d) {
-      d[2].forEach(function (x) { vus[slugV(x[0])] = 1; items.push([x[0], x[0], x[1]]); });
+      d[2].forEach(function (x) { vus[slugV(x[0])] = 1; items.push([x[0], x[0] + (x[2] ? " (" + x[2] + ")" : ""), x[1] + (x[2] ? " (" + x[2] + ")" : "")]); });
       Object.keys(OF).forEach(function (k) {       // nos quartiers rattachés à cette délégation sans localité officielle
         var o = OF[k], nom = ((window.LIEUX.l || {})[k] || [k.split("/")[1], k.split("/")[1]]);
         if (k.split("/")[0] === g && o[0] === dv && !vus[slugV(nom[0])]) { vus[slugV(nom[0])] = 1; items.push(["q:" + k.split("/")[1], nom[0], nom[1]]); }
@@ -160,7 +160,7 @@
   }
   function lieuChoisi() {                         // nom affiché : la localité ou la délégation choisie (listes officielles)
     var sl = el("v-l"), sd = el("v-d");
-    if (sl.value) return sl.options[sl.selectedIndex].text;
+    if (sl.value) return sl.options[sl.selectedIndex].text.replace(/ \(\d{4}\)/g, "");   // sans le code postal
     if (sd.value) return sd.options[sd.selectedIndex].text;
     return "";
   }
@@ -176,7 +176,7 @@
   }
   // paramètre utilisé par le modèle d'IA aujourd'hui (la mesure décide chaque jour, décision d'Ahmed du 15/10/2026)
   function utilise(n) { var m = window.IA_IMMO && IA_IMMO.modele && IA_IMMO.modele(); return !!(m && (m.atouts || []).indexOf(n) >= 0); }
-  function libelleChoix(id) { var x = el(id); if (!x || !x.value) return null; var t = x.options[x.selectedIndex].text.split(" · "); return [t[0], t[1] || t[0]]; }
+  function libelleChoix(id) { var x = el(id); if (!x || !x.value) return null; var t = x.options[x.selectedIndex].text.replace(/ \(\d{4}\)/g, "").split(" · "); return [t[0], t[1] || t[0]]; }
 
   // ---- le calcul
   function calcul() {
@@ -325,12 +325,13 @@
     h += "<h3>" + T2("La concurrence en ce moment", "المنافسة الآن") + "</h3><p>" + nb(r.semblables.length) +
       T2(" biens semblables sont en vente", " عقارًا مشابهًا معروضًا للبيع") + (px.length >= 4 ? T2(" ; la moitié entre ", "؛ نصفها بين ") + dt(quart(px, 0.25)) + T2(" et ", " و") + dt(quart(px, 0.75)) : "") +
       ". " + T2("Plus il y en a, plus un prix juste compte pour vendre.", "كلما زاد عددها، زادت أهمية السعر العادل للبيع.") + "</p>";
+    var logt = r.t === "appartement" || r.t === "maison";   // pièces (S+N) : seulement pour un logement
     if (r.proches.length) {
       h += "<h3>" + T2("Les annonces de référence (les plus proches de votre bien)", "إعلانات المرجع (الأقرب إلى عقارك)") + '</h3><div class="inv-tableau"><table><thead><tr><th>' +
-        T2("Prix", "السعر") + "</th><th>" + T2("Surface", "المساحة") + "</th><th>" + T2("Pièces", "الغرف") + "</th><th>" + T2("Lieu", "المكان") + "</th><th></th></tr></thead><tbody>" +
+        T2("Prix", "السعر") + "</th><th>" + T2("Surface", "المساحة") + "</th>" + (logt ? "<th>" + T2("Pièces", "الغرف") + "</th>" : "") + "<th>" + T2("Lieu", "المكان") + "</th><th></th></tr></thead><tbody>" +
         r.proches.map(function (x) {
-          return "<tr><td><b>" + dt(x.p) + "</b>" + (x.s ? "<small>" + dt(x.p / x.s) + "/m²</small>" : "") + "</td><td>" + (x.s ? nb(x.s) + " m²" : "—") + "</td><td>" + (x.c != null ? '<bdi dir="ltr">S+' + x.c + "</bdi>" : "—") +
-            "</td><td>" + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + '</td><td><a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></td></tr>";
+          return "<tr><td><b>" + dt(x.p) + "</b>" + (x.s ? "<small>" + dt(x.p / x.s) + "/m²</small>" : "") + "</td><td>" + (x.s ? nb(x.s) + " m²" : "—") + "</td>" + (logt ? "<td>" + (x.c != null ? '<bdi dir="ltr">S+' + x.c + "</bdi>" : "—") + "</td>" : "") +
+            "<td>" + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + '</td><td><a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></td></tr>";
         }).join("") + "</tbody></table></div>";
     }
     h += blocAnnonce(r, juste);

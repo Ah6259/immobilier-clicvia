@@ -1049,3 +1049,9 @@ main > .comment-marche:first-child{margin-top:14px}
 .sj-choix:hover{background:var(--sable)}
 .sj-panneau{inset-inline:auto;inset-inline-start:0;width:max(100%,min(330px,calc(100vw - 32px)))}
 .sj-choix{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sj-bouton:disabled{background:var(--sable);color:var(--doux);cursor:not-allowed}
+.sj.sj-droite .sj-panneau{left:auto;right:0}
+.sj:not(.sj-droite) .sj-panneau{left:0;right:auto}
+.sj-bouton{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sj-choix.sj-plat{font-weight:400;color:var(--encre)}
+.sj-choix.sj-plat.actif{font-weight:700}

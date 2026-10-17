@@ -306,7 +306,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   });
 }
 
-// ------------------------------------------------------------------ liste « Type de bien » en couleurs (19/10/2026, Ahmed)
+// ------------------------------------------------------------------ listes en couleurs (19/10/2026, Ahmed : Type de bien, puis toutes)
 // La liste native du téléphone ignore les couleurs : pour les <select data-joli>, notre propre liste s'ouvre à la place
 // (catégories en bandeau bleu, types en blanc). La liste native reste dans la page (cachée) : la recherche, les alertes et les
 // liens lisent toujours sa valeur ; un choix ici change sa valeur et déclenche « change ».
@@ -322,7 +322,12 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     var panneau = document.createElement("div"); panneau.className = "sj-panneau"; panneau.setAttribute("role", "listbox"); panneau.hidden = true;
     bloc.appendChild(bouton); bloc.appendChild(panneau);
     sel.parentNode.insertBefore(bloc, sel.nextSibling);
-    function texte() { var o = sel.options[sel.selectedIndex]; bouton.textContent = o ? o.textContent : ""; }
+    function texte() {
+      var o = sel.options[sel.selectedIndex], t = o ? o.textContent : "";
+      if (bouton.textContent !== t) bouton.textContent = t;
+      bouton.disabled = sel.disabled;                                  // « Choisissez d'abord la délégation » : grisée comme avant
+      if (sel.disabled && !panneau.hidden) fermer();
+    }
     function fermer() { panneau.hidden = true; bouton.setAttribute("aria-expanded", "false"); }
     function choisir(v) {
       if (sel.value !== v) { sel.value = v; sel.dispatchEvent(new Event("change", { bubbles: true })); sel.dispatchEvent(new Event("input", { bubbles: true })); }
@@ -340,7 +345,8 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     function ajouter(o, dansGroupe) {
       if (o.disabled || o.hidden) return;
       var b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option");
-      b.className = "sj-choix" + (dansGroupe ? " sj-dans" : "") + (o.value === sel.value ? " actif" : "");
+      var plat = !dansGroupe && o.value !== "" && !sel.querySelector("optgroup");   // liste sans catégories : lignes normales
+      b.className = "sj-choix" + (dansGroupe ? " sj-dans" : "") + (plat ? " sj-plat" : "") + (o.value === sel.value ? " actif" : "");
       b.setAttribute("aria-selected", o.value === sel.value ? "true" : "false");
       b.textContent = o.textContent; b.setAttribute("data-v", o.value);
       b.addEventListener("click", function () { choisir(o.value); });
@@ -348,16 +354,22 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     }
     bouton.addEventListener("click", function () {
       if (!panneau.hidden) { fermer(); return; }
-      remplir(); panneau.hidden = false; bouton.setAttribute("aria-expanded", "true");
+      if (sel.disabled) return;
+      remplir();
+      var r = bloc.getBoundingClientRect();                            // liste à droite de l'écran : elle s'ouvre vers la gauche
+      bloc.classList.toggle("sj-droite", r.left > (window.innerWidth || 400) / 2);
+      panneau.hidden = false; bouton.setAttribute("aria-expanded", "true");
       var a = panneau.querySelector(".actif"); if (a && a.scrollIntoView) a.scrollIntoView({ block: "nearest" });
     });
     document.addEventListener("click", function (e) { if (!bloc.contains(e.target)) fermer(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") fermer(); });
     sel.addEventListener("change", texte);
+    if (window.MutationObserver) new MutationObserver(texte).observe(sel, { attributes: true, attributeFilter: ["disabled"], childList: true, subtree: true });
     if (sel.form) sel.form.addEventListener("reset", function () { setTimeout(texte, 0); });
     texte();
     setInterval(texte, 800);   // valeur changée par le programme (adresse, langue, bouton Effacer) : le bouton suit
   }
-  function tous() { [].forEach.call(document.querySelectorAll("select[data-joli]"), joli); }
+  // 19/10/2026 (Ahmed : « fais cette amélioration pour les autres filtres ») : toutes les listes du site (sauf data-joli="non")
+  function tous() { [].forEach.call(document.querySelectorAll('select:not([data-joli="non"])'), joli); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tous); else tous();
 })();

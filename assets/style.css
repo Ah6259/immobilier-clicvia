@@ -1016,3 +1016,10 @@ main > .comment-marche:first-child{margin-top:14px}
 .onglet-investir{text-decoration:none}
 @media (max-width:360px){.onglet{font-size:14px}.onglet svg{width:23px;height:23px}}
 .choix-accueil ul{grid-template-columns:minmax(0,1fr)}.choix-accueil li{min-width:0}.choix-cloche span{min-width:0}.choix-cloche b{overflow:hidden;text-overflow:ellipsis}
+/* 18/10/2026 : 4 étapes du dépôt en une petite carte (une ligne courte chacune) */
+.etapes-mini{list-style:none;margin:0;padding:12px 14px;display:grid;gap:8px;background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r);font-size:14px;line-height:1.35}
+.etapes-mini li{display:flex;gap:10px;align-items:baseline}
+.etapes-mini .num{width:22px;height:22px;border-radius:50%;background:var(--terre);color:#fff;display:inline-grid;place-items:center;font-size:12.5px;font-weight:700;flex:none;transform:translateY(4px)}
+.etapes-mini b{font-weight:700}
+.etapes-mini span:last-child{color:var(--doux)}
+.etapes-mini b{color:var(--encre)}

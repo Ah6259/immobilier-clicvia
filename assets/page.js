@@ -135,6 +135,18 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     for (var i = 0; i < b.length; i++) b[i].addEventListener("click", function () { appliquer(html.lang === "ar" ? "fr" : "ar"); });
     var s = document.querySelectorAll(".partager");
     for (var k = 0; k < s.length; k++) s[k].addEventListener("click", partager);
+    // bloc « Partager ce rapport » (18/10/2026, Ahmed) : clic compté par réseau ; « Copier le lien »
+    var r = document.querySelectorAll("a[data-reseau]");
+    for (var j = 0; j < r.length; j++) r[j].addEventListener("click", function () {
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage-" + this.getAttribute("data-reseau") + location.pathname, title: "Partage", event: true }); } catch (e) {}
+    });
+    var c = document.querySelectorAll("button[data-copier]");
+    for (var q = 0; q < c.length; q++) c[q].addEventListener("click", function () {
+      var bouton = this, lien = bouton.getAttribute("data-copier");
+      var fini = function () { bouton.classList.add("copie-ok"); setTimeout(function () { bouton.classList.remove("copie-ok"); }, 2500); };
+      try { navigator.clipboard.writeText(lien).then(fini, function () { window.prompt(T("Copiez le lien :", "انسخ الرابط:"), lien); }); }
+      catch (e) { window.prompt(T("Copiez le lien :", "انسخ الرابط:"), lien); }
+    });
   }
 
   // textes des listes déroulantes (data-fr / data-ar)
@@ -162,6 +174,8 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     var titre = document.title.split(" | ")[0];
     try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname, title: "Partage", event: true }); } catch (e) {}
     var texte = titre + "\n" + T("Annonces immobilières gratuites en Tunisie : ", "إعلانات عقارية مجانية في تونس: ");
+    if (document.body.getAttribute("data-page") === "rapport")  // rapports du mois (18/10/2026) : on dit d'où vient l'article
+      texte = titre + "\n" + T("Rapport du mois d’Immobilier Tunisie (immobilier.clicvia.com) : ", "تقرير الشهر من عقارات تونس (immobilier.clicvia.com): ");
     if (document.body.getAttribute("data-page") === "video")   // page vidéo : lien de la vidéo + adresse du site
       texte = T("Immobilier Tunisie, la vidéo de présentation. Le site : https://immobilier.clicvia.com/\nLa vidéo : ",
                 "عقارات تونس، الفيديو التقديمي. الموقع: https://immobilier.clicvia.com/\nالفيديو: ");

@@ -1086,3 +1086,20 @@ main > .comment-marche:first-child{margin-top:14px}
 .rp-lien-page{margin:0 0 12px}
 .rp-lien-page a{font-weight:600;color:var(--terre-f)}
 .rp-saison{display:block;font-size:12px;font-style:italic}
+/* Partager ce rapport (18/10/2026) */
+.rp-signature{margin:-4px 0 10px;font-size:15px;color:var(--doux)}
+.rp-signature b{color:var(--terre-f)}
+.rp-partage{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r-petit);padding:12px 14px;margin:16px 0}
+.rp-partage-haut{margin-top:0}
+.rp-partage-titre{margin:0 0 8px;font-weight:700;font-size:15px}
+.rp-partage-boutons{display:flex;flex-wrap:wrap;gap:8px}
+.rp-p{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:8px 14px;border-radius:999px;border:1.5px solid var(--ligne);background:#fff;color:var(--encre);font:inherit;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer}
+.rp-p svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rp-p-fb{background:#1877F2;border-color:#1877F2;color:#fff}
+.rp-p-fb svg{fill:#fff;stroke:none}
+.rp-p-wa{background:#25D366;border-color:#25D366;color:#073B1E}
+.rp-p .rp-copie{display:none}
+.rp-p.copie-ok .rp-copie{display:inline}
+.rp-p.copie-ok .rp-a-copier{display:none}
+.rp-p.copie-ok{border-color:var(--olive);color:var(--olive)}
+.rp-partage .rp-p.partager{width:auto!important;height:auto!important;min-height:42px;display:inline-flex;padding:8px 14px}

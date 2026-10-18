@@ -64,13 +64,26 @@
   }
   function remplirLieux() {
     var g = el("inv-g"), q = el("inv-q"), gg = g.value, gq = q.value, t = el("inv-t").value, a = /^a\d$/.test(t) ? +t.slice(1) : 0;
-    var L = lignes().slice().sort(function (x, y) { return x[1].localeCompare(y[1]); });
+    var L = lignes().slice();
+    if (a) (Z.v || []).forEach(function (x) {                 // gouvernorat aux prix trop variés pour cette taille : proposé, avec le message
+      if (!x[1] && x[2] === a && !L.some(function (y) { return y[0] === x[0]; })) L.push([x[0], x[3], x[4]]);
+    });
+    L.sort(function (x, y) { return x[1].localeCompare(y[1]); });
     g.innerHTML = '<option value="">' + T("Toute la Tunisie", "كامل تونس") + "</option>" + L.map(function (x) { return '<option value="' + esc(x[0]) + '">' + esc(ar() ? x[2] : x[1]) + "</option>"; }).join("");
     g.value = L.some(function (x) { return x[0] === gg; }) ? gg : "";
-    var Q = a && g.value ? Z.q.filter(function (x) { return x[0] === g.value && x[4] === a && !x[10]; }).sort(function (x, y) { return x[2].localeCompare(y[2]); }) : [];
+    var Q = a && g.value ? Z.q.filter(function (x) { return x[0] === g.value && x[4] === a && !x[10]; }) : [];
+    // quartiers aux prix trop variés pour cette taille (IM.16) : proposés quand même, la page dit pourquoi il n'y a pas de chiffre
+    if (a && g.value) (Z.v || []).forEach(function (x) { if (x[0] === g.value && x[1] && x[2] === a) Q.push([x[0], x[1], x[3], x[4]]); });
+    Q.sort(function (x, y) { return x[2].localeCompare(y[2]); });
     q.innerHTML = '<option value="">' + T("Tous", "الكل") + "</option>" + Q.map(function (x) { return '<option value="' + esc(x[1]) + '">' + esc(ar() ? x[3] : x[2]) + "</option>"; }).join("");
     q.value = Q.some(function (x) { return x[1] === gq; }) ? gq : "";
     el("inv-q-l").hidden = !Q.length;
+  }
+  function varie(g, q, a) { return (Z.v || []).some(function (x) { return x[0] === g && x[1] === (q || "") && x[2] === a; }); }
+  function msgVarie(nomZ, nomT) {
+    return '<h4 class="res-zone">' + esc(nomZ) + " <small>" + escT(nomT) + "</small></h4><p class=\"res-varie\">" +
+      T("Prix trop variés ici pour cette taille : les annonces des tailles voisines se contredisent (un appartement plus grand moins cher). Pas de chiffre plutôt qu’un chiffre faux.",
+        "الأسعار متفاوتة جدًا هنا لهذا الحجم: إعلانات الأحجام المجاورة تتناقض (شقة أكبر بسعر أقل). لا رقم أفضل من رقم خاطئ.") + "</p>";
   }
   function ligneRes(fr, ar_, val, cls) { return '<p class="' + (cls || "") + '"><span>' + T(fr, ar_) + "</span><b>" + val + "</b></p>"; }
   function calculer() {
@@ -80,7 +93,10 @@
     var zg = L.filter(function (x) { return x[0] === g; })[0];
     if (a) {
       var zq = q ? Z.q.filter(function (x) { return x[0] === g && x[1] === q && x[4] === a; })[0] : null;
-      if (zq) {
+      var nq = q ? (Z.v || []).filter(function (x) { return x[0] === g && x[1] === q && x[2] === a; })[0] : null;
+      if (nq) h += msgVarie(ar() ? nq[4] : nq[3], nomT);
+      else if (!q && g && varie(g, "", a)) h += msgVarie((Z.v.filter(function (x) { return x[0] === g && !x[1] && x[2] === a; })[0] || [])[ar() ? 4 : 3] || g, nomT);
+      else if (zq) {
         h += '<h4 class="res-zone">' + esc(ar() ? zq[3] : zq[2]) + " <small>" + escT(nomT) + "</small></h4>" + ligneRes("Prix d’achat médian", "سعر الشراء الوسط", dt(zq[5])) +
              ligneRes("Loyer médian par mois", "الكراء الوسط في الشهر", dt(zq[6])) + ligneRes("Rendement brut", "المردود الخام", pc(zq[7]), "fort") +
              '<p class="petit">' + T(zq[8] + " ventes et " + zq[9] + " locations comparées", zq[8] + " بيع و" + zq[9] + " كراء للمقارنة") +

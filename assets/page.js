@@ -136,15 +136,15 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     var s = document.querySelectorAll(".partager");
     for (var k = 0; k < s.length; k++) s[k].addEventListener("click", partager);
     // bloc « Partager ce rapport » (18/10/2026, Ahmed) : clic compté par réseau ; « Copier le lien »
-    var r = document.querySelectorAll("a[data-reseau]");
+    // UN bouton « Partager ce rapport » : menu de partage du téléphone (Facebook, WhatsApp, LinkedIn…), sinon lien copié
+    var r = document.querySelectorAll("button[data-partage-rapport]");
     for (var j = 0; j < r.length; j++) r[j].addEventListener("click", function () {
-      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage-" + this.getAttribute("data-reseau") + location.pathname, title: "Partage", event: true }); } catch (e) {}
-    });
-    var c = document.querySelectorAll("button[data-copier]");
-    for (var q = 0; q < c.length; q++) c[q].addEventListener("click", function () {
-      var bouton = this, lien = bouton.getAttribute("data-copier");
-      var fini = function () { bouton.classList.add("copie-ok"); setTimeout(function () { bouton.classList.remove("copie-ok"); }, 2500); };
-      try { navigator.clipboard.writeText(lien).then(fini, function () { window.prompt(T("Copiez le lien :", "انسخ الرابط:"), lien); }); }
+      var bouton = this, lien = bouton.getAttribute("data-partage-rapport"), titre = bouton.getAttribute("data-titre");
+      var texte = titre + "\n" + T("Rapport du mois d’Immobilier Tunisie (immobilier.clicvia.com) : ", "تقرير الشهر من عقارات تونس (immobilier.clicvia.com): ");
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname, title: "Partage", event: true }); } catch (e) {}
+      var fini = function () { bouton.classList.add("copie-ok"); setTimeout(function () { bouton.classList.remove("copie-ok"); }, 4000); };
+      if (navigator.share) { navigator.share({ title: titre, text: texte, url: lien }).catch(function () {}); return; }
+      try { navigator.clipboard.writeText(texte + lien).then(fini, function () { window.prompt(T("Copiez le lien :", "انسخ الرابط:"), lien); }); }
       catch (e) { window.prompt(T("Copiez le lien :", "انسخ الرابط:"), lien); }
     });
   }

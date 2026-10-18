@@ -1103,3 +1103,7 @@ main > .comment-marche:first-child{margin-top:14px}
 .rp-p.copie-ok .rp-a-copier{display:none}
 .rp-p.copie-ok{border-color:var(--olive);color:var(--olive)}
 .rp-partage .rp-p.partager{width:auto!important;height:auto!important;min-height:42px;display:inline-flex;padding:8px 14px}
+.rp-p-unique{background:var(--terre);border-color:var(--terre);color:#fff;font-size:16px;min-height:48px;padding:10px 20px}
+.rp-p-unique:hover{background:var(--terre-f)}
+.rp-partage-aide{margin:6px 0 0;font-size:13px;color:var(--doux)}
+.rp-p-unique.copie-ok{background:var(--olive);border-color:var(--olive);color:#fff}

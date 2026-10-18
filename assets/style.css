@@ -1162,3 +1162,11 @@ main > .comment-marche:first-child{margin-top:14px}
 .pass-lien{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0 0}.pass-lien small{color:var(--doux)}
 .pass-code-haut{display:grid;gap:6px;margin:12px 0}.pass-code-haut label{font-weight:800}.pass-code-haut span{display:flex;gap:8px}
 .pass-code-haut input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border:1.5px solid var(--bord,#d8cfc0);border-radius:10px;text-transform:uppercase}
+/* 18/10/2026 (Ahmed : « le bouton d'alarme prend beaucoup d'espace ») : petit bouton « 🔔 Être alerté » + lien « Comment fonctionne
+   le site ? » sur UNE ligne sous la recherche */
+.ligne-accueil{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:nowrap}
+.ligne-accueil .choix-accueil{margin:0;flex:none}
+.ligne-accueil .lien-comment{margin:0;text-align:end;font-size:14px;min-width:0}
+.choix.choix-mini{min-height:42px;padding:6px 14px;border-radius:999px;gap:7px;box-shadow:none;height:auto}
+.choix.choix-mini>svg{width:22px;height:22px}
+.choix.choix-mini b{font-size:15px}

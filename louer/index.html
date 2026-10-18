@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=f5d897a73f">
-<script src="../assets/page.js?v=f5d897a73f"></script>
+<link rel="stylesheet" href="../assets/style.css?v=5134dca236">
+<script src="../assets/page.js?v=5134dca236"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://immobilier.clicvia.com/"}, {"@type": "ListItem", "position": 2, "name": "Louer votre bien", "item": "https://immobilier.clicvia.com/louer/"}]}</script>
 </head>
@@ -55,13 +55,13 @@
    <span class="pli-sous" id="v-sous"><span data-l="fr">Touchez ici : décrivez votre bien, notre IA donne son loyer en 1 minute, gratuitement.</span><span data-l="ar">المس هنا: صف عقارك، ويعطيك ذكاؤنا الاصطناعي كراءه في دقيقة، مجانًا.</span></span></summary>
   <p class="zone-titre zone-titre-remplir"><span data-l="fr">✏️ <b>1. À remplir</b> : décrivez votre bien</span><span data-l="ar">✏️ <b>1. للتعبئة</b>: صف عقارك</span></p>
   <form class="calc ia-form zone-saisie" id="v-form" novalidate data-tr="location">
-    <label><span data-l="fr">Type de bien</span><span data-l="ar">نوع العقار</span><select id="v-t"><option value="">— Choisissez · اختر —</option><option value="appartement">Appartement · شقة</option><option value="maison">Maison / villa · منزل / فيلا</option><option value="bureau">Bureau · مكتب</option><option value="commerce">Local commercial · محل تجاري</option></select></label>
+    <label><span data-l="fr">Type de bien</span><span data-l="ar">نوع العقار</span><select id="v-t" data-type-bien><option value="">— Choisissez · اختر —</option><option value="appartement">Appartement · شقة</option><option value="maison">Maison / villa · منزل / فيلا</option><option value="bureau">Bureau · مكتب</option><option value="commerce">Local commercial · محل تجاري</option></select></label>
     <label><span data-l="fr">Gouvernorat</span><span data-l="ar">الولاية</span><select id="v-g"><option value="">— Choisissez · اختر —</option><option value="ariana">Ariana · أريانة</option><option value="beja">Béja · باجة</option><option value="ben-arous">Ben Arous · بن عروس</option><option value="bizerte">Bizerte · بنزرت</option><option value="gabes">Gabès · قابس</option><option value="gafsa">Gafsa · قفصة</option><option value="jendouba">Jendouba · جندوبة</option><option value="kairouan">Kairouan · القيروان</option><option value="kasserine">Kasserine · القصرين</option><option value="kebili">Kébili · قبلي</option><option value="manouba">La Manouba · منوبة</option><option value="le-kef">Le Kef · الكاف</option><option value="mahdia">Mahdia · المهدية</option><option value="medenine">Médenine · مدنين</option><option value="monastir">Monastir · المنستير</option><option value="nabeul">Nabeul · نابل</option><option value="sfax">Sfax · صفاقس</option><option value="sidi-bouzid">Sidi Bouzid · سيدي بوزيد</option><option value="siliana">Siliana · سليانة</option><option value="sousse">Sousse · سوسة</option><option value="tataouine">Tataouine · تطاوين</option><option value="tozeur">Tozeur · توزر</option><option value="tunis">Tunis · تونس</option><option value="zaghouan">Zaghouan · زغوان</option></select></label>
     <label><span data-l="fr">Délégation</span><span data-l="ar">المعتمدية</span><select id="v-d"><option value=""><span data-l="fr">Toutes</span><span data-l="ar">الكل</span></option></select></label>
     <label><span data-l="fr">Localité / quartier</span><span data-l="ar">المنطقة / الحي</span><select id="v-l"><option value=""><span data-l="fr">Toutes</span><span data-l="ar">الكل</span></option></select></label>
     <p class="petit v-meme" id="v-meme" hidden></p>
     <input type="hidden" id="v-q" value="">
-    <label id="v-p-l"><span data-l="fr">Pièces</span><span data-l="ar">الغرف</span><select id="v-p"><option value="">—</option><option value="1">S+1</option><option value="2">S+2</option><option value="3">S+3</option><option value="4">S+4</option><option value="5">S+5</option></select></label>
+    <label id="v-p-l" data-champ="pieces"><span data-l="fr">Pièces</span><span data-l="ar">الغرف</span><select id="v-p"><option value="">—</option><option value="1">S+1</option><option value="2">S+2</option><option value="3">S+3</option><option value="4">S+4</option><option value="5">S+5</option></select></label>
     <label><span data-l="fr">Surface (m²)</span><span data-l="ar">المساحة (م²)</span><input id="v-s" type="number" inputmode="numeric" min="8" step="1" placeholder="—"></label>
     <label id="v-e-l"><span data-l="fr">Étage</span><span data-l="ar">الطابق</span><select id="v-e"><option value="">—</option><option value="0"><span data-l="fr">Rez-de-chaussée</span><span data-l="ar">الطابق الأرضي</span></option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></label>
     <label id="v-niv-l" hidden><span data-l="fr">Nombre de niveaux</span><span data-l="ar">عدد الطوابق</span><select id="v-niv"><option value="">—</option><option value="1">Plain-pied · طابق واحد</option><option value="2">2 niveaux (R+1) · طابقان</option><option value="3">3 niveaux (R+2) · ثلاثة طوابق</option></select></label>
@@ -145,9 +145,9 @@
 <script src="../donnees/lieux.js?v=2026-10-18" defer></script>
 <script src="../donnees/decoupage.js?v=d4e3f18d33" defer></script>
 <script src="../donnees/annonces.js?v=0264c5b5cb" defer></script>
-<script src="../assets/app.js?v=f5d897a73f" defer></script>
-<script src="../assets/ia.js?v=f5d897a73f" defer></script>
-<script src="../assets/vendre.js?v=f5d897a73f" defer></script>
-<script src="../assets/alerte.js?v=f5d897a73f" defer></script>
+<script src="../assets/app.js?v=5134dca236" defer></script>
+<script src="../assets/ia.js?v=5134dca236" defer></script>
+<script src="../assets/vendre.js?v=5134dca236" defer></script>
+<script src="../assets/alerte.js?v=5134dca236" defer></script>
 </body>
 </html>

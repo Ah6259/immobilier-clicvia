@@ -67,7 +67,7 @@
     var o = (window.LIEUX && window.LIEUX.o) || {};
     if (!c.d && c.l && o[c.g + "/" + c.l]) c.d = slug(o[c.g + "/" + c.l][0]);   // page d'un quartier : sa délégation
     c.p = val("p");
-    c.c = val("c");
+    c.c = (window.champUtile && !window.champUtile("pieces", c.y)) ? "" : val("c");
     return c;
   }
 
@@ -107,14 +107,14 @@
           '<div class="bascule" role="radiogroup" aria-label="' + T("Acheter ou louer", "شراء أو كراء") + '">' +
             radio("", "Tout", "الكل") + radio("v", "Acheter", "شراء") + radio("l", "Louer", "كراء") + '</div>' +
           '<div class="champs">' +
-            '<label class="champ"><span>' + T("Type de bien", "نوع العقار") + '</span><select name="ay"><option value="">' + T("Tous les biens", "كل العقارات") + '</option>' +
+            '<label class="champ"><span>' + T("Type de bien", "نوع العقار") + '</span><select name="ay" data-type-bien><option value="">' + T("Tous les biens", "كل العقارات") + '</option>' +
               TYPES.filter(function (x) { return x[0] !== "local" || c.y === "local"; })
                 .map(function (x) { return '<option value="' + x[0] + '"' + (c.y === x[0] ? " selected" : "") + '>' + (ar ? x[2] : x[1]) + '</option>'; }).join("") + '</select></label>' +
             '<label class="champ"><span>' + T("Gouvernorat", "الولاية") + '</span><select name="ag"><option value="">' + T("Toute la Tunisie", "كل تونس") + '</option>' +
               gouvs.map(function (g) { return '<option value="' + E(g) + '"' + (c.g === g ? " selected" : "") + '>' + E(G[g][ar ? 1 : 0]) + '</option>'; }).join("") + '</select></label>' +
             '<label class="champ"><span>' + T("Délégation", "المعتمدية") + '</span><select name="ad"></select></label>' +
             '<label class="champ"><span>' + T("Localité / quartier", "المنطقة / الحي") + '</span><select name="al"></select></label>' +
-            '<label class="champ"><span>' + T("Pièces minimum", "أدنى عدد غرف") + '</span><select name="ac"><option value="">' + T("Indifférent", "لا يهم") + '</option>' +
+            '<label class="champ" data-champ="pieces"><span>' + T("Pièces minimum", "أدنى عدد غرف") + '</span><select name="ac"><option value="">' + T("Indifférent", "لا يهم") + '</option>' +
               [1, 2, 3, 4, 5].map(function (n) { return '<option value="' + n + '"' + (String(c.c) === String(n) ? " selected" : "") + '>S+' + n + T(" ou plus", " أو أكثر") + '</option>'; }).join("") + '</select></label>' +
             '<label class="champ alerte-prix"><span>' + T("Prix maximum (DT)", "أقصى سعر (د.ت)") + '</span><input name="ap" type="number" inputmode="numeric" min="0" step="50" placeholder="' + T("sans limite", "دون حد") + '" value="' + E(parseInt(c.p, 10) > 0 ? parseInt(c.p, 10) : "") + '"></label>' +
           '</div>' +
@@ -138,6 +138,7 @@
                                       "تُفحص الإعلانات كل ساعتين من 8 صباحًا إلى 10 ليلًا. معلومات للإرشاد: تحقق دائمًا مع البائع.") + '</p>' +
       '</div>';
     remplirDelegs(c.d, c.l);
+    if (window.appliquerChamps) window.appliquerChamps(document.getElementById("alerte-form"));   // règle commune des champs (page.js)
     maj();
   }
 
@@ -160,7 +161,8 @@
   function criteres() {
     var f = document.getElementById("alerte-form"), t = f.querySelector('input[name="at"]:checked');
     var v = function (k) { return f.querySelector('[name="' + k + '"]').value; };
-    return { t: t ? t.value : "", y: v("ay"), g: v("ag"), d: v("ad"), l: v("al"), p: v("ap"), c: v("ac") };
+    return { t: t ? t.value : "", y: v("ay"), g: v("ag"), d: v("ad"), l: v("al"), p: v("ap"),
+             c: (window.champUtile && !window.champUtile("pieces", v("ay"))) ? "" : v("ac") };   // règle commune (assets/page.js)
   }
 
   function resume(c) {

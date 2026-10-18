@@ -486,3 +486,35 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   function tous() { [].forEach.call(document.querySelectorAll('select:not([data-joli="non"])'), joli); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tous); else tous();
 })();
+
+/* RÈGLE COMMUNE DES CHAMPS SELON LE TYPE DE BIEN (18/10/2026, capture d'Ahmed : « Pièces S+1… S+5 » proposées pour un local
+   commercial dans la recherche, alors que la page Estimer les cachait). UNE seule règle pour TOUS les formulaires du site
+   (recherche, alerte, dépôt, Estimer, Louer, Investir) : un champ marqué data-champ="…" n'apparaît que pour les types de CHAMPS_TYPE ;
+   caché, sa valeur est effacée (un filtre caché ne filtre jamais). Le type de bien du formulaire est marqué data-type-bien.
+   Même liste dans robot/modele_ia.py (TYPES_PIECES) : test croisé dans tools/test_site.mjs. */
+(function () {
+  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"] };          // "" = « Tous les biens »
+  function utile(champ, type) { var l = CHAMPS_TYPE[champ]; return !l || l.indexOf(type || "") >= 0; }
+  function appliquer(form) {
+    if (!form || !form.querySelector) return;
+    var sel = form.querySelector("[data-type-bien]");
+    if (!sel) return;
+    [].forEach.call(form.querySelectorAll("[data-champ]"), function (b) {
+      var ok = utile(b.getAttribute("data-champ"), sel.value);
+      b.hidden = !ok;
+      if (!ok) [].forEach.call(b.querySelectorAll("select, input"), function (x) {
+        if (x.value !== "") { x.value = ""; try { x.dispatchEvent(new Event("change", { bubbles: true })); } catch (e) {} }
+      });
+    });
+  }
+  window.CHAMPS_TYPE = CHAMPS_TYPE;
+  window.champUtile = utile;
+  window.appliquerChamps = appliquer;
+  // phase de capture : le champ est effacé AVANT que le formulaire ne recalcule ses résultats
+  document.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t && t.matches && t.matches("[data-type-bien]")) appliquer(t.form || (t.closest && t.closest("form")));
+  }, true);
+  function tous() { [].forEach.call(document.querySelectorAll("form"), appliquer); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tous); else tous();
+})();

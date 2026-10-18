@@ -384,7 +384,7 @@
       var g = form.querySelector('[name="g"]');
       var n = function (k) { var x = parseInt((form.querySelector('[name="' + k + '"]') || {}).value, 10); return x > 0 ? x : 0; };
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
-      return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: n("c"), v: val("v"),
+      return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
                p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), tri: tri ? tri.value : "date" };
     }
     function filtrer() {

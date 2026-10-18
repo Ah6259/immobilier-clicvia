@@ -488,6 +488,9 @@ details.paiement>summary{list-style:none}
 details.paiement>summary::-webkit-details-marker{display:none}
 .calc{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-top:10px}
 .calc label{display:grid;gap:4px;font-size:14px;font-weight:600}
+/* 18/10/2026 (capture d'Ahmed : formulaire qui dépassait à droite sur téléphone) : une case ne s'élargit jamais avec son texte */
+.calc>label,.calc>fieldset{min-width:0;max-width:100%}
+.calc select{width:100%;box-sizing:border-box;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
 .calc input{font:inherit;font-size:16px;padding:9px 12px;border:1.5px solid var(--ligne,#EADFD6);border-radius:12px;background:#fff;min-width:0}
 .calc-res{margin-top:12px;background:#fff;border:1px solid var(--ligne,#EADFD6);border-radius:14px;padding:8px 14px}
 .calc-res p{display:flex;justify-content:space-between;gap:12px;margin:6px 0}
@@ -1038,6 +1041,10 @@ main > .comment-marche:first-child{margin-top:14px}
 /* 19/10/2026 (Ahmed) : liste « Type de bien » en couleurs — catégories en bandeau bleu, types en blanc (page.js, select[data-joli]) */
 .sj-cache{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;overflow:hidden}
 .sj{position:relative;width:100%}
+/* 18/10/2026 (capture d'Ahmed : le formulaire dépassait à droite) : la liste ne s'élargit jamais avec un texte long, elle le coupe « … » */
+.sj{min-width:0;max-width:100%}
+.sj-bouton{display:block;box-sizing:border-box;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sj-bouton>span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sj-bouton{width:100%;min-height:44px;text-align:start;padding:10px 34px 10px 12px;border:1px solid var(--ligne);border-radius:10px;background:#fff;color:var(--encre);font:inherit;font-size:15px;cursor:pointer;position:relative}
 .sj-bouton::after{content:"";position:absolute;inset-inline-end:14px;top:50%;width:8px;height:8px;border-right:2px solid var(--doux);border-bottom:2px solid var(--doux);transform:translateY(-70%) rotate(45deg)}
 .sj-panneau{position:absolute;z-index:50;inset-inline:0;top:calc(100% + 4px);max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--ligne);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
@@ -1107,3 +1114,4 @@ main > .comment-marche:first-child{margin-top:14px}
 .rp-p-unique:hover{background:var(--terre-f)}
 .rp-partage-aide{margin:6px 0 0;font-size:13px;color:var(--doux)}
 .rp-p-unique.copie-ok{background:var(--olive);border-color:var(--olive);color:#fff}
+.v-trouvees{margin:6px 0 10px;padding-inline-start:18px}.v-trouvees li{margin:4px 0;font-size:14.5px}

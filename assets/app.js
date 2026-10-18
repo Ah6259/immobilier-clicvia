@@ -219,7 +219,7 @@
         });
         items.sort(function (x, y) { return x[1].localeCompare(y[1], "fr"); });
       }
-      selL.innerHTML = (d ? premiere("Toutes", "الكل") : premiere("Choisissez d’abord la délégation", "اختر المعتمدية أولًا")) +
+      selL.innerHTML = (d ? premiere("Toutes", "الكل") : premiere("D’abord la délégation", "اختر المعتمدية أولًا")) +
         items.map(function (x) { return option(x[0], x[1], x[2], n[x[0]] || 0); }).join("");
       selL.disabled = !items.length;
       if (garde && pris[garde]) selL.value = garde;

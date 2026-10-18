@@ -137,7 +137,7 @@
       });
       items.sort(function (x, y) { return x[1].localeCompare(y[1], "fr"); });
     }
-    sl.innerHTML = opt("", d ? "Toutes" : "Choisissez d’abord la délégation", d ? "الكل" : "اختر المعتمدية أولًا") +
+    sl.innerHTML = opt("", d ? "Toutes" : "D’abord la délégation", d ? "الكل" : "اختر المعتمدية أولًا") +
       items.map(function (x) { return opt(x[0], x[1], x[2]); }).join("");
     sl.disabled = !d;
     if (items.some(function (x) { return x[0] === garde; })) sl.value = garde;
@@ -183,23 +183,30 @@
   }
   // cases utiles au type choisi (Ahmed, 18/10/2026 : pas d'étage pour une villa, pas de piscine pour un bureau…)
   function casesDuType(t) {
-    var connu = window.IA_IMMO && IA_IMMO.pret && IA_IMMO.pret() && t;
+    // 18/10/2026 (Ahmed : « local commercial, et en bas je trouve piscine ») : AUCUNE case tant que le type n'est pas choisi, et pour un
+    // type que notre IA n'estime pas encore (local commercial…), pas de cases « notre IA en tient compte » du tout
+    var pret = window.IA_IMMO && IA_IMMO.pret && IA_IMMO.pret();
+    var estime = !!(t && pret && IA_IMMO.estime && IA_IMMO.estime(TR, t));
+    var fs = form.querySelector(".v-atouts");
     [].forEach.call(form.querySelectorAll('input[name="atout"]'), function (b) {
-      var ok = !connu || utilise(b.value, t); b.parentNode.hidden = !ok; if (!ok) b.checked = false;
+      var ok = estime && utilise(b.value, t); b.parentNode.hidden = !ok; if (!ok) b.checked = false;
     });
+    if (fs) fs.hidden = !estime || ![].some.call(form.querySelectorAll('input[name="atout"]'), function (b) { return !b.parentNode.hidden; });
     var std = el("v-std"), etb = el("v-etb"), niv = el("v-niv-l");
-    if (std) std.parentNode.hidden = !!connu && !utilise("haut_standing", t);
-    if (etb) etb.parentNode.hidden = !!connu && !ETATS.some(function (n) { return utilise(n, t); });
-    if (niv) niv.hidden = t !== "maison";
+    if (std) { std.parentNode.hidden = !estime || !utilise("haut_standing", t); if (std.parentNode.hidden) std.value = ""; }
+    if (etb) { etb.parentNode.hidden = !estime || !ETATS.some(function (n) { return utilise(n, t); }); if (etb.parentNode.hidden) etb.value = ""; }
+    if (niv) niv.hidden = t !== "maison" || !estime;
   }
   function libelleChoix(id) { var x = el(id); if (!x || !x.value) return null; var t = x.options[x.selectedIndex].text.replace(/ \(\d{4}\)/g, "").split(" · "); return [t[0], t[1] || t[0]]; }
 
   // ---- le calcul
+  var MIN_REF = 5;                                // biens comparables (même type, même S+, même zone) au moins pour un chiffre de référence
   function calcul() {
     var t = el("v-t").value, g = el("v-g").value, q = el("v-q").value, s = parseFloat((el("v-s").value || "").replace(",", ".")),
         ch = el("v-p").value === "" ? null : parseInt(el("v-p").value, 10);
     s = isFinite(s) && s >= 8 ? s : null;
     // formulaire vide au départ (15/10/2026, Ahmed) : rien n'est estimé tant que le type et le gouvernorat ne sont pas choisis
+    casesDuType(t);
     if (!t || !g) { el("v-p-l").hidden = false; return { vide: true, t: t, g: g, q: q, s: s, ch: ch, ia: null, refPrix: null, at: [], et: null, proches: [], semblables: [], nVentes: 0 }; }
     if (!(t === "appartement" || t === "maison")) ch = null;
     el("v-p-l").hidden = !(t === "appartement" || t === "maison");
@@ -230,9 +237,26 @@
       d += (s && a.s) ? Math.min(3, Math.abs(Math.log(a.s / s)) * 3) : (s ? 0.7 : 0);
       return d;
     }
-    var proches = zone.filter(tailleProche).map(function (a) { return { a: a, d: distance(a) }; }).sort(function (x, y) { return x.d - y.d || y.a.d.localeCompare(x.a.d); }).slice(0, 10).map(function (x) { return x.a; });
-    if (proches.length < 3) proches = [];      // moins de 3 biens comparables dans la zone : seulement l'IA
-    var refPrix = med(proches.map(function (a) { return a.p; }));
+    // 18/10/2026 (visiteur : deux locaux voisins de 15 m² et 70 m², même loyer de référence 1 310 DT) : surface donnée -> on compare
+    // seulement à des biens dont on CONNAÎT la surface, au PRIX AU M² × la surface (jamais le prix total de biens de taille inconnue)
+    var base = s ? zone.filter(function (a) { return a.s; }) : zone;
+    // même nombre de pièces seulement (18/10/2026, visites simulées : un S+4 comparé à des S+2 donnait un prix plus bas que le S+3)
+    if (ch !== null) base = base.filter(function (a) { return a.c === ch; });
+    var proches = base.filter(tailleProche).map(function (a) { return { a: a, d: distance(a) }; }).sort(function (x, y) { return x.d - y.d || y.a.d.localeCompare(x.a.d); }).slice(0, 10).map(function (x) { return x.a; });
+    if (s && proches.length < MIN_REF) proches = base.map(function (a) { return { a: a, d: distance(a) }; }).sort(function (x, y) { return x.d - y.d; }).slice(0, 10).map(function (x) { return x.a; });
+    var trouvees = proches.slice(0, 5);            // annonces semblables trouvées (montrées telles quelles, avec leur lien)
+    if (proches.length < MIN_REF) proches = [];   // moins de 5 biens vraiment comparables dans la zone : pas de chiffre de référence
+    var refPrix = s && proches.length ? med(proches.map(function (a) { return a.p / a.s; })) * s : med(proches.map(function (a) { return a.p; }));
+    var refM2 = !!(s && proches.length);
+    // cohérence (18/10/2026, visites simulées : à La Marsa, les annonces de maisons S+2 étaient plus chères que les S+3) : sans surface,
+    // la référence d'un S+ ne doit pas être plus basse que celle du S+ plus petit, ni plus haute que celle du S+ plus grand ; sinon
+    // « prix trop variés » plutôt qu'un chiffre qui contredit le bon sens
+    var tropVaries = false;
+    if (refPrix && !refM2 && ch !== null) {
+      var refDe = function (c) { var l = zone.filter(function (a) { return a.c === c; }); return l.length >= MIN_REF ? med(l.map(function (a) { return a.p; })) : null; };
+      var avant = refDe(ch - 1), apres = refDe(ch + 1);
+      if ((avant && refPrix < avant) || (apres && refPrix > apres)) tropVaries = true;   // (appliqué plus bas, seulement sans l'IA)
+    }
     // atouts cochés et étage (15/10/2026) : le modèle d'IA en tient compte (robot/atouts.py, mêmes noms)
     var at = [].slice.call(form.querySelectorAll('input[name="atout"]:checked')).map(function (x) { return x.value; });
     at = at.concat(etatStanding().filter(function (x) {           // standing / état : seulement si la case est montrée
@@ -245,11 +269,14 @@
     var niv = el("v-niv") && el("v-niv").value !== "" && t === "maison" ? parseInt(el("v-niv").value, 10) : null;
     var plus = {st: (t === "appartement" || t === "maison") ? sorte : null, niveaux: niv};
     var ia = window.IA_IMMO && IA_IMMO.pret() ? IA_IMMO.estimer(TR, t, g, q, s, ch, at, et, plus) : null;
+    // RÈGLE d'Ahmed (18/10/2026) : « notre estimation se base sur le modèle, sinon pas d'estimation » -> sans l'IA, AUCUN chiffre
+    // (plus de « médiane des annonces les plus proches ») : on montre seulement les annonces trouvées et on le dit
+    if (!ia) { refPrix = null; tropVaries = false; } else tropVaries = false;
     var sansSurface = !s && window.IA_IMMO && IA_IMMO.pret() && (((IA_IMMO.modele() || {}).surface_obligatoire || []).indexOf(t) >= 0 || (t === "maison" && ch === null));
     var m2 = function (l) { return med(l.filter(function (a) { return a.s; }).map(function (a) { return a.p / a.s; })); };
     var duQuartier = qslug ? ventes.filter(function (a) { return a.l === qslug; }) : [];
     var semblables = zone.filter(function (a) { return ch === null || a.c == null || Math.abs(a.c - ch) <= 1; });
-    return { t: t, g: g, q: q, s: s, ch: ch, ia: ia, at: at, et: et, plus: plus, sansSurface: sansSurface, proches: proches, refPrix: refPrix, nVentes: ventes.length,
+    return { t: t, g: g, q: q, s: s, ch: ch, ia: ia, at: at, et: et, plus: plus, sansSurface: sansSurface, proches: proches, trouvees: ia ? [] : trouvees, refPrix: refPrix, refM2: refM2, tropVaries: tropVaries, nVentes: ventes.length,
              m2Q: duQuartier.length >= 3 ? m2(duQuartier) : null, m2G: (qslug || dz) ? null : m2(ventes),
              m2D: dz && zone.length >= 3 ? m2(zone) : null, dz: dz, semblables: semblables };
   }
@@ -259,8 +286,10 @@
     var t = r.t, champs = [
       [!!t, T2("le type de bien", "نوع العقار")], [!!r.g, T2("le gouvernorat", "الولاية")],
       [!!el("v-d").value, T2("la délégation", "المعتمدية")], [!!el("v-l").value, T2("la localité", "المنطقة")],
-      [!!r.s, T2("la surface", "المساحة")], [!!(el("v-std") && el("v-std").value && utilise("haut_standing")), T2("le standing", "المستوى")],
-      [!!(el("v-etb") && el("v-etb").value), T2("l’état du bien", "حالة العقار")]];
+      [!!r.s, T2("la surface", "المساحة")]];
+    // standing / état : seulement s'ils sont montrés pour ce type (jamais « ajoutez le standing » d'un local commercial)
+    if (el("v-std") && !el("v-std").parentNode.hidden) champs.push([!!(el("v-std").value && utilise("haut_standing")), T2("le standing", "المستوى")]);
+    if (el("v-etb") && !el("v-etb").parentNode.hidden) champs.push([!!el("v-etb").value, T2("l’état du bien", "حالة العقار")]);
     if (!t || t === "appartement" || t === "maison") champs.push([el("v-p").value !== "", T2("le nombre de pièces", "عدد الغرف")]);
     if (t === "appartement" || t === "bureau" || t === "commerce") champs.push([el("v-e").value !== "", T2("l’étage", "الطابق")]);
     if (t === "maison" && el("v-niv")) champs.push([el("v-niv").value !== "", T2("le nombre de niveaux", "عدد الطوابق")]);
@@ -268,7 +297,7 @@
     var pts = Math.round(n / champs.length * 5), barre = "";
     for (var i = 0; i < 5; i++) barre += '<span class="pt' + (i < pts ? " plein" : "") + '"></span>';
     return '<p class="v-precision"><span class="v-precision-titre">' + T2("Précision du résultat", "دقة النتيجة") + ' <span class="v-barre" aria-label="' + pts + '/5">' + barre + "</span></span>" +
-      (manque.length ? T2("Pour un résultat plus précis, ajoutez : ", "لنتيجة أدق، أضف: ") + manque.join(", ") + (r.vide ? "" : T2(" (et les atouts de votre bien).", " (ومزايا عقارك).")) : T2("✅ Toutes les informations sont remplies : cochez aussi les atouts de votre bien.", "✅ كل المعطيات معبّأة: اختر أيضًا مزايا عقارك.")) + "</p>";
+      (manque.length ? T2("Pour un résultat plus précis, ajoutez : ", "لنتيجة أدق، أضف: ") + manque.join(", ") + (r.vide || (form.querySelector(".v-atouts") || {}).hidden ? "" : T2(" (et les atouts de votre bien).", " (ومزايا عقارك).")) : ((form.querySelector(".v-atouts") || {}).hidden ? T2("✅ Toutes les informations sont remplies.", "✅ كل المعطيات معبّأة.") : T2("✅ Toutes les informations sont remplies : cochez aussi les atouts de votre bien.", "✅ كل المعطيات معبّأة: اختر أيضًا مزايا عقارك."))) + "</p>";
   }
 
   function afficherGratuit(r) {
@@ -287,9 +316,19 @@
            (acces().ok ? "" : '<small class="indicatif">' + T2("Estimation gratuite à titre indicatif, non complète.", "تقدير مجاني للاستئناس، غير كامل.") + "</small>") + "</p>";
     } else if (r.refPrix) {
       h += '<p class="ia-ligne"><span>' + T2("Prix de référence des annonces semblables", "سعر المرجع للإعلانات المشابهة") + "</span><b>" + dt(r.refPrix) + "</b><small>" +
-           T2("notre IA n’est pas encore assez fiable pour ce type de bien : référence = médiane des annonces les plus proches", "ذكاؤنا الاصطناعي غير موثوق بعد لهذا النوع: المرجع = وسيط أقرب الإعلانات") + "</small></p>";
+           (r.refM2 ? T2("prix au m² des annonces semblables (médiane) × votre surface", "سعر المتر المربع للإعلانات المشابهة (الوسيط) × مساحتك")
+                    : T2("médiane des annonces les plus proches (ajoutez la surface pour un résultat au m²)", "وسيط أقرب الإعلانات (أضف المساحة لنتيجة حسب المتر المربع)")) + "</small></p>";
+    } else if (r.trouvees && r.trouvees.length) {
+      h += "<p><b>" + T2("Pas assez d’annonces pour faire l’estimation de ce bien.", "لا توجد إعلانات كافية لتقدير هذا العقار.") + "</b> " +
+           T2("Voici les annonces semblables trouvées près de chez vous :", "إليك الإعلانات المشابهة التي وجدناها قربك:") + '</p><ul class="v-trouvees">' +
+           r.trouvees.map(function (x) {
+             return "<li><b>" + dt(x.p) + "</b>" + (x.s ? " · " + nb(x.s) + " m²" : "") + (x.c != null ? ' · <bdi dir="ltr">S+' + x.c + "</bdi>" : "") +
+                    " · " + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + ' · <a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></li>";
+           }).join("") + "</ul>";
+    } else if (r.tropVaries) {
+      h += "<p>" + T2("Les annonces semblables de cette zone ont des prix trop variés pour donner un chiffre fiable (un plus petit bien y est parfois annoncé plus cher). Ajoutez la surface : la comparaison se fera au m².", "الإعلانات المشابهة في هذه المنطقة أسعارها متفاوتة جدًا لإعطاء رقم موثوق. أضف المساحة: تتم المقارنة حسب المتر المربع.") + "</p>";
     } else {
-      h += "<p>" + T2("Pas encore assez d’annonces de ce type dans ce gouvernorat pour estimer. Essayez « Tout le gouvernorat » ou un autre type.", "لا توجد بعد إعلانات كافية من هذا النوع في هذه الولاية للتقدير.") + "</p>";
+      h += "<p>" + T2("Pas encore assez d’annonces semblables (même type, même nombre de pièces) près de chez vous pour donner un chiffre fiable. Essayez sans préciser la localité, ou ajoutez la surface.", "لا توجد بعد إعلانات مشابهة كافية (نفس النوع ونفس عدد الغرف) قربك لإعطاء رقم موثوق. جرّب دون تحديد المنطقة، أو أضف المساحة.") + "</p>";
     }
     if (r.ia || r.refPrix) {
       h += '<p class="petit base-calcul"><b>' + T2("Sur quelle base ?", "على أي أساس؟") + "</b> " +

@@ -152,7 +152,7 @@
   function remplirLocalites(garde) {
     var f = document.getElementById("alerte-form"), g = f.querySelector('[name="ag"]').value, dv = f.querySelector('[name="ad"]').value, sel = f.querySelector('[name="al"]');
     var ar = document.documentElement.lang === "ar", ls = g && dv ? localitesDe(g, dv) : [];
-    sel.innerHTML = '<option value="">' + (dv ? T("Toutes", "الكل") : T("Choisissez d’abord la délégation", "اختر المعتمدية أولًا")) + '</option>' +
+    sel.innerHTML = '<option value="">' + (dv ? T("Toutes", "الكل") : T("D’abord la délégation", "اختر المعتمدية أولًا")) + '</option>' +
       ls.map(function (x) { return '<option value="' + E(x[0]) + '"' + (garde === x[0] ? " selected" : "") + '>' + E(ar ? x[2] || x[1] : x[1]) + '</option>'; }).join("");
     sel.disabled = !ls.length;
   }

@@ -56,7 +56,7 @@
   function estType(tm, g, q, s, ch, x) {
     var nv = tm.niveaux;
     if (!q || !nv.q[g + "|" + q]) return null;
-    return predire(tm, variables(g, q, s, ch, nv, x, tm.params || [])) + corr(nv, g, q);
+    return predire(tm, variables(g, q, s, ch, nv, x, tm.params || [])) + corr(nv, g, q) + ((nv.depart_taille || {})[String(ch)] || 0);
   }
   // « Tout le gouvernorat » : moyenne des quartiers CONNUS de ce type, pondérée par leur nombre d'annonces (comme predire_lieu du robot)
   function predireLieu(tm, g, q, s, ch, x) {
@@ -70,7 +70,9 @@
     : Promise.reject(new Error("fetch"))).then(function (m) { M = m; return m; });
   // paramètres du modèle de ce type (le formulaire ne montre que les cases utiles à ce type)
   function params(tr, t) { var tm = M && M.modeles && M.modeles[tr] && M.modeles[tr].types && M.modeles[tr].types[t]; return tm ? (tm.params || []) : ((M && M.par_type && M.par_type[tr + "/" + t]) || []); }
-  window.IA_IMMO = {estimer: estimer, params: params, pret: function () { return !!M; }, charger: function () { return promesse; }, modele: function () { return M; }};
+  // le modèle estime-t-il ce type ? (sinon le formulaire cache les atouts : « notre IA en tient compte » serait faux)
+  function estime(tr, t) { var m = M && M.modeles && M.modeles[tr], tm = m && m.types && m.types[t], pr = m && m.precision && m.precision[t]; return !!(tm && tm.params && pr && pr.fiable); }
+  window.IA_IMMO = {estimer: estimer, params: params, estime: estime, pret: function () { return !!M; }, charger: function () { return promesse; }, modele: function () { return M; }};
   if (!f || !res) return;
   function T2(fr, a) { return ar() ? a : fr; }
   function quartiers() {

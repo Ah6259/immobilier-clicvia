@@ -65,6 +65,20 @@ jobs:
           node tools/test_site.mjs > /tmp/test_site.log 2>&1 || { grep -E "ÉCHEC|vérifications" /tmp/test_site.log; exit 1; }
           tail -1 /tmp/test_site.log
           node tools/test_securite.mjs
+      # 18/10/2026 (Ahmed : « un robot qui relit le site comme un visiteur une fois les annonces mises à jour ») : estimations (vente,
+      # location), avis et pages relus ; rien n'est publié si un résultat n'est jamais acceptable (journal : des nombres seulement)
+      - name: Contrôleur du modèle et visites réelles (rien n'est publié si un résultat est inacceptable)
+        if: steps.v.outputs.pub == 'oui'
+        working-directory: moteur
+        env:
+          RAPPORTS_IA: /tmp/rapports-ia
+        run: |
+          python tools/controleur.py > /tmp/c.log 2>&1 || { grep -E "ÉCHEC|Anomalies|Contrôleur" /tmp/c.log; exit 1; }
+          grep -E "Contrôleur|Anomalies" /tmp/c.log
+          (python3 -m http.server 8765 > /dev/null 2>&1 &)
+          sleep 2
+          python tools/visites_reelles.py > /tmp/vr.log 2>&1 || { grep -E "visites|ANOMALIES" /tmp/vr.log; exit 1; }
+          grep -E "visites|ANOMALIES" /tmp/vr.log
       - name: Publier
         if: steps.v.outputs.pub == 'oui'
         working-directory: public

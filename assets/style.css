@@ -1179,3 +1179,6 @@ main > .comment-marche:first-child{margin-top:14px}
    « Plus de filtres » (la case « Où ? » a déjà 10 px dessous) */
 .recherche-simple .plus-filtres{margin:0 0 12px}.recherche-simple .champ-ou{margin-bottom:12px}
 .leaflet-marker-icon.cp-gouv.cp-reste{border-style:dashed}
+/* 18/10/2026 (Ahmed : « l'espace à droite et à gauche de by doit être le même ») : les traits du carré IA dépassent de .32em ;
+   la marge les compte, pour le même espace (≈ 5,6 px au téléphone) des deux côtés de « by » */
+.logo-ia{margin-inline-start:calc(.32em + 5.6px)}

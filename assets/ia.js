@@ -10,14 +10,11 @@
   function ar() { return document.documentElement.lang === "ar"; }
   function dt(x) { var r = x >= 20000 ? Math.round(x / 1000) * 1000 : Math.round(x / 10) * 10;
     return '<bdi dir="ltr">' + r.toLocaleString("fr-FR").replace(/[  ]/g, " ") + "</bdi>" + (ar() ? " دينار" : " DT"); }
-  function famille(t) { return /^(terrain|terrainind|agricole)$/.test(t) ? "terrain" : (t === "appartement" || t === "maison" ? "logement" : "pro"); }
-  // version 2 (15/10/2026) : + latitude, longitude (centre du quartier), atouts (1 / 0 / inconnu), étage — comme variables() du robot
-  function variables(t, g, q, s, ch, nv, x) {
-    var base = nv.base[t], lg = nv.g[g] !== undefined ? nv.g[g] : 0, gf = nv.gf[g + "|" + famille(t)], lq = nv.q[g + "|" + q];
-    var geo = nv.geo || {}, c = geo[g + "|" + q] || geo[g + "|"] || null, v = [base === undefined ? null : base, lg, gf === undefined ? lg : gf,
-      lq ? lq[0] : lg, lq ? Math.log(lq[1] + 1) : 0, s ? Math.log(s) : null, ch];
-    if (!M || M.version < 2) return v;
-    return v.concat([c ? c[0] : null, c ? c[1] : null], x);
+  // version 5 (18/10/2026, décision d'Ahmed) : UN MODÈLE PAR TYPE DE BIEN (M.modeles[tr].types[t]) ; le prix d'un quartier est
+  // propre au type et n'existe qu'avec assez d'annonces de ce type (sinon : pas d'estimation) — comme variables() du robot
+  function variables(g, q, s, ch, nv, x) {
+    var lg = nv.g[g] !== undefined ? nv.g[g] : 0, lq = nv.q[g + "|" + q], geo = nv.geo || {}, c = geo[g + "|" + q] || geo[g + "|"] || null;
+    return [lg, lq ? lq[0] : lg, lq ? Math.log(lq[1] + 1) : 0, s ? Math.log(s) : null, ch, c ? c[0] : null, c ? c[1] : null].concat(x);
   }
   // atouts (liste, ou null = inconnus) et étage -> la fin du vecteur (comme extras_de du robot)
   function extras(at, et) {
@@ -36,25 +33,29 @@
     }
   }
   function estimer(tr, t, g, q, s, ch, at, et) {
-    var m = M && M.modeles && M.modeles[tr], pr = m && m.precision && m.precision[t];
-    if (!m || m.niveaux.base[t] === undefined || !pr || !pr.fiable) return null;
+    var m = M && M.modeles && M.modeles[tr], pr = m && m.precision && m.precision[t], tm = m && m.types && m.types[t];
+    if (!tm || !pr || !pr.fiable) return null;
     if (!s && (M.surface_obligatoire || []).indexOf(t) >= 0) return null;     // maisons et terrains : seulement avec leur surface
-    if (m.gt && (m.gt[g + "|" + t] || 0) < (m.min_gt || 10)) return null;     // trop peu d'annonces de ce type dans ce gouvernorat (18/10/2026)
-    var p = predireLieu(m, t, g, q || "", s, (t === "appartement" || t === "maison") ? ch : null, extras(at, et));
+    if ((tm.gt[g] || 0) < (m.min_gt || 10)) return null;                      // trop peu d'annonces de ce type dans ce gouvernorat
+    var p = predireLieu(tm, g, q || "", s, (t === "appartement" || t === "maison") ? ch : null, extras(at, et));
+    if (p === null) return null;                                               // quartier sans assez d'annonces de ce type
     return [Math.exp(p), Math.exp(p + pr.bas), Math.exp(p + pr.haut), pr];
   }
-  // écart propre au quartier appris par le robot (correction() de robot/modele_ia.py, 18/10/2026)
-  function corr(nv, g, q, t) { return (q && nv.cal && nv.cal[g + "|" + q + "|" + t]) || 0; }
+  // écart propre au quartier appris par le robot (correction() de robot/modele_ia.py)
+  function corr(nv, g, q) { return (q && nv.cal && nv.cal[g + "|" + q]) || 0; }
   function predire(m, x) { var p = m.depart; for (var i = 0; i < m.arbres.length; i++) p += arbre(m.arbres[i], x); return p; }
-  // « Tout le gouvernorat » : moyenne des quartiers pondérée par leur nombre d'annonces (comme predire_lieu du robot)
-  function predireLieu(m, t, g, q, s, ch, x) {
-    var nv = m.niveaux;
-    if (!q || !nv.q[g + "|" + q]) {
-      var ks = Object.keys(nv.q).filter(function (k) { return k.split("|")[0] === g; }).sort(), tot = 0, som = 0;
-      ks.forEach(function (k) { var n = nv.q[k][1]; tot += n; som += (predire(m, variables(t, g, k.slice(g.length + 1), s, ch, nv, x)) + corr(nv, g, k.slice(g.length + 1), t)) * n; });
-      if (ks.length) return som / tot;
-    }
-    return predire(m, variables(t, g, q, s, ch, nv, x)) + corr(nv, g, q, t);
+  function estType(tm, g, q, s, ch, x) {
+    var nv = tm.niveaux;
+    if (!q || !nv.q[g + "|" + q]) return null;
+    return predire(tm, variables(g, q, s, ch, nv, x)) + corr(nv, g, q);
+  }
+  // « Tout le gouvernorat » : moyenne des quartiers CONNUS de ce type, pondérée par leur nombre d'annonces (comme predire_lieu du robot)
+  function predireLieu(tm, g, q, s, ch, x) {
+    if (q) return estType(tm, g, q, s, ch, x);
+    var nv = tm.niveaux, ks = Object.keys(nv.q).filter(function (k) { return k.split("|")[0] === g; }).sort(), tot = 0, som = 0;
+    if (!ks.length) return null;
+    ks.forEach(function (k) { var n = nv.q[k][1]; tot += n; som += estType(tm, g, k.slice(g.length + 1), s, ch, x) * n; });
+    return som / tot;
   }
   var promesse = (typeof fetch === "function" ? fetch(racine + "donnees/modele-ia.json", {cache: "no-cache"}).then(function (r) { return r.json(); })
     : Promise.reject(new Error("fetch"))).then(function (m) { M = m; return m; });
@@ -75,7 +76,7 @@
     el("ia-p-l").hidden = !(t === "appartement" || t === "maison");
     // bien ordinaire (aucun atout coché, comme le formulaire Vendre / Louer) : « atouts inconnus » estimait trop haut (18/10/2026)
     var v = estimer("vente", t, g, q, s, ch, []), l = estimer("location", t, g, q, s, ch, []), h = "";
-    var pas = '<span class="ia-pas">' + T2("pas encore assez fiable pour ce bien (le modèle apprend à chaque relevé des annonces)", "غير موثوق بعد لهذا العقار (يتعلّم النموذج مع كل تحديث للإعلانات)") + "</span>";
+    var pas = '<span class="ia-pas">' + T2("pas assez d’annonces de ce type ici pour une estimation fiable (le modèle apprend à chaque relevé)", "لا توجد إعلانات كافية من هذا النوع هنا لتقدير موثوق (يتعلّم النموذج مع كل تحديث)") + "</span>";
     h += '<p class="ia-ligne"><span>' + T2("Prix de vente estimé", "سعر البيع التقديري") + "</span>" + (v ? "<b>" + dt(v[0]) + "</b><small>" +
          T2("entre ", "بين ") + dt(v[1]) + T2(" et ", " و") + dt(v[2]) + "</small>" : pas) + "</p>";
     h += '<p class="ia-ligne"><span>' + T2("Loyer estimé par mois", "الكراء الشهري التقديري") + "</span>" + (l ? "<b>" + dt(l[0]) + "</b><small>" +

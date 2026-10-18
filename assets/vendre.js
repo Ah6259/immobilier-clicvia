@@ -152,9 +152,15 @@
     var ng = nom(g), nd = nom(d), nl = nom(l), G = g.value ? g.options[g.selectedIndex].text.split(" · ")[0] : "";
     var meme = (nd && nd === ng) || (nl && (nl === nd || nl === ng));
     p.hidden = !meme;
-    if (meme) p.textContent = T2("Même nom à plusieurs niveaux : c’est le découpage officiel. La délégation " + (nd === ng ? G : d.options[d.selectedIndex].text) +
-      " est la ville chef-lieu, et la localité du même nom est son centre. Choisissez « Toutes » pour toute la délégation.",
-      "نفس الاسم في عدة مستويات: هذا هو التقسيم الرسمي. المعتمدية هي المدينة مركز الولاية، والمنطقة التي تحمل نفس الاسم هي وسطها. اختر « الكل » لكامل المعتمدية.");
+    // 18/10/2026 (capture d'Ahmed : « Bab Bhar est la ville chef-lieu » était faux) : « chef-lieu » seulement quand la délégation porte
+    // le nom du GOUVERNORAT ; sinon : la localité du même nom est le centre de la délégation
+    var D = d.value ? d.options[d.selectedIndex].text.split(" · ")[0] : "", Lc = l.value ? l.options[l.selectedIndex].text.replace(/ \(\d{4}\)/g, "").split(" · ")[0] : "";
+    if (meme) p.textContent = nd && nd === ng
+      ? T2("Même nom à plusieurs niveaux : c’est le découpage officiel. La délégation " + D + " est la ville chef-lieu du gouvernorat" +
+           (nl === nd ? ", et la localité " + Lc + " est son centre" : "") + ". Choisissez « Toutes » pour toute la délégation.",
+           "نفس الاسم في عدة مستويات: هذا هو التقسيم الرسمي. المعتمدية هي مدينة مركز الولاية" + (nl === nd ? "، والمنطقة التي تحمل نفس الاسم هي وسطها" : "") + ". اختر « الكل » لكامل المعتمدية.")
+      : T2("Même nom à deux niveaux : c’est le découpage officiel. La localité " + Lc + " est le centre de la délégation " + D + ". Choisissez « Toutes » pour toute la délégation.",
+           "نفس الاسم في مستويين: هذا هو التقسيم الرسمي. المنطقة هي وسط المعتمدية التي تحمل نفس الاسم. اختر « الكل » لكامل المعتمدية.");
   }
   function choisirQuartier() {                    // quartier du modèle d'IA le plus proche de la localité / délégation choisie
     var g = el("v-g").value, dv = el("v-d").value, lv = el("v-l").value, M = window.IA_IMMO && IA_IMMO.modele();

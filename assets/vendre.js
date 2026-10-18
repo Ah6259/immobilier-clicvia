@@ -141,7 +141,20 @@
       items.map(function (x) { return opt(x[0], x[1], x[2]); }).join("");
     sl.disabled = !d;
     if (items.some(function (x) { return x[0] === garde; })) sl.value = garde;
+    memeNom();
     choisirQuartier();
+  }
+  // 18/10/2026 (capture d'Ahmed : « Ben Arous » en gouvernorat, délégation ET localité) : c'est le découpage officiel (la ville chef-lieu
+  // porte le nom du gouvernorat, et son centre aussi) ; une phrase le dit quand deux niveaux choisis portent le même nom
+  function memeNom() {
+    var p = el("v-meme"); if (!p) return;
+    var g = el("v-g"), d = el("v-d"), l = el("v-l"), nom = function (s) { return s && s.value ? slugV(s.options[s.selectedIndex].text.split(" · ")[0]) : ""; };
+    var ng = nom(g), nd = nom(d), nl = nom(l), G = g.value ? g.options[g.selectedIndex].text.split(" · ")[0] : "";
+    var meme = (nd && nd === ng) || (nl && (nl === nd || nl === ng));
+    p.hidden = !meme;
+    if (meme) p.textContent = T2("Même nom à plusieurs niveaux : c’est le découpage officiel. La délégation " + (nd === ng ? G : d.options[d.selectedIndex].text) +
+      " est la ville chef-lieu, et la localité du même nom est son centre. Choisissez « Toutes » pour toute la délégation.",
+      "نفس الاسم في عدة مستويات: هذا هو التقسيم الرسمي. المعتمدية هي المدينة مركز الولاية، والمنطقة التي تحمل نفس الاسم هي وسطها. اختر « الكل » لكامل المعتمدية.");
   }
   function choisirQuartier() {                    // quartier du modèle d'IA le plus proche de la localité / délégation choisie
     var g = el("v-g").value, dv = el("v-d").value, lv = el("v-l").value, M = window.IA_IMMO && IA_IMMO.modele();
@@ -579,7 +592,7 @@
   window.VENDRE_IMMO = { calcul: calcul, identifiant: identifiant, normaliser: normaliser, jetonAvant: jetonAvant, texteAnnonce: texteAnnonce };
 
   form.addEventListener("change", function (e) {
-    if (e.target.id === "v-g") quartiers(); else if (e.target.id === "v-d") localites(); else if (e.target.id === "v-l") choisirQuartier();
+    if (e.target.id === "v-g") quartiers(); else if (e.target.id === "v-d") localites(); else if (e.target.id === "v-l") { memeNom(); choisirQuartier(); }
     tout();
   });
   form.addEventListener("input", function () { tout(); });

@@ -238,9 +238,11 @@
         INDEX.push({ g: g, d: "", l: "", fr: G[0], ar: G[1], sous: ["Gouvernorat", "ولاية"], k: cle(G[0] + " " + G[1]), r: 0 });
         delegs(g).forEach(function (d) {
           var sd = slug(d[0]);
-          INDEX.push({ g: g, d: sd, l: "", fr: d[0], ar: d[1], sous: [G[0], G[1]], k: cle(d[0] + " " + d[1]), r: 1 });
+          // 18/10/2026 (capture d'Ahmed : « El Mourouj » deux fois, 264 et 260 annonces) : la DÉLÉGATION El Mourouj contient la LOCALITÉ
+          // El Mourouj et d'autres (Cité El Mourouj 3 Bis…) : chaque proposition dit son niveau
+          INDEX.push({ g: g, d: sd, l: "", fr: d[0], ar: d[1], sous: ["Délégation entière · " + G[0], "كامل المعتمدية · " + G[1]], k: cle(d[0] + " " + d[1]), r: 1 });
           // code postal de La Poste (18/10/2026, idée d'Ahmed) : taper « 1000 » ou « 2045 » trouve aussi la localité
-          d[2].forEach(function (l) { var cp = l[2] ? " · " + l[2] : ""; INDEX.push({ g: g, d: sd, l: slug(l[0]), fr: l[0], ar: l[1], sous: [d[0] + " · " + G[0] + cp, d[1] + " · " + G[1] + cp], k: cle(l[0] + " " + l[1] + " " + (l[2] || "")), r: 2 }); });
+          d[2].forEach(function (l) { var cp = l[2] ? " · " + l[2] : ""; INDEX.push({ g: g, d: sd, l: slug(l[0]), fr: l[0], ar: l[1], sous: ["Localité · " + d[0] + " · " + G[0] + cp, "منطقة · " + d[1] + " · " + G[1] + cp], k: cle(l[0] + " " + l[1] + " " + (l[2] || "")), r: 2 }); });
         });
         ((LX.al || {})[g] || []).forEach(function (a) {     // autres écritures connues (« Bab Jdid » = Bab Djedid), 18/10/2026
           var sd = a[1] === "quartier" ? slug((OF[g + "/" + a[3]] || [""])[0]) : slug(a[3]);
@@ -251,7 +253,7 @@
           if (k.split("/")[0] !== g) return;
           var s = k.split("/")[1], o = OF[k] || [LX.l[k][0], ""], sd = slug(o[0]);
           if (slug(LX.l[k][0]) === sd) return;            // le quartier est la délégation elle-même (déjà dans la liste)
-          INDEX.push({ g: g, d: sd, l: s, fr: LX.l[k][0], ar: LX.l[k][1], sous: [o[0] + " · " + G[0], o[0] + " · " + G[1]], k: cle(LX.l[k][0] + " " + LX.l[k][1]), r: 2 });
+          INDEX.push({ g: g, d: sd, l: s, fr: LX.l[k][0], ar: LX.l[k][1], sous: ["Quartier · " + o[0] + " · " + G[0], "حي · " + o[0] + " · " + G[1]], k: cle(LX.l[k][0] + " " + LX.l[k][1]), r: 2 });
         });
       });
       return INDEX;

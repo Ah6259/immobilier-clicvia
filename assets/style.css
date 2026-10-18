@@ -1147,3 +1147,4 @@ main > .comment-marche:first-child{margin-top:14px}
 .fav-actions a,.fav-retirer{font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;border:1.5px solid var(--ligne);background:var(--carte);color:var(--terre-f);border-radius:999px;padding:7px 13px}
 .fav-retirer{color:var(--ko)}
 #fav-vide .fav-voir{display:inline-flex;margin-top:12px;padding:10px 20px;text-decoration:none;color:#fff}
+.calc .v-meme{grid-column:1/-1;margin:0;color:var(--bleu)}

@@ -1175,3 +1175,6 @@ main > .comment-marche:first-child{margin-top:14px}
    Règle commune § 28 (tous les sites avec une carte) */
 .leaflet-container,.cp-carte{isolation:isolate;z-index:0}
 .lu-seulement{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* 18/10/2026 (Ahmed : « bouton pas bien centré entre la recherche et Voir… ») : même espace (12 px) au-dessus et au-dessous de
+   « Plus de filtres » (la case « Où ? » a déjà 10 px dessous) */
+.recherche-simple .plus-filtres{margin:0 0 12px}.recherche-simple .champ-ou{margin-bottom:12px}

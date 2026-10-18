@@ -187,17 +187,21 @@
     if (!g || (!c.d && !c.l)) return null;
     if (c.l) {                               // un quartier (nos bulles) ou une localité officielle rattachée à un de nos quartiers
       var q = D.q.filter(function (x) { return x.g === g && (x.q === c.l || (OF[g + "/" + x.q] && slugC(OF[g + "/" + x.q][1]) === c.l)); });
-      if (q.length) return { pts: q.map(function (x) { return [x.p, x.fr]; }), zoom: NIV_QUARTIER + 1 };
+      if (q.length) return { pts: q.map(function (x) { return [x.p, x.fr]; }), qq: q.map(function (x) { return x.p; }), zoom: NIV_QUARTIER + 1 };
     }
     if (!c.d) return null;
     var S = delegsChoisies(g, c.d);
     var dd = D.d.filter(function (x) { return x.g === g && S[x.s]; }).map(function (x) { return [x.p, x.fr]; });
     var qq = D.q.filter(function (x) { return x.g === g && OF[g + "/" + x.q] && S[slugC(OF[g + "/" + x.q][0])]; }).map(function (x) { return [x.p, x.fr]; });
-    return dd.length || qq.length ? { pts: dd.length ? dd : qq, cadre: dd.concat(qq), zoom: NIV_DELEG + 1 } : null;
+    return dd.length || qq.length ? { pts: dd.length ? dd : qq, cadre: dd.concat(qq), dd: dd.map(function (x) { return x[0]; }), qq: qq.map(function (x) { return x[0]; }), zoom: NIV_DELEG + 1 } : null;
   }
-  function entourer() {                      // anneau autour du lieu choisi (redessiné à chaque dessin de la carte)
-    choisis.forEach(function (x) {
-      L.circleMarker(x[0], { radius: 24, color: "#B5532F", weight: 4, fill: false, interactive: false, className: "cp-choisi" }).addTo(couche);
+  // 18/10/2026 (Ahmed : « ces cercles ne servent à rien » : un anneau vide, sans bulle dedans) : l'anneau entoure seulement une bulle
+  // VISIBLE au zoom actuel : bulles des délégations au niveau 2, bulles des quartiers (de la délégation choisie) au niveau 3
+  var anneaux = { dd: [], qq: [] };
+  function entourer() {
+    var n = niveau(), pts = n === 2 ? anneaux.dd : n === 3 ? anneaux.qq : [];
+    pts.forEach(function (p) {
+      L.circleMarker(p, { radius: 24, color: "#B5532F", weight: 4, fill: false, interactive: false, className: "cp-choisi" }).addTo(couche);
     });
   }
   function cadrer() {
@@ -205,6 +209,7 @@
     var D = donnees(), g = zone.getAttribute("data-g") || (fg && fg.value) || null, q = zone.getAttribute("data-q");
     var ch = lieuChoisi(D, g);
     choisis = ch ? ch.pts : [];
+    anneaux = { dd: (ch && ch.dd) || [], qq: (ch && ch.qq) || [] };
     zone.setAttribute("data-choisi", choisis.map(function (x) { return x[1]; }).join(" | "));
     if (ch) {
       var tous = (ch.cadre || ch.pts).map(function (x) { return x[0]; });

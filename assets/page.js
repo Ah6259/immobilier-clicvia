@@ -7,6 +7,98 @@ var BASE_SITE = "/";
 window.goatcounter = window.goatcounter || {};
 window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier-tunis" + p : p; };   // préfixe des statistiques (inchangé)
 
+/* Favoris (18/10/2026, IM.15, « Fais » d'Ahmed) : un cœur sur chaque annonce, page « Mes favoris » (favoris/, assets/favoris.js).
+   Gardés DANS LE TÉLÉPHONE du visiteur (localStorage, clé « favoris-immobilier ») : rien n'est envoyé, sans compte. Pour pouvoir montrer
+   une annonce retirée du site (« n'est plus en ligne »), chaque favori garde le minimum : titre, prix, lieu, lien, date d'ajout.
+   Mémoire bloquée (navigation privée…) : les cœurs marchent pendant la visite (mémoire de la page), sans erreur. */
+(function () {
+  var CLE = "favoris-immobilier", MAX = 300, MEM = null, BLOQUE = false;
+  var COEUR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.2-9.4C1.6 7.6 3.8 4.5 7.1 4.5c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.3 0 5.5 3.1 4.3 6.6-1.7 4.8-9.2 9.4-9.2 9.4z"/></svg>';
+  function T(fr, ar) { return window.T ? window.T(fr, ar) : fr; }
+  function E(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function txt(v, n) { return typeof v === "string" ? v.slice(0, n || 200) : ""; }
+  function propre(f) {               // valeurs relues de la mémoire : jamais de confiance aveugle
+    if (!f || typeof f.i !== "string" || !f.i) return null;
+    return { i: f.i.slice(0, 80), tf: txt(f.tf), ta: txt(f.ta), lf: txt(f.lf), la: txt(f.la), p: typeof f.p === "number" && isFinite(f.p) ? f.p : null,
+             t: f.t === "l" ? "l" : "v", y: txt(f.y, 20), g: txt(f.g, 30), u: /^https?:\/\//i.test(f.u || "") ? txt(f.u, 500) : "", d: txt(f.d, 10) };
+  }
+  function lire() {
+    if (MEM) return MEM.slice();
+    try {
+      var v = JSON.parse(localStorage.getItem(CLE) || "[]");
+      return Array.isArray(v) ? v.map(propre).filter(Boolean) : [];
+    } catch (e) { BLOQUE = true; return []; }
+  }
+  function ecrire(l) {
+    l = l.slice(0, MAX);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); MEM = null; }
+    catch (e) { BLOQUE = true; MEM = l; }        // mémoire bloquée ou pleine : gardés le temps de la visite
+    maj();
+    try { document.dispatchEvent(new Event("favoris")); } catch (e) {}
+  }
+  function est(id) { return lire().some(function (f) { return f.i === id; }); }
+  function annonce(id) {
+    var a = window.ANNONCES && window.ANNONCES.a;
+    if (!a) return null;
+    for (var k = 0; k < a.length; k++) if (a[k].i === id) return a[k];
+    return null;
+  }
+  function langues(el) {             // texte FR et AR d'un élément de carte (spans data-l), ou le même texte (titre écrit par le vendeur)
+    if (!el) return ["", ""];
+    var fr = el.querySelector('[data-l="fr"]'), ar = el.querySelector('[data-l="ar"]');
+    var tout = (el.textContent || "").replace(/\s+/g, " ").trim();
+    return [fr ? fr.textContent.replace(/\s+/g, " ").trim() : tout, ar ? ar.textContent.replace(/\s+/g, " ").trim() : tout];
+  }
+  function infos(id, carte) {        // le minimum gardé (pour afficher le favori même si l'annonce a quitté le site)
+    var a = annonce(id) || {}, t = carte ? langues(carte.querySelector(".an-titre")) : ["", ""], l = carte ? langues(carte.querySelector(".an-lieu")) : ["", ""];
+    var p = a.p != null ? a.p : null;
+    if (p == null && carte) { var s = carte.querySelector(".an-prix strong"); var n = s && parseInt(s.textContent.replace(/\D/g, ""), 10); if (n > 0) p = n; }
+    var u = a.u || "";
+    if (!u && carte) { var lien = carte.querySelector("a.an-contact, a.an-voir, a.an-fb"); u = lien ? lien.href : ""; }
+    var j = new Date(), d = j.getFullYear() + "-" + ("0" + (j.getMonth() + 1)).slice(-2) + "-" + ("0" + j.getDate()).slice(-2);
+    return propre({ i: id, tf: t[0], ta: t[1], lf: l[0], la: l[1], p: p, t: a.t || (carte && carte.getAttribute("data-t")) || "v",
+                    y: a.y || (carte && carte.getAttribute("data-y")) || "", g: a.g || "", u: u, d: d });
+  }
+  function basculer(id, carte) {
+    var l = lire(), avant = l.length;
+    l = l.filter(function (f) { return f.i !== id; });
+    if (l.length === avant) { var f = infos(id, carte); if (f) l.unshift(f); }
+    ecrire(l);
+    return l.length > avant;
+  }
+  function libelle(on) { return on ? T("Retirer des favoris", "إزالة من المفضّلة") : T("Ajouter aux favoris", "أضف إلى المفضّلة"); }
+  function maj() {                   // cœurs des cartes + compteur de l'en-tête
+    var l = lire(), ids = Object.create(null);
+    l.forEach(function (f) { ids[f.i] = 1; });
+    [].forEach.call(document.querySelectorAll(".an-fav[data-fav]"), function (b) {
+      var on = !!ids[b.getAttribute("data-fav")];
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.setAttribute("aria-label", libelle(on)); b.title = libelle(on);
+    });
+    [].forEach.call(document.querySelectorAll(".entete-fav"), function (a) {
+      var c = a.querySelector(".fav-compte");
+      if (c) { c.textContent = l.length; c.hidden = !l.length; }
+      a.setAttribute("aria-label", T("Mes favoris", "مفضّلاتي") + " (" + l.length + ")");
+    });
+  }
+  // un vrai bouton, aussi dans les cartes dessinées par assets/app.js (même forme que bouton_favori() du robot)
+  function bouton(id) {
+    var on = est(id);
+    return '<button type="button" class="an-fav" data-fav="' + E(id) + '" aria-pressed="' + on + '" aria-label="' + libelle(on) + '" title="' + libelle(on) + '">' + COEUR + "</button>";
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target && e.target.closest && e.target.closest(".an-fav[data-fav]");
+    if (!b) return;
+    e.preventDefault();
+    var on = basculer(b.getAttribute("data-fav"), b.closest(".annonce"));
+    b.classList.remove("fav-anim"); void b.offsetWidth; if (on) b.classList.add("fav-anim");
+  });
+  document.addEventListener("langue", maj);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", maj); else maj();
+  window.FAVORIS = { cle: CLE, lire: lire, ecrire: ecrire, est: est, basculer: basculer, bouton: bouton, maj: maj, coeur: COEUR,
+                     bloque: function () { lire(); return BLOQUE; } };
+})();
+
 (function () {
   var html = document.documentElement;
   var racine = html.getAttribute("data-racine") || "";
@@ -99,6 +191,9 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
             '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9.5 10.5h5v3h-5z"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg>' +
             '<span class="long">' + T('<span class="mot-ia">IA</span> pour l’immobilier', '<span class="mot-ia">الذكاء الاصطناعي</span> للعقار') + '</span></a>' +
           '<a class="entete-depot" href="' + racine + 'deposer/" aria-label="' + T("Publier une annonce gratuite", "انشر إعلانًا مجانيًا") + '">' + ICO_PLUS + '<span class="long">' + T("Publier une annonce gratuite", "انشر إعلانًا مجانيًا") + '</span><span class="court">' + T("Publier", "انشر") + '</span></a>' +
+          // favoris (18/10/2026, IM.15) : cœur + nombre de favoris gardés dans ce téléphone -> favoris/
+          '<a class="entete-fav" href="' + racine + 'favoris/" aria-label="' + T("Mes favoris", "مفضّلاتي") + '" title="' + T("Mes favoris", "مفضّلاتي") + '">' +
+            (window.FAVORIS ? window.FAVORIS.coeur : "") + '<span class="long">' + T("Favoris", "المفضّلة") + '</span><span class="fav-compte" hidden></span></a>' +
           '<button class="partager" type="button" aria-label="' + T("Partager cette page", "شارك هذه الصفحة") + '" title="' + T("Partager", "شارك") + '">' + ICO_PARTAGE + '</button>' +
           // bouton court « ع » / « Fr » (demande d'Ahmed 11/10/2026 : plus de place pour le nom du site sur téléphone)
           '<button class="langue" type="button" lang="' + (html.lang === "ar" ? "fr" : "ar") + '" aria-label="' + T("Lire en arabe", "Lire en français") +
@@ -119,6 +214,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
           '<a href="' + racine + 'rapports/">' + T("Rapports du mois (prix par quartier)", "تقارير الشهر (الأسعار حسب الحي)") + '</a>' +
           '<a href="' + racine + 'vendre/">' + T("Vendre : estimer mon bien (IA)", "البيع: قدّر عقاري (ذكاء اصطناعي)") + '</a>' +
           '<a href="' + racine + 'alertes/">' + T("Alertes gratuites", "تنبيهات مجانية") + '</a>' +
+          '<a href="' + racine + 'favoris/">' + T("Mes favoris", "مفضّلاتي") + '</a>' +
           '<a href="' + racine + 'a-propos/">' + T("Comment fonctionne le site ?", "كيف يعمل الموقع؟") + '</a>' +
           '<a href="' + racine + '#avis">' + T("Votre avis", "رأيك") + '</a>' +
           '<a href="' + racine + 'video/">' + T("Vidéo de présentation", "الفيديو التقديمي") + '</a>' +
@@ -131,6 +227,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
                   "موقع مستقل وغير رسمي، معلومات للإرشاد: تحقق دائمًا مع البائع. الأسماء والعلامات ملك لأصحابها.") + '</p>' +
         '<p>© 2026 ' + T("Immobilier Tunisie — tous droits réservés.", "عقارات تونس — جميع الحقوق محفوظة.") + '</p>' +
       '</div>';
+    if (window.FAVORIS) window.FAVORIS.maj();
     var b = document.querySelectorAll(".langue");
     for (var i = 0; i < b.length; i++) b[i].addEventListener("click", function () { appliquer(html.lang === "ar" ? "fr" : "ar"); });
     var s = document.querySelectorAll(".partager");

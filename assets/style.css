@@ -1115,3 +1115,35 @@ main > .comment-marche:first-child{margin-top:14px}
 .rp-partage-aide{margin:6px 0 0;font-size:13px;color:var(--doux)}
 .rp-p-unique.copie-ok{background:var(--olive);border-color:var(--olive);color:#fff}
 .v-trouvees{margin:6px 0 10px;padding-inline-start:18px}.v-trouvees li{margin:4px 0;font-size:14.5px}
+
+/* ---------------------------------------------------------------- favoris (18/10/2026, IM.15) : cœur sur chaque annonce, page favoris/ */
+.an-fav{flex:none;margin-inline-start:auto;width:40px;height:40px;display:grid;place-items:center;padding:0;cursor:pointer;
+  border:1.5px solid var(--ligne);border-radius:999px;background:var(--carte);color:var(--doux);transition:color .15s,border-color .15s,background .15s}
+.an-fav svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+.an-fav:hover{border-color:var(--terre);color:var(--terre)}
+.an-fav[aria-pressed="true"]{color:#C8323C;border-color:#E9B4B4;background:#FDF0F0}
+.an-fav[aria-pressed="true"] svg{fill:currentColor}
+.an-fav:focus-visible,.entete-fav:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.fav-anim svg{animation:fav-pouls .35s ease-out}
+@keyframes fav-pouls{50%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.fav-anim svg{animation:none}}
+.entete-fav{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;min-width:38px;padding:0;
+  border:1.5px solid var(--ligne);border-radius:999px;background:var(--carte);color:var(--encre);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap}
+.entete-fav svg{width:19px;height:19px;fill:none;stroke:#C8323C;stroke-width:2;stroke-linejoin:round}
+.entete-fav .long{display:none}
+.fav-compte{position:absolute;top:-6px;inset-inline-end:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#C8323C;color:#fff;
+  font-size:11.5px;font-weight:700;line-height:19px;text-align:center;font-family:var(--texte)}
+@media (min-width:1120px){.entete-fav{padding:0 13px}.entete-fav .long{display:inline}}
+/* téléphone : le cœur prend place dans l'en-tête sans pousser « by IA » sur une 3e ligne (boutons un peu plus petits) */
+@media (max-width:440px){.entete-boutons{gap:4px}.partager,.langue,.entete-fav{width:34px;min-width:34px;height:34px}
+  .entete-fav svg{width:18px;height:18px}.entete-depot{padding:6px 11px!important}.entete-depot svg{display:none}}
+.fav-vider{font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid var(--ligne);background:var(--carte);color:var(--ko);border-radius:999px;padding:6px 14px;margin-bottom:10px}
+.fav-info{background:var(--bleu-clair);color:var(--bleu);border-radius:var(--r-petit);padding:10px 14px;font-size:14px;margin:0 0 14px}
+.fav-retiree{border-style:dashed;background:var(--sable)}
+.fav-retiree .an-titre,.fav-retiree .an-prix strong{color:var(--doux)}
+.an-badge.fav-plus-la{background:#F6E1E1;color:#9B2C2C}
+.fav-note,.fav-date{margin:0;font-size:13.5px;color:var(--doux)}
+.fav-actions{display:flex;flex-wrap:wrap;gap:8px}
+.fav-actions a,.fav-retirer{font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;border:1.5px solid var(--ligne);background:var(--carte);color:var(--terre-f);border-radius:999px;padding:7px 13px}
+.fav-retirer{color:var(--ko)}
+#fav-vide .fav-voir{display:inline-flex;margin-top:12px;padding:10px 20px;text-decoration:none;color:#fff}

@@ -111,6 +111,13 @@
     var pr = (v || l || [0, 0, 0, null])[3];
     // pas de pourcentage d'erreur affiché (information interne, décision d'Ahmed du 15/10/2026)
     if (pr) h += '<p class="petit">' + T2("La fourchette montre où se situent la plupart des biens semblables.", "يبيّن المجال أين تقع أغلب العقارات المشابهة.") + "</p>";
+    // 18/10/2026 (vérification de la page investisseur) : l'IA estime ici un bien ORDINAIRE (non meublé, sans atout) ; les médianes des
+    // annonces mélangent meublés et non meublés (à Tunis, S+2 : 2 000 DT meublé, 1 300 DT non meublé) : le dire, et renvoyer vers
+    // l'estimation détaillée (meublé, étage, atouts)
+    if (v || l) h += '<p class="petit ia-ordinaire">' + T2("Estimation pour un bien ordinaire : non meublé, sans atout particulier. Meublé, étage, vue, piscine… : ",
+        "تقدير لعقار عادي: غير مفروش، دون ميزة خاصة. مفروش، طابق، إطلالة، مسبح…: ") +
+        '<a href="' + racine + 'louer/">' + T2("estimer un loyer en détail", "قدّر الكراء بالتفصيل") + "</a> · " +
+        '<a href="' + racine + 'vendre/">' + T2("estimer un prix en détail", "قدّر السعر بالتفصيل") + "</a>.</p>";
     res.innerHTML = h;
   }
   f.addEventListener("input", function (e) { if (e.target.id === "ia-g") quartiers(); calculer(); });

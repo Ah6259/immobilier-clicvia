@@ -316,7 +316,7 @@
     var pts = Math.round(n / champs.length * 5), barre = "";
     for (var i = 0; i < 5; i++) barre += '<span class="pt' + (i < pts ? " plein" : "") + '"></span>';
     return '<p class="v-precision"><span class="v-precision-titre">' + T2("Précision du résultat", "دقة النتيجة") + ' <span class="v-barre" aria-label="' + pts + '/5">' + barre + "</span></span>" +
-      (manque.length ? T2("Pour un résultat plus précis, ajoutez : ", "لنتيجة أدق، أضف: ") + manque.join(", ") + (r.vide || (form.querySelector(".v-atouts") || {}).hidden ? "" : T2(" (et les atouts de votre bien).", " (ومزايا عقارك).")) : ((form.querySelector(".v-atouts") || {}).hidden ? T2("✅ Toutes les informations sont remplies.", "✅ كل المعطيات معبّأة.") : T2("✅ Toutes les informations sont remplies : cochez aussi les atouts de votre bien.", "✅ كل المعطيات معبّأة: اختر أيضًا مزايا عقارك."))) + "</p>";
+      (manque.length ? T2("Plus précis avec : ", "أدق مع: ") + manque.join(", ") + (r.vide || (form.querySelector(".v-atouts") || {}).hidden ? "" : T2(" (et les atouts de votre bien).", " (ومزايا عقارك).")) : ((form.querySelector(".v-atouts") || {}).hidden ? T2("✅ Tout est rempli.", "✅ كل شيء معبّأ.") : T2("✅ Tout est rempli : cochez aussi les atouts.", "✅ كل شيء معبّأ: اختر أيضًا المزايا."))) + "</p>";
   }
 
   function afficherGratuit(r) {
@@ -338,11 +338,13 @@
            (r.refM2 ? T2("prix au m² des annonces semblables (médiane) × votre surface", "سعر المتر المربع للإعلانات المشابهة (الوسيط) × مساحتك")
                     : T2("médiane des annonces les plus proches (ajoutez la surface pour un résultat au m²)", "وسيط أقرب الإعلانات (أضف المساحة لنتيجة حسب المتر المربع)")) + "</small></p>";
     } else if (r.trouvees && r.trouvees.length) {
-      h += "<p><b>" + T2("Pas assez d’annonces pour faire l’estimation de ce bien.", "لا توجد إعلانات كافية لتقدير هذا العقار.") + "</b> " +
-           T2("Voici les annonces semblables trouvées près de chez vous :", "إليك الإعلانات المشابهة التي وجدناها قربك:") + '</p><ul class="v-trouvees">' +
+      // 18/10/2026 (Ahmed : « améliore ces paragraphes ») : en pleine largeur, court et clair
+      h += '<p class="v-pas"><b>' + T2("Trop peu d’annonces ici", "إعلانات قليلة جدًا هنا") + "</b>" +
+           '<span class="v-pas-sous">' + T2("Voici les plus proches :", "إليك الأقرب:") + '</span></p><ul class="v-trouvees">' +
            r.trouvees.map(function (x) {
-             return "<li><b>" + dt(x.p) + "</b>" + (x.s ? " · " + nb(x.s) + " m²" : "") + (x.c != null ? ' · <bdi dir="ltr">S+' + x.c + "</bdi>" : "") +
-                    " · " + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + ' · <a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></li>";
+             // UNE ligne par annonce (18/10/2026, Ahmed) : le lieu se coupe (« … ») plutôt que de passer à la ligne
+             return "<li><b>" + dt(x.p) + "</b>" + (x.s ? "<span> · " + nb(x.s) + " m²</span>" : "") + (x.c != null ? '<span> · <bdi dir="ltr">S+' + x.c + "</bdi></span>" : "") +
+                    '<span class="v-tr-lieu"> · ' + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + '</span><span> · <a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></span></li>";
            }).join("") + "</ul>";
     } else if (r.tropVaries) {
       h += "<p>" + T2("Les annonces semblables de cette zone ont des prix trop variés pour donner un chiffre fiable (un plus petit bien y est parfois annoncé plus cher). Ajoutez la surface : la comparaison se fera au m².", "الإعلانات المشابهة في هذه المنطقة أسعارها متفاوتة جدًا لإعطاء رقم موثوق. أضف المساحة: تتم المقارنة حسب المتر المربع.") + "</p>";

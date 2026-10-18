@@ -1148,3 +1148,11 @@ main > .comment-marche:first-child{margin-top:14px}
 .fav-retirer{color:var(--ko)}
 #fav-vide .fav-voir{display:inline-flex;margin-top:12px;padding:10px 20px;text-decoration:none;color:#fff}
 .calc .v-meme{grid-column:1/-1;margin:0;color:var(--bleu)}
+
+/* 18/10/2026 (Ahmed : « sur une seule ligne ») : annonces semblables et phrase de précision sur une ligne au téléphone */
+.ia-res .v-pas,.v-pas{display:block!important;grid-template-columns:none!important}
+.v-trouvees{list-style:none;padding-inline-start:0}
+.v-trouvees li{display:flex;align-items:baseline;white-space:nowrap;gap:0;min-width:0;font-size:14px}
+.v-trouvees li::before{content:"•";margin-inline-end:6px;color:var(--doux)}
+.v-trouvees li>*{flex:none}.v-trouvees li>.v-tr-lieu{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.v-pas b{display:block;font-size:15.5px}.v-pas .v-pas-sous{display:block;margin-top:2px;color:var(--doux);font-size:14px}

@@ -10,18 +10,24 @@
   function ar() { return document.documentElement.lang === "ar"; }
   function dt(x) { var r = x >= 20000 ? Math.round(x / 1000) * 1000 : Math.round(x / 10) * 10;
     return '<bdi dir="ltr">' + r.toLocaleString("fr-FR").replace(/[  ]/g, " ") + "</bdi>" + (ar() ? " دينار" : " DT"); }
-  // version 5 (18/10/2026, décision d'Ahmed) : UN MODÈLE PAR TYPE DE BIEN (M.modeles[tr].types[t]) ; le prix d'un quartier est
-  // propre au type et n'existe qu'avec assez d'annonces de ce type (sinon : pas d'estimation) — comme variables() du robot
-  function variables(g, q, s, ch, nv, x) {
+  // version 6 (18/10/2026, décision d'Ahmed) : UN MODÈLE PAR TYPE DE BIEN (M.modeles[tr].types[t]), avec SES paramètres (tm.params :
+  // étage pour un appartement, jardin / piscine / niveaux pour une maison…) ; le prix d'un quartier est propre au type et n'existe
+  // qu'avec assez d'annonces de ce type (sinon : pas d'estimation) — comme variables() et faits_de() du robot
+  function variables(g, q, s, ch, nv, f, params) {
     var lg = nv.g[g] !== undefined ? nv.g[g] : 0, lq = nv.q[g + "|" + q], geo = nv.geo || {}, c = geo[g + "|" + q] || geo[g + "|"] || null;
-    return [lg, lq ? lq[0] : lg, lq ? Math.log(lq[1] + 1) : 0, s ? Math.log(s) : null, ch, c ? c[0] : null, c ? c[1] : null].concat(x);
+    return [lg, lq ? lq[0] : lg, lq ? Math.log(lq[1] + 1) : 0, s ? Math.log(s) : null, ch, c ? c[0] : null, c ? c[1] : null]
+      .concat(params.map(function (n) { var v = f[n]; return v === undefined ? null : v; }));
   }
-  // atouts (liste, ou null = inconnus) et étage -> la fin du vecteur (comme extras_de du robot)
-  function extras(at, et) {
-    var l = (M && M.atouts) || [];
-    // « ?nom » = cet atout est inconnu (ex. état du bien non indiqué), comme extras_de() du robot
-    return l.map(function (n) { return at === null || at === undefined || at.indexOf("?" + n) >= 0 ? null : (at.indexOf(n) >= 0 ? 1 : 0); })
-      .concat([typeof et === "number" && et >= 0 && et <= 40 ? et : null]);
+  // faits d'un bien décrit : atouts (liste, ou null = inconnus ; « ?nom » = celui-là inconnu), étage, plus = {niveaux, st}
+  function faits(at, et, plus) {
+    var f = {}, st = plus && plus.st !== undefined ? plus.st : null, nv = plus && plus.niveaux;
+    ((M && M.faits) || []).forEach(function (n) {
+      if (n.indexOf("st_") === 0) f[n] = st === null ? null : (st === n.slice(3) ? 1 : 0);
+      else if (n !== "etage" && n !== "niveaux") f[n] = at === null || at === undefined || at.indexOf("?" + n) >= 0 ? null : (at.indexOf(n) >= 0 ? 1 : 0);
+    });
+    f.etage = typeof et === "number" && et >= 0 && et <= 40 ? et : null;
+    f.niveaux = typeof nv === "number" && nv >= 1 && nv <= 4 ? nv : null;
+    return f;
   }
   function arbre(a, x) {
     var k = 0;
@@ -32,12 +38,15 @@
       k = (v === null || v === undefined) ? (n[2] ? n[3] : n[4]) : (v <= n[1] ? n[3] : n[4]);
     }
   }
-  function estimer(tr, t, g, q, s, ch, at, et) {
+  function estimer(tr, t, g, q, s, ch, at, et, plus) {
     var m = M && M.modeles && M.modeles[tr], pr = m && m.precision && m.precision[t], tm = m && m.types && m.types[t];
-    if (!tm || !pr || !pr.fiable) return null;
-    if (!s && (M.surface_obligatoire || []).indexOf(t) >= 0) return null;     // maisons et terrains : seulement avec leur surface
+    if (!tm || !tm.params || !pr || !pr.fiable) return null;                  // (modèle v6 : chaque type a ses paramètres)
+    if (!s && (M.surface_obligatoire || []).indexOf(t) >= 0) return null;     // terrains : seulement avec leur surface
+    ch = (t === "appartement" || t === "maison") && typeof ch === "number" ? ch : null;
+    if (t === "maison" && !s && ch === null) return null;                      // maison : sa surface ou son nombre de pièces
+    if (ch !== null && tm.ch_n && ((tm.ch_n[String(ch)] || 0) < (tm.min_ch || 30) || ((tm.ch_g || {})[g + "|" + ch] || 0) < (tm.min_ch_g || 5))) return null;   // trop peu d'annonces avec ce nombre de pièces (ici ou dans le pays)
     if ((tm.gt[g] || 0) < (m.min_gt || 10)) return null;                      // trop peu d'annonces de ce type dans ce gouvernorat
-    var p = predireLieu(tm, g, q || "", s, (t === "appartement" || t === "maison") ? ch : null, extras(at, et));
+    var p = predireLieu(tm, g, q || "", s, ch, faits(at, et, plus));
     if (p === null) return null;                                               // quartier sans assez d'annonces de ce type
     return [Math.exp(p), Math.exp(p + pr.bas), Math.exp(p + pr.haut), pr];
   }
@@ -47,7 +56,7 @@
   function estType(tm, g, q, s, ch, x) {
     var nv = tm.niveaux;
     if (!q || !nv.q[g + "|" + q]) return null;
-    return predire(tm, variables(g, q, s, ch, nv, x)) + corr(nv, g, q);
+    return predire(tm, variables(g, q, s, ch, nv, x, tm.params || [])) + corr(nv, g, q);
   }
   // « Tout le gouvernorat » : moyenne des quartiers CONNUS de ce type, pondérée par leur nombre d'annonces (comme predire_lieu du robot)
   function predireLieu(tm, g, q, s, ch, x) {
@@ -59,7 +68,9 @@
   }
   var promesse = (typeof fetch === "function" ? fetch(racine + "donnees/modele-ia.json", {cache: "no-cache"}).then(function (r) { return r.json(); })
     : Promise.reject(new Error("fetch"))).then(function (m) { M = m; return m; });
-  window.IA_IMMO = {estimer: estimer, pret: function () { return !!M; }, charger: function () { return promesse; }, modele: function () { return M; }};
+  // paramètres du modèle de ce type (le formulaire ne montre que les cases utiles à ce type)
+  function params(tr, t) { var tm = M && M.modeles && M.modeles[tr] && M.modeles[tr].types && M.modeles[tr].types[t]; return tm ? (tm.params || []) : ((M && M.par_type && M.par_type[tr + "/" + t]) || []); }
+  window.IA_IMMO = {estimer: estimer, params: params, pret: function () { return !!M; }, charger: function () { return promesse; }, modele: function () { return M; }};
   if (!f || !res) return;
   function T2(fr, a) { return ar() ? a : fr; }
   function quartiers() {

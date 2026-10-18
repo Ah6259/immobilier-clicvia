@@ -175,7 +175,23 @@
     return out;
   }
   // paramètre utilisé par le modèle d'IA aujourd'hui (la mesure décide chaque jour, décision d'Ahmed du 15/10/2026)
-  function utilise(n) { var m = window.IA_IMMO && IA_IMMO.modele && IA_IMMO.modele(); return !!(m && (m.atouts || []).indexOf(n) >= 0); }
+  // v6 (18/10/2026) : paramètres du modèle de CE type de bien (le formulaire ne montre que les cases utiles à ce type)
+  function utilise(n, t) {
+    t = t || (el("v-t") && el("v-t").value);
+    if (window.IA_IMMO && IA_IMMO.params && t) return IA_IMMO.params(TR, t).indexOf(n) >= 0;
+    var m = window.IA_IMMO && IA_IMMO.modele && IA_IMMO.modele(); return !!(m && (m.atouts || []).indexOf(n) >= 0);
+  }
+  // cases utiles au type choisi (Ahmed, 18/10/2026 : pas d'étage pour une villa, pas de piscine pour un bureau…)
+  function casesDuType(t) {
+    var connu = window.IA_IMMO && IA_IMMO.pret && IA_IMMO.pret() && t;
+    [].forEach.call(form.querySelectorAll('input[name="atout"]'), function (b) {
+      var ok = !connu || utilise(b.value, t); b.parentNode.hidden = !ok; if (!ok) b.checked = false;
+    });
+    var std = el("v-std"), etb = el("v-etb"), niv = el("v-niv-l");
+    if (std) std.parentNode.hidden = !!connu && !utilise("haut_standing", t);
+    if (etb) etb.parentNode.hidden = !!connu && !ETATS.some(function (n) { return utilise(n, t); });
+    if (niv) niv.hidden = t !== "maison";
+  }
   function libelleChoix(id) { var x = el(id); if (!x || !x.value) return null; var t = x.options[x.selectedIndex].text.replace(/ \(\d{4}\)/g, "").split(" · "); return [t[0], t[1] || t[0]]; }
 
   // ---- le calcul
@@ -187,6 +203,7 @@
     if (!t || !g) { el("v-p-l").hidden = false; return { vide: true, t: t, g: g, q: q, s: s, ch: ch, ia: null, refPrix: null, at: [], et: null, proches: [], semblables: [], nVentes: 0 }; }
     if (!(t === "appartement" || t === "maison")) ch = null;
     el("v-p-l").hidden = !(t === "appartement" || t === "maison");
+    casesDuType(t);
     // sorte de logement (15/10/2026, Ahmed : un duplex ne se compare pas à un S+3 ordinaire) : seulement pour appartement / maison
     var so = el("v-so"), sorte = "";
     if (so) {
@@ -218,16 +235,21 @@
     var refPrix = med(proches.map(function (a) { return a.p; }));
     // atouts cochés et étage (15/10/2026) : le modèle d'IA en tient compte (robot/atouts.py, mêmes noms)
     var at = [].slice.call(form.querySelectorAll('input[name="atout"]:checked')).map(function (x) { return x.value; });
-    at = at.concat(etatStanding());
+    at = at.concat(etatStanding().filter(function (x) {           // standing / état : seulement si la case est montrée
+      var b = x.replace(/^\?/, ""); return !(b === "haut_standing" ? el("v-std") && el("v-std").parentNode.hidden : el("v-etb") && el("v-etb").parentNode.hidden) || x.charAt(0) === "?";
+    }));
     if (["duplex", "etage_villa", "penthouse"].indexOf(sorte) >= 0) at.push(sorte);   // paramètre de l'IA si la mesure l'a gardé
     var et = el("v-e") && el("v-e").value !== "" ? parseInt(el("v-e").value, 10) : null;
     if (el("v-e-l")) el("v-e-l").hidden = !(t === "appartement" || t === "bureau" || t === "commerce");
-    var ia = window.IA_IMMO && IA_IMMO.pret() ? IA_IMMO.estimer(TR, t, g, q, s, ch, at, et) : null;
-    var sansSurface = !s && window.IA_IMMO && IA_IMMO.pret() && ((IA_IMMO.modele() || {}).surface_obligatoire || []).indexOf(t) >= 0;
+    // sorte (villa, étage de villa, duplex…) et nombre de niveaux d'une maison : paramètres du modèle de ce type (v6)
+    var niv = el("v-niv") && el("v-niv").value !== "" && t === "maison" ? parseInt(el("v-niv").value, 10) : null;
+    var plus = {st: (t === "appartement" || t === "maison") ? sorte : null, niveaux: niv};
+    var ia = window.IA_IMMO && IA_IMMO.pret() ? IA_IMMO.estimer(TR, t, g, q, s, ch, at, et, plus) : null;
+    var sansSurface = !s && window.IA_IMMO && IA_IMMO.pret() && (((IA_IMMO.modele() || {}).surface_obligatoire || []).indexOf(t) >= 0 || (t === "maison" && ch === null));
     var m2 = function (l) { return med(l.filter(function (a) { return a.s; }).map(function (a) { return a.p / a.s; })); };
     var duQuartier = qslug ? ventes.filter(function (a) { return a.l === qslug; }) : [];
     var semblables = zone.filter(function (a) { return ch === null || a.c == null || Math.abs(a.c - ch) <= 1; });
-    return { t: t, g: g, q: q, s: s, ch: ch, ia: ia, at: at, et: et, sansSurface: sansSurface, proches: proches, refPrix: refPrix, nVentes: ventes.length,
+    return { t: t, g: g, q: q, s: s, ch: ch, ia: ia, at: at, et: et, plus: plus, sansSurface: sansSurface, proches: proches, refPrix: refPrix, nVentes: ventes.length,
              m2Q: duQuartier.length >= 3 ? m2(duQuartier) : null, m2G: (qslug || dz) ? null : m2(ventes),
              m2D: dz && zone.length >= 3 ? m2(zone) : null, dz: dz, semblables: semblables };
   }
@@ -241,6 +263,7 @@
       [!!(el("v-etb") && el("v-etb").value), T2("l’état du bien", "حالة العقار")]];
     if (!t || t === "appartement" || t === "maison") champs.push([el("v-p").value !== "", T2("le nombre de pièces", "عدد الغرف")]);
     if (t === "appartement" || t === "bureau" || t === "commerce") champs.push([el("v-e").value !== "", T2("l’étage", "الطابق")]);
+    if (t === "maison" && el("v-niv")) champs.push([el("v-niv").value !== "", T2("le nombre de niveaux", "عدد الطوابق")]);
     var n = champs.filter(function (c) { return c[0]; }).length, manque = champs.filter(function (c) { return !c[0]; }).map(function (c) { return c[1]; });
     var pts = Math.round(n / champs.length * 5), barre = "";
     for (var i = 0; i < 5; i++) barre += '<span class="pt' + (i < pts ? " plein" : "") + '"></span>';
@@ -256,7 +279,8 @@
       return;
     }
     var lc = lieuChoisi(), lieu = (lc ? lc + ", " : (r.q ? nomQ(r.g, r.q) + ", " : "")) + nomG(r.g), h = "";
-    if (r.sansSurface) h += '<p class="v-surface-svp">📐 ' + T2("Indiquez la surface : pour une maison ou un terrain, c’est elle qui fait le prix, et notre IA en a besoin pour estimer.", "أدخل المساحة: في المنزل أو الأرض هي التي تحدّد السعر، ويحتاجها ذكاؤنا الاصطناعي للتقدير.") + "</p>";
+    if (r.sansSurface) h += '<p class="v-surface-svp">📐 ' + (r.t === "maison" ? T2("Indiquez la surface ou le nombre de pièces : notre IA en a besoin pour estimer une maison.", "أدخل المساحة أو عدد الغرف: يحتاجها ذكاؤنا الاصطناعي لتقدير منزل.")
+      : T2("Indiquez la surface : pour un terrain, c’est elle qui fait le prix, et notre IA en a besoin pour estimer.", "أدخل المساحة: في الأرض هي التي تحدّد السعر، ويحتاجها ذكاؤنا الاصطناعي للتقدير.")) + "</p>";
     if (r.ia) {
       h += '<p class="ia-ligne"><span>' + T2("Prix estimé par notre IA", "السعر الذي يقدّره ذكاؤنا الاصطناعي") + "</span><b>" + dt(r.ia[0]) + "</b><small>" +
            T2("fourchette probable : ", "المجال المرجّح: ") + dt(r.ia[1]) + " – " + dt(r.ia[2]) + "</small>" +
@@ -336,8 +360,8 @@
     }
     h += blocAnnonce(r, juste);
     h += "<h3>" + T2("Comment ce prix est calculé", "كيف حُسب هذا السعر") + "</h3><p>" +
-      (r.ia ? T2("Notre modèle d’IA (des centaines d’arbres de décision, ré-entraînés tous les 1 à 2 jours sur toutes les annonces du site) tient compte du type de bien, du quartier, de la surface et des pièces. ",
-                 "يأخذ نموذج الذكاء الاصطناعي (مئات أشجار القرار المدرَّبة كل يوم أو يومين على كل إعلانات الموقع) بعين الاعتبار النوع والحي والمساحة والغرف. ")
+      (r.ia ? T2("Notre IA compare votre bien aux annonces semblables du site et tient compte du type de bien, du quartier, de la surface, des pièces et des atouts. ",
+                 "يقارن ذكاؤنا الاصطناعي عقارك بالإعلانات المشابهة في الموقع ويأخذ بعين الاعتبار النوع والحي والمساحة والغرف والمزايا. ")
             : T2("Pour ce type de bien, notre IA ne fait pas encore mieux qu’une simple comparaison : le juste prix est la médiane des annonces les plus proches du vôtre. ",
                  "لهذا النوع، لا يتفوّق ذكاؤنا الاصطناعي بعد على المقارنة البسيطة: السعر العادل هو وسيط أقرب الإعلانات إلى عقارك. ")) +
       (LOC ? T2("Les annonces de référence viennent seulement de votre quartier ou de votre délégation, avec une surface proche. Ce sont des loyers DEMANDÉS : un bail se signe souvent un peu plus bas.", "إعلانات المرجع من حيّك أو معتمديتك فقط، بمساحة قريبة. هي أسعار كراء معروضة: يُوقَّع العقد غالبًا بأقل قليلًا.") : T2("Les annonces de référence viennent seulement de votre quartier ou de votre délégation, avec une surface proche. Ce sont des prix DEMANDÉS : une vente se signe souvent 5 à 10 % plus bas.",
@@ -356,7 +380,8 @@
     var lignes = [];
     [].forEach.call(form.querySelectorAll('input[name="atout"]'), function (b) {
       var avec = b.checked ? r.at : r.at.concat([b.value]), sans = r.at.filter(function (x) { return x !== b.value; });
-      var e1 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, avec, r.et), e0 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, sans, r.et);
+      if (b.parentNode.hidden) return;
+      var e1 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, avec, r.et, r.plus), e0 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, sans, r.et, r.plus);
       if (!e1 || !e0) return;
       var d = e1[0] - e0[0];
       if (d / e0[0] >= 0.02) lignes.push([d, b.checked, nomAtout(b, ar() ? "ar" : "fr")]);
@@ -365,7 +390,7 @@
     var base = r.at.filter(function (x) { var n = x.replace(/^\?/, ""); return n !== "haut_standing" && ETATS.indexOf(n) < 0; });
     [["haut_standing", T2("Haut standing", "راقٍ"), el("v-std") && el("v-std").value === "haut"], ["neuf", T2("Neuf", "جديد"), el("v-etb") && el("v-etb").value === "neuf"],
      ["renove", T2("Rénové", "مجدَّد"), el("v-etb") && el("v-etb").value === "renove"]].forEach(function (v) {
-      var e1 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base.concat([v[0]]), r.et), e0 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base, r.et);
+      var e1 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base.concat([v[0]]), r.et, r.plus), e0 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base, r.et, r.plus);
       if (e1 && e0 && (e1[0] - e0[0]) / e0[0] >= 0.02) lignes.push([e1[0] - e0[0], !!v[2], v[1]]);
     });
     lignes.sort(function (x, y) { return y[0] - x[0]; });

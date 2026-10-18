@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=0cc94aa4d2">
-<script src="../../assets/page.js?v=0cc94aa4d2"></script>
+<link rel="stylesheet" href="../../assets/style.css?v=f468b0a1d0">
+<script src="../../assets/page.js?v=f468b0a1d0"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body data-maj="2026-10-18" data-cv="6a47953dba" data-nb="18737" data-page="investir">
@@ -46,6 +46,13 @@
   </div>
 </section>
 <main class="wrap investir pass-web" id="pass-web">
+<!-- 18/10/2026 (Ahmed : « je n'ai pas trouvé où mettre mon code ») : la case du code est TOUJOURS visible, en haut, même quand ce
+     téléphone a déjà gardé un autre code (avant, elle disparaissait avec l'accueil) -->
+<form class="bloc pass-code-form pass-code-haut" id="pass-code-form">
+  <label for="pass-code-saisi"><span data-l="fr">🔑 Vous avez un code Pass ? Tapez-le ici</span><span data-l="ar">🔑 لديك رمز باس؟ اكتبه هنا</span></label>
+  <span><input id="pass-code-saisi" type="text" autocomplete="off" placeholder="INV-7K3Q" dir="ltr" autocapitalize="characters"><button type="submit"><span data-l="fr">Ouvrir</span><span data-l="ar">افتح</span></button></span>
+  <span class="petit" id="pass-code-msg" role="alert"></span>
+</form>
 <div class="pass-etat" id="pass-etat" role="status" aria-live="polite"></div>
 <section class="bloc pass" id="pass-accueil">
   <h2><span data-l="fr">Prendre le Pass Investisseur</span><span data-l="ar">خذ باس المستثمر</span></h2>
@@ -53,11 +60,6 @@
   <p><span data-l="fr">Ici, sans application ni inscription : vous recevez tout de suite votre <b>code Pass</b> (le motif du paiement) et votre <b>lien personnel</b>. Le Pass s’ouvre sur cette page dès que le paiement est reçu, dans la journée.</span><span data-l="ar">هنا، دون تطبيق أو تسجيل: تحصل فورًا على <b>رمز الباس</b> (سبب الدفع) و<b>رابطك الشخصي</b>. يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.</span></p>
   <a class="btn-exemple" href="../exemple/"><span data-l="fr">👀 Voir d’abord l’exemple complet : tout ce que vous recevez</span><span data-l="ar">👀 شاهد أولًا المثال الكامل: كل ما يصلك</span></a>
   <button type="button" class="btn-paie" id="pass-commencer"><span data-l="fr">Obtenir mon code Pass et payer</span><span data-l="ar">احصل على رمز الباس وادفع</span></button>
-  <form class="pass-code-form" id="pass-code-form">
-    <label for="pass-code-saisi"><span data-l="fr">Vous avez déjà un code Pass (Telegram, ou après paiement) ?</span><span data-l="ar">لديك رمز باس (تيليغرام، أو بعد الدفع)؟</span></label>
-    <span><input id="pass-code-saisi" type="text" autocomplete="off" placeholder="INV-7K3Q" dir="ltr"><button type="submit"><span data-l="fr">Ouvrir</span><span data-l="ar">افتح</span></button></span>
-    <span class="petit" id="pass-code-msg" role="alert"></span>
-  </form>
 </section>
 <div id="pass-contenu" hidden>
 <section class="bloc res-payant pass-analyse" id="p-analyse">
@@ -104,6 +106,6 @@
 </main>
 <footer id="pied" class="pied"></footer>
 
-<script src="../../assets/pass.js?v=0cc94aa4d2" defer></script>
+<script src="../../assets/pass.js?v=f468b0a1d0" defer></script>
 </body>
 </html>

@@ -97,13 +97,15 @@
         ? "<p><b>" + T2("Essai gratuit actif", "التجربة المجانية مفعّلة") + "</b> : " + T2("encore ", "متبقٍّ ") + "<b>" + nb(Math.max(1, jours(auj, a.fin))) + "</b>" + T2(" jour(s), jusqu’au ", " يوم، إلى غاية ") + jfr(a.fin) + "</p>"
         : "<p><b>" + T2("Pass Investisseur actif", "باس المستثمر مفعّل") + "</b> " + T2("jusqu’au ", "إلى غاية ") + jfr(a.fin) + "</p>";
     } else {
-      h += "<p><b>" + (etat.debut ? T2("Votre essai gratuit est terminé.", "انتهت تجربتك المجانية.") : T2("Votre code Pass est prêt.", "رمز الباس جاهز.")) + "</b> " +
-           T2("Payez le Pass ci-dessous avec ce code en motif : le Pass s’ouvre sur cette page dès que le paiement est reçu, dans la journée.", "ادفع الباس أدناه مع هذا الرمز كسبب للدفع: يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.") + "</p>";
+      // 18/10/2026 (Ahmed : « les lignes se coupent beaucoup ») : phrases courtes, une idée par ligne, le lien n'est plus écrit en entier
+      // (il se coupait au milieu) : un bouton le copie. Pas d'« essai gratuit » (supprimé le 15/10/2026 ; les essais commencés avant restent)
+      h += '<p class="pass-titre"><b>' + (etat.debut ? T2("Votre essai est terminé", "انتهت تجربتك") : T2("Votre code Pass est prêt", "رمز الباس جاهز")) + "</b></p>" +
+           '<ol class="pass-etapes"><li>' + T2("Payez le Pass ci-dessous.", "ادفع الباس أدناه.") + "</li><li>" +
+           T2("Motif du paiement : votre code.", "سبب الدفع: رمزك.") + "</li><li>" + T2("Le Pass s’ouvre ici, le jour même.", "يُفتح الباس هنا في نفس اليوم.") + "</li></ol>";
     }
-    h += '<p class="pass-code">' + T2("Votre code Pass", "رمز الباس") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b> <small>" +
-         T2("(motif du paiement ; il ouvre aussi cette page sur un autre téléphone)", "(سبب الدفع؛ ويفتح هذه الصفحة على هاتف آخر)") + "</small></p>" +
-         '<p class="pass-lien">' + T2("Votre lien personnel, à garder dans vos favoris", "رابطك الشخصي، احفظه في المفضلة") + ' : <bdi dir="ltr" class="pass-url">' + esc(lienPerso()) +
-         '</bdi> <button type="button" class="pass-copier" id="pass-copier">' + T2("Copier", "نسخ") + "</button></p>";
+    h += '<p class="pass-code">' + T2("Code", "الرمز") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b></p>" +
+         '<p class="pass-lien"><button type="button" class="pass-copier" id="pass-copier">' + T2("📋 Copier mon lien", "📋 انسخ رابطي") + "</button>" +
+         "<small>" + T2("Il ouvre le Pass sur un autre téléphone.", "يفتح الباس على هاتف آخر.") + "</small></p>";
     boite.innerHTML = h;
     var wa = el("pass-preuve");
     if (wa) { if (!wa.getAttribute("data-base")) wa.setAttribute("data-base", wa.href); wa.href = wa.getAttribute("data-base") + encodeURIComponent(etat.code); }

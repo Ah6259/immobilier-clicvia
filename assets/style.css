@@ -1156,3 +1156,9 @@ main > .comment-marche:first-child{margin-top:14px}
 .v-trouvees li::before{content:"•";margin-inline-end:6px;color:var(--doux)}
 .v-trouvees li>*{flex:none}.v-trouvees li>.v-tr-lieu{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .v-pas b{display:block;font-size:15.5px}.v-pas .v-pas-sous{display:block;margin-top:2px;color:var(--doux);font-size:14px}
+/* 18/10/2026 (Ahmed : « les lignes se coupent beaucoup ») : encart du code Pass, une idée par ligne */
+.pass-titre{margin:0 0 6px;font-size:17px}.pass-etapes{margin:0 0 10px;padding-inline-start:22px}.pass-etapes li{margin:2px 0}
+.pass-code{margin:6px 0;font-size:16px}.pass-code b{font-size:20px;letter-spacing:.5px}
+.pass-lien{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0 0}.pass-lien small{color:var(--doux)}
+.pass-code-haut{display:grid;gap:6px;margin:12px 0}.pass-code-haut label{font-weight:800}.pass-code-haut span{display:flex;gap:8px}
+.pass-code-haut input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border:1.5px solid var(--bord,#d8cfc0);border-radius:10px;text-transform:uppercase}

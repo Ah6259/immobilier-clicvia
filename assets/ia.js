@@ -16,7 +16,17 @@
   function variables(g, q, s, ch, nv, f, params) {
     var lg = nv.g[g] !== undefined ? nv.g[g] : 0, lq = nv.q[g + "|" + q], geo = nv.geo || {}, c = geo[g + "|" + q] || geo[g + "|"] || null;
     return [lg, lq ? lq[0] : lg, lq ? Math.log(lq[1] + 1) : 0, s ? Math.log(s) : null, ch, c ? c[0] : null, c ? c[1] : null]
-      .concat(params.map(function (n) { var v = f[n]; return v === undefined ? null : v; }));
+      .concat(params.map(function (n) { var v = f[n]; return v === undefined ? null : v; }))
+      .concat(nv.m2 ? [pm2(nv, g, q, s)] : []);
+  }
+  // version 10 (18/10/2026, Ahmed) : dès qu'un type a assez d'annonces avec leur surface, le prix au m² du lieu est un paramètre
+  // (dernière variable) : niveau au m² du quartier (sinon du gouvernorat) + log(surface) — comme pm2() du robot
+  function pm2(nv, g, q, s) {
+    var n2 = nv.m2;
+    if (!n2 || !s) return null;
+    var v = q ? n2.q[g + "|" + q] : undefined;
+    if (v === undefined) v = n2.g[g];
+    return v === undefined ? null : v + Math.log(s);
   }
   // faits d'un bien décrit : atouts (liste, ou null = inconnus ; « ?nom » = celui-là inconnu), étage, plus = {niveaux, st}
   function faits(at, et, plus) {

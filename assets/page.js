@@ -116,6 +116,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
           '<a href="' + racine + 'deposer/">' + T("Déposer une annonce gratuite", "انشر إعلانًا مجانيًا") + '</a>' +
           '<a href="' + racine + 'investir/">' + T("Où investir ? (rendement par quartier)", "أين تستثمر؟ (المردود حسب الحي)") + '</a>' +
           '<a href="' + racine + 'prix/">' + T("Carte des prix par quartier", "خريطة الأسعار حسب الحي") + '</a>' +
+          '<a href="' + racine + 'rapports/">' + T("Rapports du mois (prix par quartier)", "تقارير الشهر (الأسعار حسب الحي)") + '</a>' +
           '<a href="' + racine + 'vendre/">' + T("Vendre : estimer mon bien (IA)", "البيع: قدّر عقاري (ذكاء اصطناعي)") + '</a>' +
           '<a href="' + racine + 'alertes/">' + T("Alertes gratuites", "تنبيهات مجانية") + '</a>' +
           '<a href="' + racine + 'a-propos/">' + T("Comment fonctionne le site ?", "كيف يعمل الموقع؟") + '</a>' +

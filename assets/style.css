@@ -1055,3 +1055,34 @@ main > .comment-marche:first-child{margin-top:14px}
 .sj-bouton{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sj-choix.sj-plat{font-weight:400;color:var(--encre)}
 .sj-choix.sj-plat.actif{font-weight:700}
+/* Rapports du mois (18/10/2026) */
+.rapport .bloc h2{font-size:20px}
+.rp-var{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 7px;margin-inline-start:4px;white-space:nowrap}
+.rp-hausse{background:var(--terre-voile);color:var(--terre-f)}
+.rp-baisse{background:var(--bleu-clair);color:var(--bleu)}
+.rp-stable{background:var(--sable);color:var(--doux)}
+.rp-bref ul,.rp-methode ul{margin:8px 0 0;padding-inline-start:20px;line-height:1.55}
+.rp-bref li,.rp-methode li{margin-bottom:6px}
+.rp-deux{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 22px}
+.rp-deux h3{font-size:15px;margin:10px 0 4px}
+.rp-top{margin:0;padding-inline-start:22px;line-height:1.5}
+.rp-top li{margin-bottom:5px}
+.rp-top small{color:var(--doux)}
+.rp-top b{display:block;font-weight:600;color:var(--terre-f)}
+.rp-tous{list-style:none;padding:0;margin:0;line-height:1.7}
+.rp-tous li{margin-bottom:6px}
+.rp-mois{list-style:none;padding:0;margin:0}
+.rp-mois li{padding:10px 0;border-bottom:1px solid var(--ligne)}
+.rp-mois small{display:block;color:var(--doux)}
+.rp-liens p{display:flex;flex-wrap:wrap;gap:8px}
+.rp-btn{display:inline-flex;align-items:center;min-height:42px;padding:8px 16px;border-radius:var(--r-petit);border:1.5px solid var(--encre);color:var(--encre);text-decoration:none;font-weight:600;background:var(--carte)}
+.rp-btn:hover{background:var(--encre);color:#fff}
+.rp-btn-plein{background:var(--terre);border-color:var(--terre);color:#fff}
+.rp-btn-plein:hover{background:var(--terre-f)}
+.rp-liens p.petit{display:block;font-size:13.5px;color:var(--doux)}
+.rp-source{background:var(--sable);border:1px dashed var(--ligne);border-radius:var(--r-petit);padding:10px 12px;font-size:14px;user-select:all;word-break:break-word}
+.rp-citer summary,.rp-methode summary{cursor:pointer}
+.rp-citer summary h2,.rp-methode summary h2{display:inline}
+.rp-lien-page{margin:0 0 12px}
+.rp-lien-page a{font-weight:600;color:var(--terre-f)}
+.rp-saison{display:block;font-size:12px;font-style:italic}

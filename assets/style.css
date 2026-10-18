@@ -1178,3 +1178,4 @@ main > .comment-marche:first-child{margin-top:14px}
 /* 18/10/2026 (Ahmed : « bouton pas bien centré entre la recherche et Voir… ») : même espace (12 px) au-dessus et au-dessous de
    « Plus de filtres » (la case « Où ? » a déjà 10 px dessous) */
 .recherche-simple .plus-filtres{margin:0 0 12px}.recherche-simple .champ-ou{margin-bottom:12px}
+.leaflet-marker-icon.cp-gouv.cp-reste{border-style:dashed}

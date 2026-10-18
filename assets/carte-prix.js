@@ -83,6 +83,26 @@
         .bindPopup("<b>" + T("Délégation ", "معتمدية ") + nom + "</b><br>" + nb(x.n) + T(" annonces", " إعلانًا") + "<br><small>" + T("Zoomez pour voir les quartiers.", "قرّب لرؤية الأحياء.") + "</small>" +
                    '<br><a href="' + lien + '">' + T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>").addTo(couche);
     });
+    // 18/10/2026 (Ahmed : « je zoome sur Ajim, ses 5 annonces disparaissent ») : au zoom des QUARTIERS, une délégation dont des annonces
+    // ne sont dans aucune bulle de quartier (quartier sans position) garde une bulle avec ce reste (x.r) : aucune annonce ne disparaît
+    if (niv === 3) D.d.forEach(function (x) {
+      if (!x.r) return;
+      var nom = esc(ar() && x.ar ? x.ar : x.fr), lien = racine + x.g + "/?d=" + encodeURIComponent(x.s) + "#liste";
+      L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv cp-deleg cp-reste", html: "<span>" + court(x.r) + "</span>", iconSize: [34, 34] }), zIndexOffset: -600,
+                      title: nom + " · " + nb(x.r) + T(" annonces", " إعلانًا") })
+        .bindPopup("<b>" + T("Délégation ", "معتمدية ") + nom + "</b><br>" + nb(x.r) + T(" annonces sans quartier précis sur la carte", " إعلانًا دون حي محدد على الخريطة") +
+                   '<br><a href="' + lien + '">' + T("Voir les " + nb(x.n) + " annonces de la délégation", "شاهد " + nb(x.n) + " إعلانًا في المعتمدية") + "</a>").addTo(couche);
+    });
+    // annonces du gouvernorat dans aucune bulle de délégation (lieu vague) : une bulle « reste » au centre du gouvernorat, aux zooms 2 et 3
+    if (niv >= 2) D.g.forEach(function (x) {
+      var r = niv === 3 ? x.r3 : x.r;
+      if (!r || (niv === 2 && !avecDeleg[x.g])) return;     // niveau 2 sans délégations : la bulle normale du gouvernorat reste
+      var nom = esc(ar() ? x.ar : x.fr);
+      L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv cp-reste", html: "<span>" + court(r) + "</span>", iconSize: [34, 34] }), zIndexOffset: -700,
+                      title: nom + " · " + nb(r) + T(" annonces", " إعلانًا") })
+        .bindPopup("<b>" + nom + "</b><br>" + nb(r) + T(" annonces sans délégation précise", " إعلانًا دون معتمدية محددة") +
+                   '<br><a href="' + racine + x.g + '/#liste">' + T("Voir les " + nb(x.n) + " annonces du gouvernorat", "شاهد " + nb(x.n) + " إعلانًا في الولاية") + "</a>").addTo(couche);
+    });
     // gouvernorats sans quartier avec un prix : un cercle avec leur nombre d'annonces
     D.g.forEach(function (x) {
       if (niv === 3 || (niv === 2 && avecDeleg[x.g])) return;     // remplacées par les délégations, puis par les quartiers
@@ -193,7 +213,8 @@
     var S = delegsChoisies(g, c.d);
     var dd = D.d.filter(function (x) { return x.g === g && S[x.s]; }).map(function (x) { return [x.p, x.fr]; });
     var qq = D.q.filter(function (x) { return x.g === g && OF[g + "/" + x.q] && S[slugC(OF[g + "/" + x.q][0])]; }).map(function (x) { return [x.p, x.fr]; });
-    return dd.length || qq.length ? { pts: dd.length ? dd : qq, cadre: dd.concat(qq), dd: dd.map(function (x) { return x[0]; }), qq: qq.map(function (x) { return x[0]; }), zoom: NIV_DELEG + 1 } : null;
+    var dr = D.d.filter(function (x) { return x.g === g && S[x.s] && x.r; }).map(function (x) { return x.p; });   // bulles « reste » (niveau 3)
+    return dd.length || qq.length ? { pts: dd.length ? dd : qq, cadre: dd.concat(qq), dd: dd.map(function (x) { return x[0]; }), qq: qq.map(function (x) { return x[0]; }).concat(dr), zoom: NIV_DELEG + 1 } : null;
   }
   // 18/10/2026 (Ahmed : « ces cercles ne servent à rien » : un anneau vide, sans bulle dedans) : l'anneau entoure seulement une bulle
   // VISIBLE au zoom actuel : bulles des délégations au niveau 2, bulles des quartiers (de la délégation choisie) au niveau 3

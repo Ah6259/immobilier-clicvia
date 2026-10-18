@@ -579,8 +579,10 @@
         T2("Nous vous offrons 30 jours de plus, gratuitement.", "نهديك 30 يومًا إضافية مجانًا.") + ' <button type="button" class="btn-paie" id="v-offert">' +
         T2("Pas encore vendu ni loué : prolonger de 30 jours offerts", "لم يُبع ولم يُكرَ: مدّد 30 يومًا مجانًا") + "</button></p>";
       h += a.ok ? "<p><b>" + (a.quoi === "essai" ? T2("Essai gratuit actif", "التجربة المجانية مفعّلة") : a.quoi === "offert" ? T2("30 jours offerts", "30 يومًا هدية") : T2("Pass Propriétaire actif", "باس المالك مفعّل")) + "</b> " + T2("jusqu’au ", "إلى غاية ") + jfr(a.fin) + T2(" inclus — l’analyse complète de votre bien est juste sous l’estimation gratuite.", " — التحليل الكامل لعقارك تحت التقدير المجاني مباشرة.") + "</p>"
-                : "<p><b>" + (etat.debut ? T2("Votre essai gratuit est terminé.", "انتهت تجربتك المجانية.") : T2("Votre code Pass est prêt.", "رمز الباس جاهز.")) + "</b> " + T2("Payez ci-dessous avec ce code en motif : l’analyse complète de votre bien s’ouvre ici dès que le paiement est reçu, dans la journée.", "ادفع أسفله مع هذا الرمز كسبب: يُفتح التحليل الكامل لعقارك هنا بمجرد وصول الدفع، في نفس اليوم.") + "</p>";
-      h += '<p class="pass-code">' + T2("Votre code Pass Propriétaire", "رمز باس المالك") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b></p>";
+                : '<p class="pass-titre"><b>' + (etat.debut ? T2("Votre essai est terminé", "انتهت تجربتك") : T2("Votre code Pass est prêt", "رمز الباس جاهز")) + "</b></p>" +
+                  '<ol class="pass-etapes"><li>' + T2("Payez le Pass ci-dessous.", "ادفع الباس أدناه.") + "</li><li>" + T2("Motif du paiement : votre code.", "سبب الدفع: رمزك.") +
+                  "</li><li>" + T2("L’analyse s’ouvre ici, le jour même.", "يُفتح التحليل هنا في نفس اليوم.") + "</li></ol>";   // (18/10/2026 : comme investir/pass/)
+      h += '<p class="pass-code">' + T2("Code", "الرمز") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b></p>";
       var wa = el("pass-preuve");
       if (wa) { if (!wa.getAttribute("data-base")) wa.setAttribute("data-base", wa.href); wa.href = wa.getAttribute("data-base") + encodeURIComponent(etat.code); }
     }
@@ -617,6 +619,7 @@
     etat = { code: c, debut: etat && etat.code === c ? etat.debut : null }; garder(); tout();
     el("v-code-msg").textContent = T2("Vérification du code…", "جارٍ التحقق من الرمز…");
     verifierCode().then(function () {
+      if (typeof document === "undefined" || !document) return;   // page déjà fermée (calcul du code fini après)
       // 15/10/2026 : l'ancien message « Code inconnu » restait affiché après un bon code (Ahmed croyait que ça ne marchait pas)
       el("v-code-msg").textContent = acces().ok ? T2("✅ Code ouvert : votre analyse complète s’affiche sous l’estimation gratuite.", "✅ فُتح الرمز: يظهر تحليلك الكامل تحت التقدير المجاني.")
         : ACCES ? T2("Ce code n’est pas encore activé : il s’ouvre dès que le paiement est reçu (dans la journée).", "هذا الرمز غير مفعّل بعد: يُفتح بمجرد وصول الدفع (في نفس اليوم).") : "";

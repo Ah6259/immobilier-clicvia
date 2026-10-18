@@ -226,6 +226,7 @@
     ["p-c1", "p-c2", "p-c3"].forEach(function (id) { var s = el(id), g = s.value; s.innerHTML = opts; s.value = g; });
   }
   function tout() {
+    if (typeof document === "undefined" || !document) return;   // page déjà fermée (calcul du code fini après)
     if (R) { el("pass-date").innerHTML = jfr(R.jour); gouvernorats(); classement(); autres(); comparer(); }
     afficherEtat();
   }
@@ -249,7 +250,7 @@
     if (!/^INV-[A-Z0-9]{4,8}$/.test(c)) { el("pass-code-msg").textContent = T2("Code inconnu : il ressemble à INV-7K3Q.", "رمز غير معروف: يشبه INV-7K3Q."); return; }
     etat = {code: c, debut: etat && etat.code === c ? etat.debut : null}; garder(); tout();
     el("pass-code-msg").textContent = T2("Vérification du code…", "جارٍ التحقق من الرمز…");
-    ouvrir().then(function () { el("pass-code-msg").textContent = acces().ok ? "" : T2("Ce code n’est pas (encore) payé.", "هذا الرمز غير مدفوع (بعد)."); });
+    ouvrir().then(function () { if (typeof document === "undefined" || !document) return; el("pass-code-msg").textContent = acces().ok ? "" : T2("Ce code n’est pas (encore) payé.", "هذا الرمز غير مدفوع (بعد)."); });
   });
   document.addEventListener("langue", tout);
   tout();

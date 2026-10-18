@@ -250,9 +250,9 @@
     // Sh = Ch, Y = I, Ph = F, lettres doublées (Hammamet, Hamamet), article collé « Es/Et/En… » (Essouk, Souk), « el / al / l' »,
     // « e » ou « a » entre deux consonnes (Houmet / Houmt, Ghazela / Ghazala, Mahrès / Mahras)
     function son(t) {
-      return (" " + t + " ").replace(/ (el|al|l|le|la|les) /g, " ").replace(/ (el|al|l|le|la|les) /g, " ")
+      return (" " + t + " ")
         .replace(/ e([bcdfgjklmnpqrstvxz])\1/g, " $1").replace(/dj/g, "j").replace(/sh/g, "ch").replace(/ph/g, "f").replace(/q/g, "k")
-        .replace(/ou/g, "u").replace(/w/g, "u").replace(/y/g, "i").replace(/([a-z])\1/g, "$1")
+        .replace(/ou/g, "u").replace(/w/g, "u").replace(/y/g, "i").replace(/([a-z])\1/g, "$1").replace(/ (el|al|l|le|la|les) /g, " ").replace(/ (el|al|l|le|la|les) /g, " ")
         .replace(/([bcdfghjklmnpqrstvxz])[ea](?=[bcdfghjklmnpqrstvxz])/g, "$1").replace(/ +/g, " ");
     }
     function cle(t) { return son(" " + String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").trim() + " "); }
@@ -330,7 +330,11 @@
         if (selL) selL.value = c.x.l;
         champ.value = c.x.fr; fermer();
         memoriser(filtrer());
-        var l = document.getElementById("liste"); if (l && l.scrollIntoView) l.scrollIntoView({ behavior: "smooth", block: "start" });
+        // 18/10/2026 (Ahmed : « quand on fait une recherche, la carte doit afficher directement cet endroit ») : la carte suit « Où ? »
+        // et on la montre (la liste des annonces est juste dessous) ; sans carte sur la page : on va à la liste comme avant
+        form.dispatchEvent(new CustomEvent("lieu-choisi", { bubbles: true }));
+        var cz = document.getElementById("cp-carte"), l = cz || document.getElementById("liste");
+        if (l && l.scrollIntoView) l.scrollIntoView({ behavior: "smooth", block: cz ? "center" : "start" });
       }
       champ.addEventListener("input", proposer);
       champ.addEventListener("focus", proposer);

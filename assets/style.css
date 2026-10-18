@@ -368,7 +368,7 @@ html[dir="rtl"] .ou-boite svg{left:auto;right:12px}
 .champ-ou input{width:100%;font:inherit;font-size:16px;color:var(--encre);background:var(--carte);border:1.5px solid var(--terre);border-radius:var(--r-petit);padding:11px 12px 11px 40px;min-height:48px;-webkit-appearance:none;appearance:none}
 html[dir="rtl"] .champ-ou input{padding:11px 40px 11px 12px}
 .champ-ou input:focus{outline:0;box-shadow:0 0 0 4px var(--terre-clair)}
-.ou-suggestions{position:absolute;z-index:30;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r-petit);box-shadow:0 12px 30px rgba(30,42,48,.18);max-height:330px;overflow:auto}
+.ou-suggestions{position:absolute;z-index:1000;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--carte);border:1px solid var(--ligne);border-radius:var(--r-petit);box-shadow:0 12px 30px rgba(30,42,48,.18);max-height:330px;overflow:auto}
 .ou-suggestions li{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:9px 10px;border-radius:8px;cursor:pointer;line-height:1.25}
 .ou-suggestions li.actif,.ou-suggestions li[role=option]:hover{background:var(--terre-clair)}
 .ou-nom{font-weight:700;color:var(--encre)}
@@ -1170,3 +1170,8 @@ main > .comment-marche:first-child{margin-top:14px}
 .choix.choix-mini{min-height:42px;padding:6px 14px;border-radius:999px;gap:7px;box-shadow:none;height:auto}
 .choix.choix-mini>svg{width:22px;height:22px}
 .choix.choix-mini b{font-size:15px}
+/* 18/10/2026 (capture d'Ahmed : la liste des suggestions de « Où ? » passait DERRIÈRE la carte de Tunisie) : les couches de Leaflet ont
+   des z-index de 400 à 1000 ; la carte est ISOLÉE (ses z-index restent à l'intérieur) et les listes qui s'ouvrent passent au-dessus.
+   Règle commune § 28 (tous les sites avec une carte) */
+.leaflet-container,.cp-carte{isolation:isolate;z-index:0}
+.lu-seulement{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}

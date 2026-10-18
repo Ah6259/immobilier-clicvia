@@ -201,14 +201,18 @@
     });
   }
   function cadrer() {
-    var D = donnees(), g = zone.getAttribute("data-g"), q = zone.getAttribute("data-q");
+    var fg = document.getElementById("f-g");   // gouvernorat choisi dans la recherche (lien ?g=…, case « Où ? »)
+    var D = donnees(), g = zone.getAttribute("data-g") || (fg && fg.value) || null, q = zone.getAttribute("data-q");
     var ch = lieuChoisi(D, g);
     choisis = ch ? ch.pts : [];
     zone.setAttribute("data-choisi", choisis.map(function (x) { return x[1]; }).join(" | "));
     if (ch) {
       var tous = (ch.cadre || ch.pts).map(function (x) { return x[0]; });
       if (tous.length === 1) carte.setView(tous[0], ch.zoom);
-      else { carte.fitBounds(tous, { padding: [30, 30], maxZoom: ch.zoom + 1 }); if (carte.getZoom() < NIV_DELEG) carte.setZoom(NIV_DELEG); }
+      else {   // centre et zoom calculés d'un coup (avant : fitBounds animé puis setZoom sur l'ancien centre -> carte au milieu de la Tunisie)
+        var bz = L.latLngBounds(tous);
+        carte.setView(bz.getCenter(), Math.max(NIV_DELEG, Math.min(ch.zoom + 1, carte.getBoundsZoom(bz, false, L.point(30, 30)))), { animate: false });
+      }
       return;
     }
     // page d'un QUARTIER (17/10/2026, Ahmed : « c'est une ancienne version qui est affichée ») : la carte s'ouvre sur le quartier,
@@ -311,6 +315,13 @@
       // délégation / localité : la carte y va et l'entoure (après la mise à jour des listes par app.js)
       // setTimeout : app.js remet d'abord à jour les listes (une nouvelle délégation vide la localité)
       if (carte) { if (t.id === "f-g" || t.name === "d" || t.name === "l") setTimeout(function () { cadrer(); dessiner(); }, 0); else dessiner(); }
+    });
+    // un lieu choisi dans la case « Où ? » (gouvernorat + délégation + localité remplis d'un coup) : la carte y va et l'entoure
+    if (form) form.addEventListener("lieu-choisi", function () {
+      if (!carte) return;
+      var fg = document.getElementById("f-g");
+      if (fg && fg.value) zone.setAttribute("data-g", fg.value); else zone.removeAttribute("data-g");
+      cadrer(); dessiner();
     });
     zone.addEventListener("click", function (e) {             // « Voir les maisons » dans la bulle d'un gouvernorat
       var b = e.target.closest && e.target.closest(".cp-voir-type");

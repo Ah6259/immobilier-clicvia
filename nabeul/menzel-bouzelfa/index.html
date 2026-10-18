@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=7088da934b">
-<script src="../../assets/page.js?v=7088da934b"></script>
+<link rel="stylesheet" href="../../assets/style.css?v=03c18356f9">
+<script src="../../assets/page.js?v=03c18356f9"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://immobilier.clicvia.com/"}, {"@type": "ListItem", "position": 2, "name": "Nabeul", "item": "https://immobilier.clicvia.com/nabeul/"}, {"@type": "ListItem", "position": 3, "name": "Menzel Bouzelfa", "item": "https://immobilier.clicvia.com/nabeul/menzel-bouzelfa/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Combien d’annonces immobilières à Menzel Bouzelfa ?", "acceptedAnswer": {"@type": "Answer", "text": "12 annonces au 18 octobre 2026 : 10 à vendre et 2 à louer."}}]}</script>
@@ -68,13 +68,11 @@
     <a class="btn-estimer-loyer" href="../../louer/"><span data-l="fr">Loyer de mon bien</span><span data-l="ar">كراء عقاري</span></a>
   </div>
   <div class="champ champ-ou">
-    <label for="f-ou"><span data-l="fr">Où ? Ville, délégation ou quartier</span><span data-l="ar">أين؟ مدينة أو معتمدية أو حي</span></label>
+    <!-- 18/10/2026 (Ahmed : « enlève cette ligne ») : le titre n'est plus affiché (lu seulement par les lecteurs d'écran) -->
+    <label for="f-ou" class="lu-seulement"><span data-l="fr">Où ? Ville, délégation ou quartier</span><span data-l="ar">أين؟ مدينة أو معتمدية أو حي</span></label>
     <div class="ou-boite"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><input id="f-ou" type="search" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ou-suggestions"
-      placeholder="ex. La Marsa, Petite Ariana, Ennasr…" data-ph-fr="ex. La Marsa, Petite Ariana, Ennasr…" data-ph-ar="مثال: المرسى، أريانة الصغرى…"></div>
+      placeholder="Où ? ex. La Marsa, Ennasr, Djerba…" data-ph-fr="Où ? ex. La Marsa, Ennasr, Djerba…" data-ph-ar="أين؟ مثال: المرسى، النصر، جربة…"></div>
     <ul class="ou-suggestions" id="ou-suggestions" role="listbox" hidden></ul>
-  </div>
-  <div class="actions-recherche">
-    <button class="btn-chercher" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span data-l="fr">Voir </span><span data-l="ar">عرض </span><span class="nb-annonces"><span data-l="fr">les </span><span data-l="ar"></span></span><span data-l="fr">annonces</span><span data-l="ar">الإعلانات</span></button>
   </div>
   <details class="plus-filtres">
     <summary><span data-l="fr">Plus de filtres</span><span data-l="ar">فلاتر أخرى</span> <span class="nb-filtres" hidden></span></summary>
@@ -95,6 +93,10 @@
       <button class="btn-alerte" type="button" aria-haspopup="dialog" title="Créer une alerte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span data-l="fr">Alerte</span><span data-l="ar">تنبيه</span></button>
     </div>
   </details>
+  <!-- 18/10/2026 (Ahmed) : « Plus de filtres » AU-DESSUS du bouton « Voir les annonces » (on règle les filtres, puis on voit) -->
+  <div class="actions-recherche">
+    <button class="btn-chercher" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span data-l="fr">Voir </span><span data-l="ar">عرض </span><span class="nb-annonces"><span data-l="fr">les </span><span data-l="ar"></span></span><span data-l="fr">annonces</span><span data-l="ar">الإعلانات</span></button>
+  </div>
 </form>
 <section class="bloc" id="liste" aria-live="polite">
   <div class="bloc-tete"><div><h2><span data-l="fr">Annonces à Menzel Bouzelfa</span><span data-l="ar">إعلانات منزل بوزلفة</span></h2></div>
@@ -114,8 +116,8 @@
 <script src="../../donnees/lieux.js?v=2026-10-18" defer></script>
 <script src="../../donnees/decoupage.js?v=d4e3f18d33" defer></script>
 <script src="../../donnees/annonces.js?v=b19b73269e" defer></script>
-<script src="../../assets/app.js?v=7088da934b" defer></script>
-<script src="../../assets/carte-prix.js?v=7088da934b" defer></script>
-<script src="../../assets/alerte.js?v=7088da934b" defer></script>
+<script src="../../assets/app.js?v=03c18356f9" defer></script>
+<script src="../../assets/carte-prix.js?v=03c18356f9" defer></script>
+<script src="../../assets/alerte.js?v=03c18356f9" defer></script>
 </body>
 </html>

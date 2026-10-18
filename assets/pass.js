@@ -149,11 +149,11 @@
     if (!l.length) return;
     var h = "<h2>" + T2("Fiche investisseur : ", "بطاقة المستثمر: ") + esc(ar() ? l[0].q_ar : l[0].q_fr) + " <small>" + esc(ar() ? l[0].g_ar : l[0].g_fr) + "</small></h2>";
     if (l.some(function (x) { return x.ia; })) h += '<p class="petit p-ia-note">🤖 ' + T2("Peu d’annonces dans ce quartier : les chiffres marqués « estimé par l’IA » sont calculés par notre modèle d’IA, pas par des annonces du quartier. À vérifier sur place.", "إعلانات قليلة في هذا الحي: الأرقام المعلَّمة « تقدير الذكاء الاصطناعي » يحسبها نموذجنا وليست من إعلانات الحي. تحقّق منها ميدانيًا.") + "</p>";
-    if (l[0].saison) h += '<p class="petit">' + T2("Zone de vacances : loyers souvent meublés ou saisonniers.", "منطقة عطل: الكراء غالبًا مفروش أو موسمي.") + "</p>";
+    if (l[0].saison) h += '<p class="petit">' + T2("Zone de vacances : loyers souvent saisonniers (les meublés ne sont pas comptés).", "منطقة عطل: الكراء غالبًا موسمي (المفروش غير محسوب).") + "</p>";
     l.forEach(function (x) {
       h += '<div class="p-fiche"><h3>' + T2("Appartement", "شقة") + ' <bdi dir="ltr">S+' + x.taille + '</bdi> <span class="pe-note"><bdi dir="ltr">' + String(x.note).replace(".", ",") + "/10</bdi></span></h3><ul>" +
         "<li>" + T2("Prix d’achat : ", "سعر الشراء: ") + "<b>" + dt(x.achat) + "</b>" + iaM(x, "achat") + " <small>(" + T2("la moitié des annonces de ", "نصف الإعلانات من ") + dt(x.achat_bas) + T2(" à ", " إلى ") + dt(x.achat_haut) + T2(" : visez le bas pour négocier", ": استهدف الأدنى للتفاوض") + ")</small></li>" +
-        "<li>" + T2("Loyer : ", "الكراء: ") + "<b>" + dt(x.loyer) + "</b>" + iaM(x, "loyer") + " " + T2("/ mois", "/ شهر") + " <small>(" + dt(x.loyer_bas) + " – " + dt(x.loyer_haut) + ")</small></li>" +
+        "<li>" + T2("Loyer (non meublé) : ", "الكراء (غير مفروش): ") + "<b>" + dt(x.loyer) + "</b>" + iaM(x, "loyer") + " " + T2("/ mois", "/ شهر") + " <small>(" + dt(x.loyer_bas) + " – " + dt(x.loyer_haut) + ")</small></li>" +
         "<li>" + T2("Rendement : ", "المردود: ") + "<b>" + pc(x.brut) + "</b> " + T2("brut", "خام") + ", " + pc(x.net) + " " + T2("net", "صافٍ") +
         (x.vs_gouv === null || x.vs_gouv === undefined ? "" : " <small>(" + (x.vs_gouv >= 0 ? "+" : "−") + '<bdi dir="ltr">' + String(Math.abs(x.vs_gouv)).replace(".", ",") + "</bdi> " + T2("point(s) par rapport au gouvernorat", "نقطة مقارنة بالولاية") + ")</small>") + "</li>" +
         (x.retour_ans ? "<li>" + T2("Prix remboursé par les loyers nets en ", "يُسترجع السعر بالكراء الصافي في ") + "<b>" + '<bdi dir="ltr">' + String(x.retour_ans).replace(".", ",") + "</bdi> " + T2("ans", "سنة") + "</b></li>" : "") +

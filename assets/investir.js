@@ -98,12 +98,12 @@
       else if (!q && g && varie(g, "", a)) h += msgVarie((Z.v.filter(function (x) { return x[0] === g && !x[1] && x[2] === a; })[0] || [])[ar() ? 4 : 3] || g, nomT);
       else if (zq) {
         h += '<h4 class="res-zone">' + esc(ar() ? zq[3] : zq[2]) + " <small>" + escT(nomT) + "</small></h4>" + ligneRes("Prix d’achat médian", "سعر الشراء الوسط", dt(zq[5])) +
-             ligneRes("Loyer médian par mois", "الكراء الوسط في الشهر", dt(zq[6])) + ligneRes("Rendement brut", "المردود الخام", pc(zq[7]), "fort") +
+             ligneRes("Loyer médian par mois (non meublé)", "الكراء الوسط في الشهر (غير مفروش)", dt(zq[6])) + ligneRes("Rendement brut", "المردود الخام", pc(zq[7]), "fort") +
              '<p class="petit">' + T(zq[8] + " ventes et " + zq[9] + " locations comparées", zq[8] + " بيع و" + zq[9] + " كراء للمقارنة") +
              (zq[11] ? T(" · peu d’annonces : chiffre indicatif", " · إعلانات قليلة: رقم للاستئناس") : "") + "</p>";
       } else if (zg) {
         h += '<h4 class="res-zone">' + esc(ar() ? zg[2] : zg[1]) + " <small>" + escT(nomT) + "</small></h4>" + ligneRes("Prix d’achat médian", "سعر الشراء الوسط", dt(zg[3])) +
-             ligneRes("Loyer médian par mois", "الكراء الوسط في الشهر", dt(zg[4])) + ligneRes("Rendement brut", "المردود الخام", pc(zg[5]), "fort");
+             ligneRes("Loyer médian par mois (non meublé)", "الكراء الوسط في الشهر (غير مفروش)", dt(zg[4])) + ligneRes("Rendement brut", "المردود الخام", pc(zg[5]), "fort");
       }
       var top = Z.q.filter(function (x) { return x[4] === a && (!g || x[0] === g) && !x[10] && !x[11] && (!b || x[5] <= b); })
         .sort(function (x, y) { return y[7] - x[7]; }).slice(0, 3);

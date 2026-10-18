@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Bibliothèque de chiffrement (Pass chiffré, 17/10/2026)
-        run: pip install -q cryptography
+        run: pip install -q cryptography pillow
       - name: Positions des quartiers (OpenStreetMap)
         run: python tools/coords_quartiers.py
       - name: Pages du site

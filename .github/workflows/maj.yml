@@ -51,7 +51,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: Bibliothèque de chiffrement (Pass chiffré, 17/10/2026)
         if: steps.jour.outputs.oui == '1'
-        run: pip install -q cryptography
+        run: pip install -q cryptography pillow
       - name: Test du robot (sans réseau)
         if: steps.jour.outputs.oui == '1'
         run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources (audit du 16/10/2026)

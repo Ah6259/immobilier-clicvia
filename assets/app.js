@@ -244,7 +244,19 @@
       if (garde && pris[garde]) selL.value = garde;
     }
     // Case « Où ? » : on tape un lieu (« petite ariana », « ennasr », « المرسى ») et le site remplit gouvernorat, délégation et localité
-    function cle(t) { return " " + String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").trim() + " "; }
+    // 18/10/2026 (Ahmed : « Jerba et Djerba c'est pareil mais la recherche ne donne pas le même résultat ; vérifie les autres noms qui
+    // s'écrivent différemment ») : les noms tunisiens s'écrivent de plusieurs façons en lettres latines -> on compare « au son », le
+    // même calcul pour ce qu'on tape et pour la liste : Dj = J (Djerba, Jerba), Ou = W = U (Oued, Wed), Q = K (Kairouan, Qairouan),
+    // Sh = Ch, Y = I, Ph = F, lettres doublées (Hammamet, Hamamet), article collé « Es/Et/En… » (Essouk, Souk), « el / al / l' »,
+    // « e » ou « a » entre deux consonnes (Houmet / Houmt, Ghazela / Ghazala, Mahrès / Mahras)
+    function son(t) {
+      return (" " + t + " ").replace(/ (el|al|l|le|la|les) /g, " ").replace(/ (el|al|l|le|la|les) /g, " ")
+        .replace(/ e([bcdfgjklmnpqrstvxz])\1/g, " $1").replace(/dj/g, "j").replace(/sh/g, "ch").replace(/ph/g, "f").replace(/q/g, "k")
+        .replace(/ou/g, "u").replace(/w/g, "u").replace(/y/g, "i").replace(/([a-z])\1/g, "$1")
+        .replace(/([bcdfghjklmnpqrstvxz])[ea](?=[bcdfghjklmnpqrstvxz])/g, "$1").replace(/ +/g, " ");
+    }
+    function cle(t) { return son(" " + String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").trim() + " "); }
+    window.cleLieu = cle;
     var INDEX = null;
     function indexLieux() {
       if (INDEX) return INDEX;
@@ -257,7 +269,9 @@
           var sd = slug(d[0]);
           // 18/10/2026 (capture d'Ahmed : « El Mourouj » deux fois, 264 et 260 annonces) : la DÉLÉGATION El Mourouj contient la LOCALITÉ
           // El Mourouj et d'autres (Cité El Mourouj 3 Bis…) : chaque proposition dit son niveau
-          INDEX.push({ g: g, d: sd, l: "", fr: d[0], ar: d[1], sous: ["Délégation entière · " + G[0], "كامل المعتمدية · " + G[1]], k: cle(d[0] + " " + d[1]), r: 1 });
+          var ng = nomGroupe(g, sd);       // « Djerba – toute l'île » (Houmet Essouk + Midoun + Ajim), 18/10/2026
+          INDEX.push(ng ? { g: g, d: sd, l: "", fr: ng.fr, ar: ng.ar, sous: [groupe(g, sd).join(" + ") + " · " + G[0], groupe(g, sd).join(" + ") + " · " + G[1]], k: cle(d[0] + " " + d[1]), r: 0.5 }
+            : { g: g, d: sd, l: "", fr: d[0], ar: d[1], sous: ["Délégation entière · " + G[0], "كامل المعتمدية · " + G[1]], k: cle(d[0] + " " + d[1]), r: 1 });
           // code postal de La Poste (18/10/2026, idée d'Ahmed) : taper « 1000 » ou « 2045 » trouve aussi la localité
           d[2].forEach(function (l) { var cp = l[2] ? " · " + l[2] : ""; INDEX.push({ g: g, d: sd, l: slug(l[0]), fr: l[0], ar: l[1], sous: ["Localité · " + d[0] + " · " + G[0] + cp, "منطقة · " + d[1] + " · " + G[1] + cp], k: cle(l[0] + " " + l[1] + " " + (l[2] || "")), r: 2 }); });
         });
@@ -287,8 +301,13 @@
       function proposer() {
         var mots = cle(champ.value).trim().split(" ").filter(Boolean);
         if (!mots.length || cle(champ.value).trim().length < 2) { fermer(); return; }
+        // mot en cours de frappe : sans « e » final (« Houme » trouve déjà Houmet / Houmt) ; mots collés (« Bousaid » = « Bou Said »)
+        if (mots[mots.length - 1].length > 1) mots[mots.length - 1] = mots[mots.length - 1].replace(/[ea]+$/, "");
+        var colle = mots.join("");
         var vu = {};
-        choix = indexLieux().filter(function (x) { return mots.every(function (m) { return x.k.indexOf(" " + m) >= 0; }); })
+        choix = indexLieux().filter(function (x) { return mots.every(function (m) { return x.k.indexOf(" " + m) >= 0; })
+            || (colle.length >= 4 && (" " + x.k.trim().split(" ").join("")).indexOf(" " + colle) >= 0)
+            || (colle.length >= 4 && x.k.split(" ").some(function (w, i, t) { return w && (w + (t[i + 1] || "") + (t[i + 2] || "")).indexOf(colle) === 0; })); })
           .filter(function (x) { var c = x.g + "/" + x.d + "/" + x.l; if (vu[c]) return false; vu[c] = 1; return true; })
           .map(function (x) { return { x: x, n: compter(x), debut: x.k.indexOf(" " + mots[0]) === 0 }; })
           .sort(function (a, b) { return ((b.n > 0) - (a.n > 0)) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); })   // lieux avec annonces, puis délégation avant localité

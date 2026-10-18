@@ -166,9 +166,51 @@
         return '<span class="cp-leg"><i class="cp-c' + i + '"></i>' + nb(lim[i]) + "–" + nb(lim[i + 1]) + "</span>";   // classes : la CSP refuse les styles écrits dans la page
       }).join("") + '<span class="cp-unite">' + unite() + '</span><span class="cp-leg"><i class="cp-g"></i>' + legBleu() + "</span>" + legGris;
     }
+    entourer();
+  }
+  // 18/10/2026 (Ahmed : « quand gouvernorat, délégation et quartier sont choisis dans le filtre, ils doivent l'être aussi sur la carte :
+  // c'est une bonne manière de vérifier que tout est bon ») : la carte va sur la délégation / le quartier choisi et l'entoure
+  function slugC(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+  function choixFiltre() {                   // délégation et localité choisies dans la recherche (vide si rien)
+    var f = document.getElementById("recherche"), sd = f && f.querySelector('[name="d"]'), sl = f && f.querySelector('[name="l"]');
+    return { d: sd && !sd.disabled ? sd.value : "", l: sl && !sl.disabled ? sl.value : "" };
+  }
+  function delegsChoisies(g, dv) {           // la délégation choisie, ou les 3 de « Djerba – toute l'île » (LIEUX.grp)
+    var LX = window.LIEUX || {}, OF = LX.o || {}, GRP = LX.grp || {}, S = {};
+    S[dv] = 1;
+    Object.keys(GRP).forEach(function (k) { if (k.split("/")[0] === g && OF[k] && slugC(OF[k][0]) === dv) (GRP[k].d || []).forEach(function (x) { S[slugC(x)] = 1; }); });
+    return S;
+  }
+  var choisis = [];                          // points entourés sur la carte : [[lat, lon], nom]
+  function lieuChoisi(D, g) {
+    var c = choixFiltre(), OF = (window.LIEUX || {}).o || {};
+    if (!g || (!c.d && !c.l)) return null;
+    if (c.l) {                               // un quartier (nos bulles) ou une localité officielle rattachée à un de nos quartiers
+      var q = D.q.filter(function (x) { return x.g === g && (x.q === c.l || (OF[g + "/" + x.q] && slugC(OF[g + "/" + x.q][1]) === c.l)); });
+      if (q.length) return { pts: q.map(function (x) { return [x.p, x.fr]; }), zoom: NIV_QUARTIER + 1 };
+    }
+    if (!c.d) return null;
+    var S = delegsChoisies(g, c.d);
+    var dd = D.d.filter(function (x) { return x.g === g && S[x.s]; }).map(function (x) { return [x.p, x.fr]; });
+    var qq = D.q.filter(function (x) { return x.g === g && OF[g + "/" + x.q] && S[slugC(OF[g + "/" + x.q][0])]; }).map(function (x) { return [x.p, x.fr]; });
+    return dd.length || qq.length ? { pts: dd.length ? dd : qq, cadre: dd.concat(qq), zoom: NIV_DELEG + 1 } : null;
+  }
+  function entourer() {                      // anneau autour du lieu choisi (redessiné à chaque dessin de la carte)
+    choisis.forEach(function (x) {
+      L.circleMarker(x[0], { radius: 24, color: "#B5532F", weight: 4, fill: false, interactive: false, className: "cp-choisi" }).addTo(couche);
+    });
   }
   function cadrer() {
     var D = donnees(), g = zone.getAttribute("data-g"), q = zone.getAttribute("data-q");
+    var ch = lieuChoisi(D, g);
+    choisis = ch ? ch.pts : [];
+    zone.setAttribute("data-choisi", choisis.map(function (x) { return x[1]; }).join(" | "));
+    if (ch) {
+      var tous = (ch.cadre || ch.pts).map(function (x) { return x[0]; });
+      if (tous.length === 1) carte.setView(tous[0], ch.zoom);
+      else { carte.fitBounds(tous, { padding: [30, 30], maxZoom: ch.zoom + 1 }); if (carte.getZoom() < NIV_DELEG) carte.setZoom(NIV_DELEG); }
+      return;
+    }
     // page d'un QUARTIER (17/10/2026, Ahmed : « c'est une ancienne version qui est affichée ») : la carte s'ouvre sur le quartier,
     // au niveau des bulles des quartiers ; sinon (quartier pas encore placé) sur son gouvernorat
     var ici = q && D.q.filter(function (x) { return x.g === g && x.q === q; })[0];
@@ -263,10 +305,12 @@
       if (t.name === "t") { var rc = form.querySelector('input[name="t"]:checked'); mode = rc && rc.value === "l" ? "loyer" : "m2"; if (type === "terrain" && mode === "loyer") type = "tout"; }
       else if (t.id === "f-y") type = TYPES_CARTE[t.value] ? t.value : "tout";
       else if (t.id === "f-g" && carte) { if (t.value) zone.setAttribute("data-g", t.value); else zone.removeAttribute("data-g"); }
-      else return;
+      else if (t.name !== "d" && t.name !== "l") return;
       if (type === "terrain") mode = "m2";
       boutons();
-      if (carte) { dessiner(); if (t.id === "f-g") cadrer(); }
+      // délégation / localité : la carte y va et l'entoure (après la mise à jour des listes par app.js)
+      // setTimeout : app.js remet d'abord à jour les listes (une nouvelle délégation vide la localité)
+      if (carte) { if (t.id === "f-g" || t.name === "d" || t.name === "l") setTimeout(function () { cadrer(); dessiner(); }, 0); else dessiner(); }
     });
     zone.addEventListener("click", function (e) {             // « Voir les maisons » dans la bulle d'un gouvernorat
       var b = e.target.closest && e.target.closest(".cp-voir-type");

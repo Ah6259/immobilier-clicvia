@@ -167,6 +167,19 @@
     var selD = form.querySelector('[name="d"]'), selL = form.querySelector('[name="l"]'), selG = form.querySelector('[name="g"]');
     function slug(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
     function delegDe(a) { if (a.dl) return a.dl; var o = a.l && OF[a.g + "/" + a.l]; return o ? o[0] : ""; }   // a.dl / a.lo : annonces déposées
+    // 18/10/2026 (Ahmed : « Djerba, ce sont les délégations Midoun, Houmet Essouk… ») : un nom qui couvre plusieurs délégations
+    // officielles (LIEUX.grp) contient leurs annonces + celles qui disent seulement « Djerba »
+    var GRP = LX.grp || {};
+    function groupe(g, dv) {          // délégations officielles couvertes par la délégation choisie (ou null)
+      var k = Object.keys(GRP).filter(function (k) { return k.split("/")[0] === g && OF[k] && slug(OF[k][0]) === dv; })[0];
+      return k ? GRP[k].d : null;
+    }
+    function nomGroupe(g, dv) { var k = Object.keys(GRP).filter(function (k) { return k.split("/")[0] === g && OF[k] && slug(OF[k][0]) === dv; })[0]; return k ? GRP[k] : null; }
+    function dansDeleg(a, dv) {
+      var d = slug(delegDe(a)), gr;
+      return d === dv || !!((gr = groupe(a.g, dv)) && gr.some(function (x) { return slug(x) === d; }));
+    }
+    window.dansDeleg = dansDeleg;
     function locDe(a) { if (a.lo) return a.lo; var o = a.l && OF[a.g + "/" + a.l]; return o ? o[1] : ""; }
     // 18/10/2026 (retour d'un visiteur : « Ennasr 2, S+5 : aucune annonce, alors que la carte en montre à Ennasr ») : beaucoup d'annonces
     // disent seulement « Ennasr » (sans 1 ou 2). Elles comptent pour « Cité Ennasr 1 » ET « Cité Ennasr 2 » : on ne devine pas lequel,
@@ -194,8 +207,9 @@
       var g = gCourant(), garde = selD.value, n = {};
       tout.forEach(function (a) { if (a.g === g) { var d = delegDe(a); if (d) n[d] = (n[d] || 0) + 1; } });
       var liste = g ? delegs(g) : [];
+      liste.forEach(function (d) { var gr = groupe(g, slug(d[0])); if (gr) gr.forEach(function (x) { n[d[0]] = (n[d[0]] || 0) + (n[x] || 0); }); });
       selD.innerHTML = (g ? premiere("Toutes", "الكل") : premiere("Choisissez d’abord le gouvernorat", "اختر الولاية أولًا")) +
-        liste.map(function (d) { return option(slug(d[0]), d[0], d[1], n[d[0]] || 0); }).join("");
+        liste.map(function (d) { var ng = nomGroupe(g, slug(d[0])); return option(slug(d[0]), ng ? ng.fr : d[0], ng ? ng.ar : d[1], n[d[0]] || 0); }).join("");
       selD.disabled = !liste.length;
       if (garde && liste.some(function (d) { return slug(d[0]) === garde; })) selD.value = garde;
       if (lFixe) { selD.closest(".champ").hidden = true; if (selL) selL.closest(".champ").hidden = true; }   // page d'un quartier : déjà choisi
@@ -204,6 +218,7 @@
       if (!selL) return;
       var g = gCourant(), dv = selD ? selD.value : "", garde = selL.value;
       var d = dv ? delegs(g).filter(function (x) { return slug(x[0]) === dv; })[0] : null;
+      var gr = d && groupe(g, dv), ds = !d ? [] : gr ? delegs(g).filter(function (x) { return x === d || gr.indexOf(x[0]) >= 0; }) : [d];
       var n = {}, items = [], pris = {};
       tout.forEach(function (a) {
         if (a.g !== g) return;
@@ -213,11 +228,13 @@
       });
       if (d) {
         var exact = {};          // localité officielle -> notre quartier du même nom
-        Object.keys(OF).forEach(function (k) { if (k.split("/")[0] === g && OF[k][0] === d[0] && OF[k][1]) exact[OF[k][1]] = k.split("/")[1]; });
-        d[2].forEach(function (l) { var v = exact[l[0]] || slug(l[0]); pris[v] = 1; items.push([v, l[0], l[1]]); });
-        Object.keys(OF).forEach(function (k) {          // nos quartiers de cette délégation qui ne sont pas une localité officielle
-          var s = k.split("/")[1], nom = LX.l[k] || [s, s];
-          if (k.split("/")[0] === g && OF[k][0] === d[0] && !pris[s] && slug(nom[0]) !== dv) { pris[s] = 1; items.push([s, nom[0], nom[1]]); }
+        ds.forEach(function (d) {     // une délégation, ou toutes celles d'un groupe (Djerba)
+          Object.keys(OF).forEach(function (k) { if (k.split("/")[0] === g && OF[k][0] === d[0] && OF[k][1]) exact[OF[k][1]] = k.split("/")[1]; });
+          d[2].forEach(function (l) { var v = exact[l[0]] || slug(l[0]); if (!pris[v]) { pris[v] = 1; items.push([v, l[0], l[1]]); } });
+          Object.keys(OF).forEach(function (k) {          // nos quartiers de cette délégation qui ne sont pas une localité officielle
+            var s = k.split("/")[1], nom = LX.l[k] || [s, s];
+            if (k.split("/")[0] === g && OF[k][0] === d[0] && !pris[s] && slug(nom[0]) !== dv) { pris[s] = 1; items.push([s, nom[0], nom[1]]); }
+          });
         });
         items.sort(function (x, y) { return x[1].localeCompare(y[1], "fr"); });
       }
@@ -259,7 +276,7 @@
       return INDEX;
     }
     function compter(x) {
-      return tout.filter(function (a) { return a.g === x.g && (!x.d || slug(delegDe(a)) === x.d) && (!x.l || dansLoc(a, x.l)); }).length;
+      return tout.filter(function (a) { return a.g === x.g && (!x.d || dansDeleg(a, x.d)) && (!x.l || dansLoc(a, x.l)); }).length;
     }
     function ouChercher() {
       var champ = document.getElementById("f-ou"), boite = document.getElementById("ou-suggestions");
@@ -395,7 +412,7 @@
         if (v.t && a.t !== v.t) return false;
         if (v.y && !typeVoulu(a, v.y)) return false;
         if (v.g && a.g !== v.g) return false;
-        if (v.d && slug(delegDe(a)) !== v.d) return false;
+        if (v.d && !dansDeleg(a, v.d)) return false;
         if (v.l && !dansLoc(a, v.l)) return false;
         if (v.c && (a.c == null || (v.c >= 5 ? a.c < 5 : a.c !== v.c))) return false;
         if (v.v && (a.v || "a") !== v.v && !(v.v === "p" && a.v === "d")) return false;   // « Particulier » : aussi les annonces déposées ici

@@ -136,11 +136,12 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     var s = document.querySelectorAll(".partager");
     for (var k = 0; k < s.length; k++) s[k].addEventListener("click", partager);
     // bloc « Partager ce rapport » (18/10/2026, Ahmed) : clic compté par réseau ; « Copier le lien »
-    // UN bouton « Partager ce rapport » : menu de partage du téléphone (Facebook, WhatsApp, LinkedIn…), sinon lien copié
+    // UN bouton « Partager ce rapport » : menu de partage du téléphone (Facebook, WhatsApp, LinkedIn…), sinon lien copié.
+    // AUCUNE adresse dans le texte (18/10/2026, vu par Ahmed) : Facebook prenait « immobilier.clicvia.com » du texte et montrait l'accueil
     var r = document.querySelectorAll("button[data-partage-rapport]");
     for (var j = 0; j < r.length; j++) r[j].addEventListener("click", function () {
       var bouton = this, lien = bouton.getAttribute("data-partage-rapport"), titre = bouton.getAttribute("data-titre");
-      var texte = titre + "\n" + T("Rapport du mois d’Immobilier Tunisie (immobilier.clicvia.com) : ", "تقرير الشهر من عقارات تونس (immobilier.clicvia.com): ");
+      var texte = titre + "\n" + T("Rapport du mois d’Immobilier Tunisie : ", "تقرير الشهر من عقارات تونس: ");
       try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname, title: "Partage", event: true }); } catch (e) {}
       var fini = function () { bouton.classList.add("copie-ok"); setTimeout(function () { bouton.classList.remove("copie-ok"); }, 4000); };
       if (navigator.share) { navigator.share({ title: titre, text: texte, url: lien }).catch(function () {}); return; }
@@ -175,7 +176,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname, title: "Partage", event: true }); } catch (e) {}
     var texte = titre + "\n" + T("Annonces immobilières gratuites en Tunisie : ", "إعلانات عقارية مجانية في تونس: ");
     if (document.body.getAttribute("data-page") === "rapport")  // rapports du mois (18/10/2026) : on dit d'où vient l'article
-      texte = titre + "\n" + T("Rapport du mois d’Immobilier Tunisie (immobilier.clicvia.com) : ", "تقرير الشهر من عقارات تونس (immobilier.clicvia.com): ");
+      texte = titre + "\n" + T("Rapport du mois d’Immobilier Tunisie : ", "تقرير الشهر من عقارات تونس: ");
     if (document.body.getAttribute("data-page") === "video")   // page vidéo : lien de la vidéo + adresse du site
       texte = T("Immobilier Tunisie, la vidéo de présentation. Le site : https://immobilier.clicvia.com/\nLa vidéo : ",
                 "عقارات تونس، الفيديو التقديمي. الموقع: https://immobilier.clicvia.com/\nالفيديو: ");

@@ -33,7 +33,8 @@
   var AUTRE = "__autre__";
   function E(t) { return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function slug(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
-  function opt(v, fr, ar) { return '<option value="' + E(v) + '">' + E(fr) + (ar ? " · " + E(ar) : "") + '</option>'; }
+  // 19/10/2026 (Ahmed) : un choix en UNE langue (celle de la page), ses deux noms dans data-fr / data-ar
+  function opt(v, fr, ar) { return '<option value="' + E(v) + '" data-fr="' + E(fr) + '" data-ar="' + E(ar || fr) + '">' + E(document.documentElement.lang === "ar" ? (ar || fr) : fr) + '</option>'; }
 
   // Gouvernorat -> délégations -> localités (window.DECOUPAGE, donnees/decoupage.js, liste de La Poste), comme sur Tunisie-annonce
   function delegations(form) {
@@ -67,7 +68,7 @@
   // titre fait tout seul pour un lien Facebook : « Appartement S+2 à louer — Ennasr »
   function titreFb(form) {
     var v = function (n) { var c = form.querySelector('[name="' + n + '"]:checked') || form.querySelector('[name="' + n + '"]'); return c ? c.value : ""; };
-    var ty = form.querySelector('[name="type"]'), tyt = ty && ty.selectedOptions && ty.selectedOptions[0] ? ty.selectedOptions[0].textContent.split(" · ")[0] : "Bien";
+    var ty = form.querySelector('[name="type"]'), tyt = ty && ty.selectedOptions && ty.selectedOptions[0] ? (ty.selectedOptions[0].getAttribute("data-fr") || ty.selectedOptions[0].textContent.split(" · ")[0]) : "Bien";
     var ch = v("chambres"), tr = v("transaction"), lieu = v("localite") && v("localite") !== AUTRE ? v("localite") : v("lieu");
     return (tyt + (ch !== "" && /^\d+$/.test(ch) ? " S+" + ch : "") + (tr === "vente" ? " à vendre" : " à louer") + (lieu ? " — " + lieu : "")).slice(0, 70);
   }

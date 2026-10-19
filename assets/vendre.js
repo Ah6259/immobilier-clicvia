@@ -118,7 +118,10 @@
     });
     return liste.sort(function (x, y) { return x[0].localeCompare(y[0], "fr"); });
   }
-  function opt(v, fr, a) { return '<option value="' + esc(v) + '">' + esc(ar() ? (a || fr) : fr) + "</option>"; }
+  function opt(v, fr, a) { return '<option value="' + esc(v) + '" data-fr="' + esc(fr) + '" data-ar="' + esc(a || fr) + '">' + esc(ar() ? (a || fr) : fr) + "</option>"; }
+  // 19/10/2026 (Ahmed : « fais la liste en une seule langue ») : un choix montre UNE langue ; ses deux noms sont dans data-fr / data-ar
+  function noms(o) { if (!o) return ["", ""]; var t = (o.text || "").replace(/ \(\d{4}\)/g, ""), fr = o.getAttribute("data-fr") || t.split(" · ")[0];
+    return [fr.replace(/ \(\d{4}\)/g, ""), (o.getAttribute("data-ar") || t.split(" · ")[1] || fr).replace(/ \(\d{4}\)/g, "")]; }
   function quartiers() {                         // (nom gardé : appelé quand le modèle d'IA est chargé et au changement de langue)
     var g = el("v-g").value, sd = el("v-d"), garde = sd.value;
     var l = delegsV(g);
@@ -148,13 +151,13 @@
   // porte le nom du gouvernorat, et son centre aussi) ; une phrase le dit quand deux niveaux choisis portent le même nom
   function memeNom() {
     var p = el("v-meme"); if (!p) return;
-    var g = el("v-g"), d = el("v-d"), l = el("v-l"), nom = function (s) { return s && s.value ? slugV(s.options[s.selectedIndex].text.split(" · ")[0]) : ""; };
-    var ng = nom(g), nd = nom(d), nl = nom(l), G = g.value ? g.options[g.selectedIndex].text.split(" · ")[0] : "";
+    var g = el("v-g"), d = el("v-d"), l = el("v-l"), nom = function (s) { return s && s.value ? slugV(noms(s.options[s.selectedIndex])[0]) : ""; };
+    var ng = nom(g), nd = nom(d), nl = nom(l), G = g.value ? noms(g.options[g.selectedIndex])[0] : "";
     var meme = (nd && nd === ng) || (nl && (nl === nd || nl === ng));
     p.hidden = !meme;
     // 18/10/2026 (capture d'Ahmed : « Bab Bhar est la ville chef-lieu » était faux) : « chef-lieu » seulement quand la délégation porte
     // le nom du GOUVERNORAT ; sinon : la localité du même nom est le centre de la délégation
-    var D = d.value ? d.options[d.selectedIndex].text.split(" · ")[0] : "", Lc = l.value ? l.options[l.selectedIndex].text.replace(/ \(\d{4}\)/g, "").split(" · ")[0] : "";
+    var D = d.value ? noms(d.options[d.selectedIndex])[0] : "", Lc = l.value ? noms(l.options[l.selectedIndex])[0] : "";
     if (meme) p.textContent = nd && nd === ng
       ? T2("Même nom à plusieurs niveaux : c’est le découpage officiel. La délégation " + D + " est la ville chef-lieu du gouvernorat" +
            (nl === nd ? ", et la localité " + Lc + " est son centre" : "") + ". Choisissez « Toutes » pour toute la délégation.",
@@ -216,7 +219,7 @@
     if (etb) { etb.parentNode.hidden = !estime || !ETATS.some(function (n) { return utilise(n, t); }); if (etb.parentNode.hidden) etb.value = ""; }
     if (niv) niv.hidden = t !== "maison" || !estime;
   }
-  function libelleChoix(id) { var x = el(id); if (!x || !x.value) return null; var t = x.options[x.selectedIndex].text.replace(/ \(\d{4}\)/g, "").split(" · "); return [t[0], t[1] || t[0]]; }
+  function libelleChoix(id) { var x = el(id); if (!x || !x.value) return null; return noms(x.options[x.selectedIndex]); }
 
   // ---- le calcul
   var MIN_REF = 5;                                // biens comparables (même type, même S+, même zone) au moins pour un chiffre de référence
@@ -387,7 +390,7 @@
     // carte repliable (15/10/2026, Ahmed : « est-ce un exemple ? il faut l'indiquer ; carte compacte, + pour l'agrandir ») :
     // le résumé dit QUEL bien est analysé (celui du formulaire, pas un exemple) et donne le juste prix
     var ouvert = el("v-analyse-d") ? el("v-analyse-d").open : false;
-    var o = el("v-t").options[el("v-t").selectedIndex].text.split(" · "), li = lieuxDeux();
+    var o = noms(el("v-t").options[el("v-t").selectedIndex]), li = lieuxDeux();
     var bien = (ar() ? (o[1] || o[0]) : o[0]) + (r.ch !== null && r.ch !== undefined ? " S+" + r.ch : "") + (r.s ? ", " + nb(r.s) + (ar() ? " م²" : " m²") : "") + ", " + esc(li[ar() ? 1 : 0]);
     var h = '<details class="pliable" id="v-analyse-d"' + (ouvert ? " open" : "") + "><summary><h2>" + T2("📂 Ouvrir votre analyse complète", "📂 افتح تحليلك الكامل") + "</h2>" +
       '<span class="pli-sous pli-sous-garde"><b>' + bien + "</b> · " + (LOC ? T2("juste loyer : ", "الكراء العادل: ") : T2("juste prix : ", "السعر العادل: ")) + "<b>" + dt(juste) + "</b><br>" +
@@ -474,7 +477,7 @@
   }
   function chiffre(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f]/g, " "); }
   function texteAnnonce(r, prix) {
-    var o = el("v-t").options[el("v-t").selectedIndex].text.split(" · "), tfr = o[0], tar = o[1] || o[0], li = lieuxDeux();
+    var o = noms(el("v-t").options[el("v-t").selectedIndex]), tfr = o[0], tar = o[1] || o[0], li = lieuxDeux();
     var sn = r.ch !== null && r.ch !== undefined ? " S+" + r.ch : "";
     var coches = [].filter.call(form.querySelectorAll('input[name="atout"]'), function (b) { return b.checked; });
     var atFr = coches.map(function (b) { return nomAtout(b, "fr").toLowerCase(); }), atAr = coches.map(function (b) { return nomAtout(b, "ar"); });

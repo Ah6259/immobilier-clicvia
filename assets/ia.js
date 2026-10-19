@@ -70,7 +70,23 @@
   }
   // PLUS GRAND = PLUS CHER (19/10/2026) : à pièces égales, le prix monte au moins comme surface^elast (pente apprise sur les vraies
   // annonces) — comme _est_type() de robot/modele_ia.py
+  // sans surface : UNE PIÈCE DE PLUS = PLUS CHER (19/10/2026) — au moins gamma par pièce, comme _est_pieces() du robot
+  function piecesOk(tm, g, k) {
+    return ((tm.ch_n || {})[String(k)] || 0) >= (tm.min_ch || 30) && ((tm.ch_g || {})[g + "|" + k] || 0) >= (tm.min_ch_g || 5);
+  }
+  function estPieces(tm, g, q, ch, x) {
+    var cur = null, prec = null;
+    for (var k = 0; k <= ch; k++) {
+      if (k !== ch && !piecesOk(tm, g, k)) continue;
+      var pk = estBrut(tm, g, q, null, k, x);
+      if (pk === null) continue;
+      cur = cur === null ? pk : Math.max(pk, cur + tm.gamma * (k - prec));
+      prec = k;
+    }
+    return prec === ch ? cur : null;
+  }
   function estType(tm, g, q, s, ch, x) {
+    if (!s && ch !== null && ch !== undefined && (tm.gamma || 0) > 0) return estPieces(tm, g, q, ch, x);
     var p = estBrut(tm, g, q, s, ch, x), b = tm.elast || 0;
     if (p === null || !s || b <= 0 || !tm.s_min) return p;
     var ls = Math.log(s), lmin = Math.log(tm.s_min);

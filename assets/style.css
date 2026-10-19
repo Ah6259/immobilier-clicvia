@@ -68,7 +68,12 @@ html[dir="rtl"] .credit-photo{right:auto;left:8px}
    de la page suffit (titre, carte des prix, recherche) */
 @media (min-width:900px){ .hero-grille:has(> .zone-recherche){grid-template-columns:minmax(0,1fr) minmax(320px,420px);
     grid-template-areas:"texte texte" "recherche carte";row-gap:14px}
-  .hero-grille > .hero-texte{grid-area:texte} .hero-grille > .hero-carte{grid-area:carte} .hero-grille > .zone-recherche{grid-area:recherche;margin-top:0} }
+  .hero-grille:has(> .zone-recherche) > .hero-texte{grid-area:texte} .hero-grille:has(> .zone-recherche) > .hero-carte{grid-area:carte}
+  .hero-grille > .zone-recherche{grid-area:recherche;margin-top:0}
+  /* 19/10/2026 (capture d'Ahmed sur PC) : la recherche est DANS le bloc du titre depuis le 18/10 ; les zones nommées ci-dessus
+     ne s'appliquaient plus et posaient titre, recherche et carte dans la même case (tout caché derrière la carte, sur toutes les
+     pages à carte). Accueil : titre + recherche à gauche, carte à droite */
+  .hero-grille:has(> .hero-texte .zone-recherche){grid-template-columns:minmax(0,1fr) minmax(340px,460px)} }
 .surtitre{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--terre)}
 html[lang="ar"] .surtitre{letter-spacing:0}
 .hero h1{font-size:clamp(27px,6.6vw,44px);font-weight:600;margin-bottom:14px;text-wrap:balance}
@@ -83,6 +88,12 @@ html[lang="ar"] .surtitre{letter-spacing:0}
 .chiffres{list-style:none;display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0 0 18px}
 .chiffres li{background:var(--sable);border:1px solid var(--ligne);border-radius:var(--r-petit);padding:8px 13px;font-size:13.5px;color:var(--doux);display:flex;flex-direction:column;min-width:96px}
 .chiffres b{font-family:var(--titres);font-size:22px;color:var(--encre);font-weight:600;line-height:1.15}
+/* cases cliquables (19/10/2026) : toute la case mène aux annonces qu'elle compte, avec une flèche pour montrer qu'on peut toucher */
+.chiffres-liens li:has(> a){padding:0}
+.chiffres-liens a{display:flex;flex-direction:column;padding:8px 26px 8px 13px;color:inherit;text-decoration:none;border-radius:inherit;position:relative}
+.chiffres-liens a::after{content:"›";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--terre)}
+html[dir="rtl"] .chiffres-liens a{padding:8px 13px 8px 26px} html[dir="rtl"] .chiffres-liens a::after{right:auto;left:10px;content:"‹"}
+.chiffres-liens li:has(> a):hover{border-color:var(--terre)} .chiffres-liens a:focus-visible{outline:2px solid var(--terre);outline-offset:2px}
 .lieux h2{font-size:17px;margin:4px 0 10px}
 .lieux ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0}
 .lieux a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--encre);background:var(--carte);border:1.5px solid var(--ligne);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:500}

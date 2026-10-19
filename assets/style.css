@@ -337,6 +337,8 @@ html[lang="ar"] .an-prix.sans{font-style:normal}
 .plus-filtres > summary::before{content:"+ ";font-weight:700}
 .plus-filtres[open] > summary::before{content:"− "}
 .plus-filtres .champs{margin-top:6px}
+.case-photo{grid-column:1/-1;display:flex;align-items:center;gap:10px;min-height:46px;padding:8px 12px;border:1.5px solid var(--ligne);border-radius:var(--r-petit);background:var(--carte);font-weight:600;cursor:pointer}
+.case-photo input{width:22px;height:22px;flex:none;accent-color:var(--terre);margin:0}
 .actions-recherche{margin-top:12px;align-items:center}
 .btn-effacer{font:inherit;font-size:14px;font-weight:600;color:var(--doux);background:transparent;border:1.5px solid var(--ligne);border-radius:var(--r-petit);min-height:46px;padding:10px 12px;cursor:pointer}
 .btn-effacer:hover{color:var(--encre);border-color:var(--doux)}

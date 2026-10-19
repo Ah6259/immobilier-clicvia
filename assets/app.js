@@ -285,7 +285,7 @@
         ((LX.al || {})[g] || []).forEach(function (a) {     // autres écritures connues (« Bab Jdid » = Bab Djedid), 18/10/2026
           var sd = a[1] === "quartier" ? slug((OF[g + "/" + a[3]] || [""])[0]) : slug(a[3]);
           INDEX.push({ g: g, d: sd, l: a[1] === "quartier" ? a[3] : (a[1] === "localité" ? slug(a[2]) : ""), fr: a[0], ar: a[0],
-                       sous: ["= " + a[2] + " · " + G[0], "= " + a[2] + " · " + G[1]], k: cle(a[0]), r: 2 });
+                       sous: ["= " + a[2] + " · " + G[0], "= " + a[2] + " · " + G[1]], k: cle(a[0]), r: 2, al: 1 });
         });
         Object.keys(LX.l).forEach(function (k) {            // nos quartiers (ex. Chotrana, Ennasr), avec leur délégation
           if (k.split("/")[0] !== g) return;
@@ -323,6 +323,9 @@
         choix = indexLieux().filter(function (x) { return litOk(x) || mots.every(function (m) { return x.k.indexOf(" " + m) >= 0; })
             || (colle.length >= 4 && (" " + x.k.trim().split(" ").join("")).indexOf(" " + colle) >= 0)
             || (colle.length >= 4 && x.k.split(" ").some(function (w, i, t) { return w && (w + (t[i + 1] || "") + (t[i + 2] || "")).indexOf(colle) === 0; })); })
+          // 19/10/2026 (Ahmed : « aouina » ne montrait que « Cité El Wahat (L'Aouina) ») : pour un même lieu, le VRAI nom passe avant
+          // ses autres écritures (sinon le doublon retiré était le vrai nom)
+          .sort(function (a, b) { return (a.al || 0) - (b.al || 0); })
           .filter(function (x) { var c = x.g + "/" + x.d + "/" + x.l; if (vu[c]) return false; vu[c] = 1; return true; })
           .map(function (x) { return { x: x, n: compter(x), debut: x.k.indexOf(" " + mots[0]) === 0, lit: litOk(x) }; })
           .sort(function (a, b) { return (faible ? (b.lit - a.lit) : 0) || ((b.n > 0) - (a.n > 0)) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); })   // lieux avec annonces, puis délégation avant localité
@@ -392,6 +395,7 @@
       oy.textContent = document.documentElement.lang === "ar" ? "مكتب / محل (الكل)" : "Bureau / local (tous)"; selY.appendChild(oy);
     }
     ["y", "g", "p", "pmin", "smin", "smax", "c", "v"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k)) c.value = q.get(k); });
+    var casePh = form.querySelector('[name="ph"]'); if (casePh && q.get("ph")) casePh.checked = true;   // ?ph=1 : seulement avec photo
     suivreGouv();
     // ?d=raoued&l=… ; un ancien lien avec seulement ?l=<quartier> retrouve sa délégation
     function delegDeLoc(g, l) {      // délégation d'un quartier (LIEUX.o) ou d'une localité officielle (DECOUPAGE)
@@ -406,9 +410,9 @@
     // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
     // « Estimer » montre les deux estimations (prix de vente, loyer)
     var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
-    var CLES_F = ["y", "d", "l", "c", "pmin", "p", "smin", "smax", "v"].concat(gFixe ? [] : ["g"]);
+    var CLES_F = ["y", "d", "l", "c", "pmin", "p", "smin", "smax", "v", "ph"].concat(gFixe ? [] : ["g"]);
     function compterFiltres() {
-      var n = CLES_F.filter(function (k) { var c = form.querySelector('[name="' + k + '"]'); return c && c.value; }).length;
+      var n = CLES_F.filter(function (k) { var c = form.querySelector('[name="' + k + '"]'); return c && (c.type === "checkbox" ? c.checked : c.value); }).length;
       if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
       return n;
     }
@@ -440,7 +444,7 @@
       var n = function (k) { var x = parseInt((form.querySelector('[name="' + k + '"]') || {}).value, 10); return x > 0 ? x : 0; };
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
       return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
-               p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), tri: tri ? tri.value : "date" };
+               p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, tri: tri ? tri.value : "photo" };
     }
     function filtrer() {
       suivreGouv();
@@ -455,12 +459,14 @@
         if (v.c && (a.c == null || (v.c >= 5 ? a.c < 5 : a.c !== v.c))) return false;
         if (v.v && (a.v || "a") !== v.v && !(v.v === "p" && a.v === "d")) return false;   // « Particulier » : aussi les annonces déposées ici
         if (v.p || v.pmin) { if (a.p == null) { sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
+        if (v.ph && !PHOTO_OK(a.ph)) return false;
         if (v.smin || v.smax) { if (a.s == null) return false; if ((v.smin && a.s < v.smin) || (v.smax && a.s > v.smax)) return false; }
         return true;
       });
       var cle = { "prix-asc": function (a, b) { return (a.p == null) - (b.p == null) || a.p - b.p; },
                   "prix-desc": function (a, b) { return (a.p == null) - (b.p == null) || b.p - a.p; },
                   "surface": function (a, b) { return (b.s || 0) - (a.s || 0); },
+                  "photo": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (PHOTO_OK(b.ph) - PHOTO_OK(a.ph)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
                   "date": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); } }[v.tri] || null;
       if (cle) liste.sort(cle);
       montre = 0; zone.innerHTML = "";
@@ -489,7 +495,7 @@
     }
     function memoriser(v) {
       var p = new URLSearchParams();
-      ["t", "y", "g", "d", "l", "c", "v", "p", "pmin", "smin", "smax"].forEach(function (k) { if (v[k]) p.set(k, v[k]); }); if (v.tri && v.tri !== "date") p.set("tri", v.tri);
+      ["t", "y", "g", "d", "l", "c", "v", "p", "pmin", "smin", "smax", "ph"].forEach(function (k) { if (v[k]) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
       var l = new URLSearchParams(location.search).get("lang"); if (l) p.set("lang", l);
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
     }

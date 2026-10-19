@@ -112,18 +112,24 @@
     var sous = depose ? '<p class="an-type">' + L(E(tfr), tar) + '</p>' : "";
     var texte = depose && a.z ? '<details class="an-details"><summary>' + L("Lire la description", "قراءة الوصف") + '</summary><p class="perso an-texte" dir="auto">' + E(a.z) + '</p></details>' : "";
     // a.av : annonce MISE EN AVANT (Pass Propriétaire, 15/10/2026), étiquette visible
-    return '<article class="annonce' + (a.av ? " en-avant" : "") + '" id="a-' + E(a.i) + '" data-t="' + a.t + '" data-y="' + a.y + '" data-v="' + (a.v || "p") + '">' +
-      '<div class="an-tete"><div class="an-vignette v-' + a.y + '">' + (VIGNETTE[a.y] || VIGNETTE.autre || "") + '</div>' +
-      '<div class="an-quoi"><span class="an-badge ' + (loc ? "louer" : "vendre") + '">' + (loc ? L("À louer", "للكراء") : L("À vendre", "للبيع")) + '</span>' +
-      (a.av ? '<span class="an-badge avant">' + L("⭐ En avant", "⭐ مميّز") + '</span>' : "") +
-      '<h3 class="an-titre">' + titre + '</h3>' + sous + '<p class="an-lieu">' + ICO.lieu + lieu + '</p></div>' +
+    // carte façon SeLoger (19/10/2026, Ahmed) : grande photo (lien de l'image chez la source, jamais copiée), étiquette et cœur posés
+    // dessus ; sans photo : le dessin du type de bien, même hauteur. Même carte que carte() de robot/construire_site.py
+    var media = PHOTO_OK(a.ph)
+      ? '<img class="an-img" src="' + E(a.ph) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+      : '<div class="an-vignette v-' + a.y + '">' + (VIGNETTE[a.y] || VIGNETTE.autre || "") + '</div>';
+    return '<article class="annonce' + (a.av ? " en-avant" : "") + (PHOTO_OK(a.ph) ? " a-photo" : "") + '" id="a-' + E(a.i) + '" data-t="' + a.t + '" data-y="' + a.y + '" data-v="' + (a.v || "p") + '">' +
+      '<div class="an-media v-' + a.y + '">' + media +
+      '<div class="an-etiquettes"><span class="an-badge ' + (loc ? "louer" : "vendre") + '">' + (loc ? L("À louer", "للكراء") : L("À vendre", "للبيع")) + '</span>' +
+      (a.av ? '<span class="an-badge avant">' + L("⭐ En avant", "⭐ مميّز") + '</span>' : "") + '</div>' +
       // cœur « Ajouter aux favoris » (18/10/2026, IM.15) : assets/page.js (window.FAVORIS), même bouton que bouton_favori() du robot
       (window.FAVORIS ? window.FAVORIS.bouton(a.i) : "") + '</div>' +
-      prix + '<ul class="an-faits">' + faits + '</ul>' +
+      '<div class="an-corps">' + prix + '<ul class="an-faits">' + faits + '</ul>' +
+      '<h3 class="an-titre">' + titre + '</h3>' + sous + '<p class="an-lieu">' + ICO.lieu + lieu + '</p>' +
       // a.an : annonce de plus de 2 mois gardée pour un gouvernorat faible (17/10/2026), même texte que construire_site.py
       (a.an ? '<p class="an-ancienne">' + L("⏳ Annonce de plus de 2 mois : vérifiez qu’elle est toujours disponible.", "⏳ إعلان عمره أكثر من شهرين: تأكّد أنه ما زال متاحًا.") + '</p>' : "") +
-      texte + actions(a, racine) + '</article>';
+      texte + actions(a, racine) + '</div></article>';
   }
+  function PHOTO_OK(u) { return /^https:\/\/[^\s"'<>]+$/.test(u || ""); }
 
   // Contact (décision d'Ahmed du 11/10/2026) — même logique que robot/construire_site.py, fonction actions()
   function actions(a, racine) {

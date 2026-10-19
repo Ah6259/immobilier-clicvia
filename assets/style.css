@@ -189,6 +189,27 @@ html[lang="ar"] .an-titre{font-family:var(--arabe)}
 .an-ancienne{margin:8px 0 0;padding:6px 10px;border-radius:8px;background:#FFF4DC;color:#6B4A00;font-size:13px;line-height:1.4}
 .an-faits{list-style:none;display:flex;flex-wrap:wrap;gap:6px 14px;padding:0;margin:0;font-size:13.5px;color:#46535a}
 .an-faits li{display:inline-flex;align-items:center;gap:5px}
+/* carte façon SeLoger (19/10/2026, Ahmed) : grande photo en haut (lien de l'image chez la source), étiquette et cœur posés dessus,
+   puis le prix en gros, les caractéristiques, le titre, le lieu et le bouton ; sans photo : le dessin du type de bien, même hauteur */
+.annonce{padding:0;gap:0;overflow:hidden}
+.an-media{position:relative;aspect-ratio:3/2;display:grid;place-items:center;overflow:hidden;background:var(--sable-f)}
+.an-media .an-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
+.annonce:hover .an-media .an-img{transform:scale(1.04)}
+.an-media .an-vignette{width:84px;height:84px;border-radius:22px;background:rgba(255,255,255,.55)}
+.annonce:not(.a-photo) .an-media{aspect-ratio:auto;height:104px}
+.annonce:not(.a-photo) .an-media .an-vignette{width:64px;height:64px;border-radius:18px}
+.annonce:not(.a-photo) .an-media .an-vignette svg{width:44px;height:44px}
+.an-media .an-vignette svg{width:58px;height:58px}
+.an-media.photo-ko::after{content:"";width:64px;height:64px;opacity:.55;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23697783' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7'/%3E%3Cpath d='M5 10v10h14V10'/%3E%3Cpath d='M10 20v-6h4v6'/%3E%3C/svg%3E")}
+.an-etiquettes{position:absolute;top:10px;inset-inline-start:10px;display:flex;gap:6px;flex-wrap:wrap}
+.an-etiquettes .an-badge{margin:0;box-shadow:0 1px 4px rgba(20,30,40,.18)}
+.a-photo .an-etiquettes .an-badge.vendre{background:#fff;color:var(--bleu)} .a-photo .an-etiquettes .an-badge.louer{background:#fff;color:var(--olive)}
+.an-media .an-fav{position:absolute;top:8px;inset-inline-end:8px;background:rgba(255,255,255,.95);box-shadow:0 1px 5px rgba(20,30,40,.2)}
+.an-corps{display:flex;flex-direction:column;gap:8px;padding:14px 16px 16px;flex:1;min-width:0}
+.an-corps .an-prix{border-top:0;padding-top:0;margin:0}
+.an-corps .an-titre{font-size:15px;font-weight:600;color:#46535a;margin:0}
+.an-corps .an-lieu{font-size:13.5px}
+.an-corps .an-contact{margin-top:auto}
 .an-contact{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;font-weight:600;font-size:15px;color:var(--terre-f);background:var(--terre-voile);border:1.5px solid var(--terre-clair);border-radius:var(--r-petit);padding:10px 12px}
 .an-contact svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .an-contact:hover{background:var(--terre);border-color:var(--terre);color:#fff}

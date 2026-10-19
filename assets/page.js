@@ -224,8 +224,8 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
           '<a href="' + racine + 'video/">' + T("Vidéo de présentation", "الفيديو التقديمي") + '</a>' +
         '<a href="https://clicvia.com/" rel="noopener" target="_blank">' + T("Tous nos services", "كل خدماتنا") + '</a>' +
         '</nav>' +
-        '<p>' + T("Annonces publiques de réseaux d’agences immobilières et annonces déposées sur le site. Seuls des faits sont repris (type, lieu, prix, surface, pièces, date), jamais les textes ni les photos ; chaque annonce mène au vendeur.",
-                  "إعلانات عمومية لشبكات وكالات عقارية وإعلانات منشورة على الموقع. نأخذ المعطيات فقط (النوع، المكان، السعر، المساحة، الغرف، التاريخ) دون النصوص أو الصور؛ كل إعلان يوصلك إلى البائع.") + '</p>' +
+        '<p>' + T("Annonces publiques de réseaux d’agences immobilières et annonces déposées sur le site. Seuls des faits sont repris (type, lieu, prix, surface, pièces, date), jamais les textes ; la photo s’affiche depuis le site d’origine, sans être copiée ; chaque annonce mène au vendeur.",
+                  "إعلانات عمومية لشبكات وكالات عقارية وإعلانات منشورة على الموقع. نأخذ المعطيات فقط (النوع، المكان، السعر، المساحة، الغرف، التاريخ) دون النصوص؛ تظهر الصورة من الموقع الأصلي دون نسخها؛ كل إعلان يوصلك إلى البائع.") + '</p>' +
         (majTxt ? '<p>' + T("Dernière mise à jour : ", "آخر تحديث: ") + iso(majTxt) + '</p>' : "") +
         '<p>' + T("Site indépendant et non officiel, informations indicatives : vérifiez toujours auprès du vendeur. Les noms et marques appartiennent à leurs propriétaires.",
                   "موقع مستقل وغير رسمي، معلومات للإرشاد: تحقق دائمًا مع البائع. الأسماء والعلامات ملك لأصحابها.") + '</p>' +
@@ -269,6 +269,14 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     for (var i = 0; i < a.length; i++) a[i].href = a[i].getAttribute("href").replace(/_(ar|fr)$/, "") + window.suffixeTG();
   }
   window.liensTelegram = liensTelegram;
+  // photo d'une annonce qui ne s'affiche pas (supprimée chez la source, site lent ou qui refuse) : elle est retirée et la carte montre
+  // un dessin neutre, jamais une image cassée (19/10/2026). Écouteur global : la règle de sécurité interdit les « onerror » en ligne.
+  document.addEventListener("error", function (e) {
+    var im = e.target;
+    if (!im || im.tagName !== "IMG" || !im.classList || !im.classList.contains("an-img")) return;
+    var m = im.parentNode; im.remove();
+    if (m) { m.classList.add("photo-ko"); var c = m.closest(".annonce"); if (c) c.classList.remove("a-photo"); }
+  }, true);
   function appliquer(l) {
     html.lang = l; html.dir = l === "ar" ? "rtl" : "ltr";
     try { localStorage.setItem("langue-immobilier", l); } catch (e) {}

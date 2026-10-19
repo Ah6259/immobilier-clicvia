@@ -1170,7 +1170,7 @@ main > .comment-marche:first-child{margin-top:14px}
 .an-partage.copie-ok{color:#fff;background:var(--olive);border-color:var(--olive)}
 .an-partage:focus-visible{outline:3px solid var(--or);outline-offset:2px}
 .an-media .an-partage{position:absolute;top:8px;inset-inline-end:56px;background:rgba(255,255,255,.95);box-shadow:0 1px 5px rgba(20,30,40,.2)}
-.annonce-partagee{grid-column:1/-1;display:grid;gap:8px;justify-items:start}
+.annonce-partagee{grid-column:1/-1;scroll-margin-top:84px;display:grid;gap:8px;justify-items:start}
 .annonce-partagee .annonce{width:100%;max-width:460px;outline:3px solid var(--or);outline-offset:2px}
 .partagee-titre{margin:0;font-weight:700;color:var(--terre)}
 .fav-anim svg{animation:fav-pouls .35s ease-out}

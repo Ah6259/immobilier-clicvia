@@ -310,7 +310,9 @@
       function fermer() { boite.hidden = true; boite.innerHTML = ""; champ.setAttribute("aria-expanded", "false"); actif = -1; }
       function proposer() {
         var mots = cle(champ.value).trim().split(" ").filter(Boolean);
-        if (!mots.length || cle(champ.value).trim().length < 2) { fermer(); return; }
+        // « Elles » (Le Kef) : la clé « au son » enlève l'article « el » et ne laisse rien -> on cherche le texte tapé tel quel
+        if ((!mots.length || cle(champ.value).trim().length < 2) && brut(champ.value).trim().length >= 3) mots = brut(champ.value).trim().split(" ");
+        if (!mots.length || brut(champ.value).trim().length < 2) { fermer(); return; }
         // mot en cours de frappe : sans « e » final (« Houme » trouve déjà Houmet / Houmt) ; mots collés (« Bousaid » = « Bou Said »)
         // 19/10/2026 (Ahmed : « enna » listait Nabeul, Nebeur…) : jamais une seule lettre (« enna » -> « na » -> « n » = tout ce qui
         // commence par N) ; et ce qui CONTIENT ce qu'on a tapé (Ennasr pour « enna ») passe toujours avant les ressemblances « au son »

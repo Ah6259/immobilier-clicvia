@@ -530,7 +530,8 @@
       el("v-publier").href = racine + "deposer/?" + q.toString();
       // lien Telegram : /start p_<code>_<transaction+type>_<gouvernorat>_<pièces>_<prix en base 36>_<quartier> (64 caractères au plus)
       var debut = "p_" + (etat ? etat.code.slice(4) : "") + "_" + TL + (TYPES_L[r.t] || "a") + "_" + r.g + "_" + (r.ch !== null && r.ch !== undefined ? r.ch : "x") + "_" + Math.round(p).toString(36) + "_";
-      el("v-suivi").href = "https://t.me/AlerteImmobilierTunisieBot?start=" + debut + slugL(r.q.replace(/^nom:/, "")).slice(0, Math.max(0, 64 - debut.length));
+      var sfx = window.suffixeTG ? window.suffixeTG() : "";     // langue de la page (le robot répondra dans cette langue, 19/10/2026)
+      el("v-suivi").href = "https://t.me/AlerteImmobilierTunisieBot?start=" + debut + slugL(r.q.replace(/^nom:/, "")).slice(0, Math.max(0, 64 - debut.length - sfx.length)) + sfx;
     }
     champ.addEventListener("input", function () { var v = parseFloat(champ.value); if (etat) { etat.prix = v > 0 ? v : null; garder(); } maj(); });
     maj();

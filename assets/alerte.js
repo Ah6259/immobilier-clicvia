@@ -32,8 +32,8 @@
   function nb(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0"); }   // espace insécable : « 1 000 » reste dans l'ordre en arabe
 
   // critères -> code (v1). Toute valeur inattendue devient « x » (indifférent).
-  function code(c) {
-    c = c || {};
+  function code(c, reserve) {      // reserve : place gardée pour la langue (« _ar », 19/10/2026)
+    c = c || {}; var max = 64 - (reserve || 0);
     var t = c.t === "v" || c.t === "l" ? c.t : "x";
     var y = COURT[c.y] ? c.y : "x";
     var g = SLUG.test(c.g || "") && String(c.g).length <= 20 ? c.g : "x";
@@ -42,12 +42,12 @@
     var p = parseInt(c.p, 10); p = p > 0 && p <= 99999999 ? String(p) : "x";
     var n = parseInt(c.c, 10); n = n >= 1 && n <= 5 ? String(n) : "x";
     var k = ["v1", t, y, g, l, p, n].join("_");
-    if (k.length > 64 && y !== "x") k = ["v1", t, COURT[y], g, l, p, n].join("_");
-    if (k.length > 64 && l !== dl) k = ["v1", t, y === "x" ? "x" : COURT[y], g, dl, p, n].join("_");   // trop long : la délégation seule
-    if (k.length > 64) k = ["v1", t, y === "x" ? "x" : COURT[y], g, "x", p, n].join("_");   // dernier recours : sans le quartier
+    if (k.length > max && y !== "x") k = ["v1", t, COURT[y], g, l, p, n].join("_");
+    if (k.length > max && l !== dl) k = ["v1", t, y === "x" ? "x" : COURT[y], g, dl, p, n].join("_");   // trop long : la délégation seule
+    if (k.length > max) k = ["v1", t, y === "x" ? "x" : COURT[y], g, "x", p, n].join("_");   // dernier recours : sans le quartier
     return k;
   }
-  function lien(c) { return "https://t.me/" + ROBOT + "?start=" + code(c); }
+  function lien(c) { var sfx = window.suffixeTG ? window.suffixeTG() : ""; return "https://t.me/" + ROBOT + "?start=" + code(c, sfx.length) + sfx; }
   window.codeAlerte = code;      // utilisés par les tests
   window.lienAlerte = lien;
 

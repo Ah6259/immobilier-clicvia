@@ -128,7 +128,7 @@
   // Contact (décision d'Ahmed du 11/10/2026) — même logique que robot/construire_site.py, fonction actions()
   function actions(a, racine) {
     var url = U(a.u);
-    var origine = '<a class="an-contact" href="' + url + '" target="_blank" rel="noopener nofollow">' + ICO.tel + L("Voir le numéro", "عرض الرقم") + ICO.lien + '</a>';
+    var origine = '<a class="an-contact" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce", "عرض الإعلان") + ICO.lien + '</a>';
     // annonce vue sur Facebook, ajoutée par Ahmed (18/10/2026) : un seul bouton, vers Facebook (nom et numéro y sont, pas chez nous)
     if (/^https:\/\/(www\.|m\.|web\.)?facebook\.com\//.test(a.u || "")) return '<a class="an-contact an-fb" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce sur Facebook", "عرض الإعلان على فيسبوك") + ICO.lien + '</a>';
     if (a.v === "a") {
@@ -255,6 +255,7 @@
         .replace(/ou/g, "u").replace(/w/g, "u").replace(/y/g, "i").replace(/([a-z])\1+/g, "$1").replace(/ (el|al|l|le|la|les) /g, " ").replace(/ (el|al|l|le|la|les) /g, " ")
         .replace(/([bcdfghjklmnpqrstvxz])[ea](?=[bcdfghjklmnpqrstvxz])/g, "$1").replace(/ +/g, " ");
     }
+    function brut(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").replace(/ +/g, " "); }
     function cle(t) { return son(" " + String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").trim() + " "); }
     window.cleLieu = cle;
     var INDEX = null;
@@ -302,15 +303,23 @@
         var mots = cle(champ.value).trim().split(" ").filter(Boolean);
         if (!mots.length || cle(champ.value).trim().length < 2) { fermer(); return; }
         // mot en cours de frappe : sans « e » final (« Houme » trouve déjà Houmet / Houmt) ; mots collés (« Bousaid » = « Bou Said »)
-        if (mots[mots.length - 1].length > 1) mots[mots.length - 1] = mots[mots.length - 1].replace(/[ea]+$/, "");
+        // 19/10/2026 (Ahmed : « enna » listait Nabeul, Nebeur…) : jamais une seule lettre (« enna » -> « na » -> « n » = tout ce qui
+        // commence par N) ; et ce qui CONTIENT ce qu'on a tapé (Ennasr pour « enna ») passe toujours avant les ressemblances « au son »
+        var der = mots[mots.length - 1].replace(/[ea]+$/, "");
+        if (der.length >= 2) mots[mots.length - 1] = der;
+        var lit = brut(champ.value).trim(), litOk = function (x) { if (x.b === undefined) x.b = " " + brut(x.fr + " " + x.ar);
+          return lit.length >= 2 && lit.split(" ").every(function (m) { return x.b.indexOf(" " + m) >= 0; }); };
+        // le mot en cours de frappe a été trop raccourci par la clé « au son » (« enna » -> « na ») : le texte tapé décide
+        var tape = brut(champ.value).trim().split(" ").pop() || "";
+        var faible = mots[mots.length - 1].length < 3 && tape.length >= 3;
         var colle = mots.join("");
         var vu = {};
-        choix = indexLieux().filter(function (x) { return mots.every(function (m) { return x.k.indexOf(" " + m) >= 0; })
+        choix = indexLieux().filter(function (x) { return litOk(x) || mots.every(function (m) { return x.k.indexOf(" " + m) >= 0; })
             || (colle.length >= 4 && (" " + x.k.trim().split(" ").join("")).indexOf(" " + colle) >= 0)
             || (colle.length >= 4 && x.k.split(" ").some(function (w, i, t) { return w && (w + (t[i + 1] || "") + (t[i + 2] || "")).indexOf(colle) === 0; })); })
           .filter(function (x) { var c = x.g + "/" + x.d + "/" + x.l; if (vu[c]) return false; vu[c] = 1; return true; })
-          .map(function (x) { return { x: x, n: compter(x), debut: x.k.indexOf(" " + mots[0]) === 0 }; })
-          .sort(function (a, b) { return ((b.n > 0) - (a.n > 0)) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); })   // lieux avec annonces, puis délégation avant localité
+          .map(function (x) { return { x: x, n: compter(x), debut: x.k.indexOf(" " + mots[0]) === 0, lit: litOk(x) }; })
+          .sort(function (a, b) { return (faible ? (b.lit - a.lit) : 0) || ((b.n > 0) - (a.n > 0)) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); })   // lieux avec annonces, puis délégation avant localité
           .slice(0, 8);
         if (!choix.length) {
           boite.innerHTML = '<li class="ou-rien">' + L("Aucun lieu trouvé : vérifiez l’orthographe", "لم نجد هذا المكان: تحقق من الكتابة") + '</li>';

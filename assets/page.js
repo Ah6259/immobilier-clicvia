@@ -261,10 +261,18 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     for (var j = 0; j < ph.length; j++) ph[j].placeholder = ph[j].getAttribute(html.lang === "ar" ? "data-ph-ar" : "data-ph-fr");
   }
 
+  // robot Telegram (19/10/2026, Ahmed : « un message dans la langue du site, pas les deux ») : la langue de la page part avec le lien
+  // (…?start=CODE_ar) ; le robot répond ensuite en arabe seulement. window.suffixeTG() : pour les liens fabriqués plus tard.
+  window.suffixeTG = function () { return html.lang === "ar" ? "_ar" : ""; };
+  function liensTelegram() {
+    var a = document.querySelectorAll('a[href*="t.me/AlerteImmobilierTunisieBot?start="]');
+    for (var i = 0; i < a.length; i++) a[i].href = a[i].getAttribute("href").replace(/_(ar|fr)$/, "") + window.suffixeTG();
+  }
+  window.liensTelegram = liensTelegram;
   function appliquer(l) {
     html.lang = l; html.dir = l === "ar" ? "rtl" : "ltr";
     try { localStorage.setItem("langue-immobilier", l); } catch (e) {}
-    cadre(); options();
+    cadre(); options(); liensTelegram();
     document.dispatchEvent(new Event("langue"));
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { appliquer(langue); });

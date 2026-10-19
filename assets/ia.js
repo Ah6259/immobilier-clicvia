@@ -63,10 +63,29 @@
   // écart propre au quartier appris par le robot (correction() de robot/modele_ia.py)
   function corr(nv, g, q) { return (q && nv.cal && nv.cal[g + "|" + q]) || 0; }
   function predire(m, x) { var p = m.depart; for (var i = 0; i < m.arbres.length; i++) p += arbre(m.arbres[i], x); return p; }
-  function estType(tm, g, q, s, ch, x) {
+  function estBrut(tm, g, q, s, ch, x) {
     var nv = tm.niveaux;
     if (!q || !nv.q[g + "|" + q]) return null;
     return predire(tm, variables(g, q, s, ch, nv, x, tm.params || [])) + corr(nv, g, q) + ((nv.depart_taille || {})[String(ch)] || 0);
+  }
+  // PLUS GRAND = PLUS CHER (19/10/2026) : à pièces égales, le prix monte au moins comme surface^elast (pente apprise sur les vraies
+  // annonces) — comme _est_type() de robot/modele_ia.py
+  function estType(tm, g, q, s, ch, x) {
+    var p = estBrut(tm, g, q, s, ch, x), b = tm.elast || 0;
+    if (p === null || !s || b <= 0 || !tm.s_min) return p;
+    var ls = Math.log(s), lmin = Math.log(tm.s_min);
+    if (lmin >= ls) return p;
+    var n2 = tm.niveaux.m2, v = null;
+    if (n2) { v = n2.q[g + "|" + q]; if (v === undefined) v = n2.g[g]; if (v === undefined) v = null; }
+    var cands = [lmin].concat((tm.seuils_s || []).filter(function (t) { return lmin < t && t < ls; }));
+    if (v !== null) (tm.seuils_m2 || []).forEach(function (t) { if (lmin < t - v && t - v < ls) cands.push(t - v); });
+    cands.forEach(function (c) {
+      var c2 = c + 1e-9;
+      if (c2 >= ls) return;
+      var pc = estBrut(tm, g, q, Math.exp(c2), ch, x);
+      if (pc !== null && pc + b * (ls - c2) > p) p = pc + b * (ls - c2);
+    });
+    return p;
   }
   // « Tout le gouvernorat » : moyenne des quartiers CONNUS de ce type, pondérée par leur nombre d'annonces (comme predire_lieu du robot)
   function predireLieu(tm, g, q, s, ch, x) {

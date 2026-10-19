@@ -319,6 +319,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
 
   // Partager UNE annonce (19/10/2026, Ahmed : un ami voulait envoyer une annonce à sa femme) : menu de partage du téléphone
   // (WhatsApp, Messenger, SMS…), sinon lien copié, sinon WhatsApp. Le lien ouvre notre page du gouvernorat sur l'annonce (?a=<id>).
+  window.idPartage = function (i) { return String(i).replace(/[^a-z0-9-]/g, function (c) { return "-x" + c.charCodeAt(0).toString(16) + "-"; }); };   // = id_partage() du robot (jamais deux annonces sur la même page)
   function texteVisible(el) {
     if (!el) return "";
     var s = el.querySelector('[data-l="' + html.lang + '"]');
@@ -329,14 +330,17 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     if (!b) return;
     e.preventDefault();
     var c = b.closest(".annonce"), id = b.getAttribute("data-partage"), g = b.getAttribute("data-g");
-    var lien = new URL(racine + g + "/?a=" + encodeURIComponent(id), location.href).href;
+    // page de partage de l'annonce (annonce/<id>/, 19/10/2026) : l'aperçu WhatsApp / Facebook montre SA photo, son titre et son prix,
+    // puis elle ouvre la page du gouvernorat sur l'annonce
+    var lien = new URL(racine + "annonce/" + window.idPartage(id) + "/", location.href).href;
     var titre = texteVisible(c && c.querySelector(".an-titre")) || document.title;
-    var fort = c && c.querySelector(".an-prix strong"), prix = fort ? fort.textContent.trim() + " DT" : "";
-    var lieu = texteVisible(c && c.querySelector(".an-lieu"));
-    var texte = titre + (prix ? " — " + prix : "") + (lieu ? "\n" + lieu : "") + "\n";
+    var fort = c && c.querySelector(".an-prix strong"), prix = fort ? fort.textContent.trim() + "\u00a0DT" : "";
+    // 19/10/2026 (Ahmed : « est-ce important d'avoir ces lignes ? ») : l'aperçu du lien montre déjà photo, titre, prix et lieu ;
+    // le message ne répète rien (seulement le lien) ; titre + prix gardés pour la copie du lien (ordinateur, SMS)
+    var texte = titre + (prix ? " — " + prix : "") + "\n";
     try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage/annonce", title: "Partage d'une annonce", event: true }); } catch (x) {}
     var wa = function () { window.open("https://wa.me/?text=" + encodeURIComponent(texte + lien), "_blank", "noopener"); };
-    if (navigator.share) { navigator.share({ title: titre, text: texte, url: lien }).catch(function () {}); return; }
+    if (navigator.share) { navigator.share({ title: titre, url: lien }).catch(function () {}); return; }
     try {
       navigator.clipboard.writeText(texte + lien).then(function () {
         b.classList.add("copie-ok"); b.title = T("Lien copié", "تم نسخ الرابط");

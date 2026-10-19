@@ -6,7 +6,7 @@
   function E(t) { return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function L(fr, ar) { return '<span data-l="fr">' + fr + '</span><span data-l="ar">' + ar + '</span>'; }
   function iso(t) { return "⁦" + t + "⁩"; }
-  function nb(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+  function nb(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f"); }
   function dfr(d) { return /^\d{4}-\d\d-\d\d$/.test(d || "") ? d.slice(8, 10) + "/" + d.slice(5, 7) + "/" + d.slice(0, 4) : ""; }
 
   function demarrer() {
@@ -39,7 +39,7 @@
     function enCours(f, a) {                  // annonce toujours en ligne : la carte du jour (+ prix au moment de l'ajout s'il a changé)
       var h = window.carteAnnonce ? window.carteAnnonce(a, racine) : retiree(f);
       var note = (f.d ? L("Ajoutée le " + dfr(f.d), "أُضيف في " + iso(dfr(f.d))) : "") +
-        (f.p != null && a.p != null && a.p !== f.p ? (f.d ? " · " : "") + L("prix à l’ajout : " + nb(f.p) + " DT", "السعر عند الحفظ: " + iso(nb(f.p)) + " دينار") : "");
+        (f.p != null && a.p != null && a.p !== f.p ? (f.d ? " · " : "") + L("prix à l’ajout : " + nb(f.p) + "\u00a0DT", "السعر عند الحفظ: " + iso(nb(f.p)) + "\u00a0دينار") : "");
       return note ? h.replace(/<\/article>$/, '<p class="fav-date">' + note + "</p></article>") : h;
     }
     function dessiner() {

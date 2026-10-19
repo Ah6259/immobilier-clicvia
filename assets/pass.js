@@ -14,9 +14,9 @@
   function ar() { return document.documentElement.lang === "ar"; }
   function T2(fr, a) { return ar() ? a : fr; }
   function esc(s) { return String(s === null || s === undefined ? "" : s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
-  function nb(x) { return '<bdi dir="ltr">' + Math.round(x).toLocaleString("fr-FR").replace(/[  ]/g, " ") + "</bdi>"; }
-  function dt(x) { return nb(x) + (ar() ? " دينار" : " DT"); }
-  function pc(x) { return '<bdi dir="ltr">' + Number(x).toFixed(1).replace(".", ",") + " %</bdi>"; }
+  function nb(x) { return '<bdi dir="ltr">' + Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f") + "</bdi>"; }
+  function dt(x) { return nb(x) + (ar() ? "\u00a0دينار" : "\u00a0DT"); }
+  function pc(x) { return '<bdi dir="ltr">' + Number(x).toFixed(1).replace(".", ",") + "\u00a0%</bdi>"; }
   function jfr(d) { return d ? '<bdi dir="ltr">' + d.slice(8, 10) + "/" + d.slice(5, 7) + "/" + d.slice(0, 4) + "</bdi>" : ""; }
   function aujourdhui() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
   function plus(d, n) { var x = new Date(d + "T12:00:00"); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); }
@@ -172,7 +172,7 @@
     f.scrollIntoView({behavior: "smooth", block: "start"});
   }
   function affaire(a) {
-    return '<li data-pert="' + a.ecart + '" data-prix="' + a.prix + '" data-rdt="' + a.brut + '"><b>' + T2("S+", "S+") + a.taille + " " + esc(ar() ? a.q_ar : a.q_fr) + "</b> : <b>" + dt(a.prix) + "</b> — " + nb(a.ecart) + T2(" % sous le prix du quartier (", " % أقل من سعر الحي (") + dt(a.mediane) +
+    return '<li data-pert="' + a.ecart + '" data-prix="' + a.prix + '" data-rdt="' + a.brut + '"><b>' + T2("S+", "S+") + a.taille + " " + esc(ar() ? a.q_ar : a.q_fr) + "</b> : <b>" + dt(a.prix) + "</b> — " + nb(a.ecart) + T2("\u00a0% sous le prix du quartier (", "\u00a0% أقل من سعر الحي (") + dt(a.mediane) +
       ") · " + T2("loyer du quartier ", "كراء الحي ") + dt(a.loyer) + " → <b>" + pc(a.brut) + "</b> " + T2("brut", "خام") +
       (a.ia ? " · " + T2("estimation de l’IA ≈ ", "تقدير الذكاء الاصطناعي ≈ ") + dt(a.ia) : "") +
       ' · <a href="' + esc(a.url) + '" target="_blank" rel="noopener nofollow">' + T2("voir l’annonce", "شاهد الإعلان") + "</a></li>";
@@ -217,9 +217,9 @@
     var noms = {maison: ["Maison / villa", "منزل / فيلا"], bureau: ["Bureau", "مكتب"], commerce: ["Local commercial", "محل تجاري"], industriel: ["Usine / entrepôt", "مصنع / مستودع"],
                 terrain: ["Terrain à bâtir", "أرض للبناء"], terrainind: ["Terrain industriel", "أرض صناعية"], agricole: ["Terrain agricole", "أرض فلاحية"]};
     function n(t) { return (noms[t] || [t, t])[ar() ? 1 : 0]; }
-    el("p-m2").innerHTML = R.m2.map(function (x) { return '<li data-pert="' + ((x.nb_ventes || 0) + (x.nb_locations || 0)) + '" data-prix="' + x.prix_m2 + '" data-rdt="' + x.brut + '"><b>' + n(x.type) + "</b> " + esc(ar() ? x.g_ar : x.g_fr) + " (~" + nb(x.surface) + " m²) : " + nb(x.prix_m2) + T2(" DT/m² · loyer ", " دينار/م² · كراء ") +
-      '<bdi dir="ltr">' + String(x.loyer_m2).replace(".", ",") + "</bdi>" + T2(" DT/m² · ", " دينار/م² · ") + "<b>" + pc(x.brut) + "</b></li>"; }).join("") +
-      R.terrains.map(function (x) { return '<li data-pert="' + x.nb + '" data-prix="' + x.prix_m2 + '"><b>' + n(x.type) + "</b> " + esc(ar() ? x.g_ar : x.g_fr) + " : " + nb(x.prix_m2) + T2(" DT/m² (", " دينار/م² (") + nb(x.nb) + T2(" annonces)", " إعلان)") + "</li>"; }).join("");
+    el("p-m2").innerHTML = R.m2.map(function (x) { return '<li data-pert="' + ((x.nb_ventes || 0) + (x.nb_locations || 0)) + '" data-prix="' + x.prix_m2 + '" data-rdt="' + x.brut + '"><b>' + n(x.type) + "</b> " + esc(ar() ? x.g_ar : x.g_fr) + " (~" + nb(x.surface) + "\u00a0m²) : " + nb(x.prix_m2) + T2("\u00a0DT/m² · loyer ", "\u00a0دينار/م² · كراء ") +
+      '<bdi dir="ltr">' + String(x.loyer_m2).replace(".", ",") + "</bdi>" + T2("\u00a0DT/m² · ", "\u00a0دينار/م² · ") + "<b>" + pc(x.brut) + "</b></li>"; }).join("") +
+      R.terrains.map(function (x) { return '<li data-pert="' + x.nb + '" data-prix="' + x.prix_m2 + '"><b>' + n(x.type) + "</b> " + esc(ar() ? x.g_ar : x.g_fr) + " : " + nb(x.prix_m2) + T2("\u00a0DT/m² (", "\u00a0دينار/م² (") + nb(x.nb) + T2(" annonces)", " إعلان)") + "</li>"; }).join("");
     el("p-affaires").innerHTML = R.affaires.length ? R.affaires.map(affaire).join("") : "<li>" + T2("Aucune bonne affaire cette semaine.", "لا صفقات جيدة هذا الأسبوع.") + "</li>";
     retrier("p-affaires"); retrier("p-m2");
     var opts = '<option value="">—</option>' + quartiersUniques().map(function (x) { return '<option value="' + esc(x.g + "|" + x.q) + '">' + esc(ar() ? x.q_ar : x.q_fr) + " (" + esc(ar() ? x.g_ar : x.g_fr) + ")</option>"; }).join("");

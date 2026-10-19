@@ -43,9 +43,9 @@
   function T2(fr, a) { if (LOC && LOC_TXT[fr]) { a = LOC_TXT[fr][1]; fr = LOC_TXT[fr][0]; } return ar() ? a : fr; }
   function esc(s) { return String(s === null || s === undefined ? "" : s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
   function rond(x) { return x >= 20000 ? Math.round(x / 1000) * 1000 : Math.round(x / 10) * 10; }
-  function nb(x) { return '<bdi dir="ltr">' + Math.round(x).toLocaleString("fr-FR").replace(/[  ]/g, " ") + "</bdi>"; }
-  function dt(x) { return nb(rond(x)) + (ar() ? " دينار" : " DT"); }
-  function pc(x) { return '<bdi dir="ltr">' + (x >= 0 ? "+" : "−") + Math.abs(Math.round(x)) + " %</bdi>"; }
+  function nb(x) { return '<bdi dir="ltr">' + Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f") + "</bdi>"; }
+  function dt(x) { return nb(rond(x)) + (ar() ? "\u00a0دينار" : "\u00a0DT"); }
+  function pc(x) { return '<bdi dir="ltr">' + (x >= 0 ? "+" : "−") + Math.abs(Math.round(x)) + "\u00a0%</bdi>"; }
   function med(v) { v = v.slice().sort(function (a, b) { return a - b; }); var n = v.length; return n ? (n % 2 ? v[(n - 1) / 2] : (v[n / 2 - 1] + v[n / 2]) / 2) : null; }
   function quart(v, f) { v = v.slice().sort(function (a, b) { return a - b; }); return v.length ? v[Math.min(v.length - 1, Math.floor(v.length * f))] : null; }
   function aujourdhui() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
@@ -346,7 +346,7 @@
            '<span class="v-pas-sous">' + T2("Voici les plus proches :", "إليك الأقرب:") + '</span></p><ul class="v-trouvees">' +
            r.trouvees.map(function (x) {
              // UNE ligne par annonce (18/10/2026, Ahmed) : le lieu se coupe (« … ») plutôt que de passer à la ligne
-             return "<li><b>" + dt(x.p) + "</b>" + (x.s ? "<span> · " + nb(x.s) + " m²</span>" : "") + (x.c != null ? '<span> · <bdi dir="ltr">S+' + x.c + "</bdi></span>" : "") +
+             return "<li><b>" + dt(x.p) + "</b>" + (x.s ? "<span> · " + nb(x.s) + "\u00a0m²</span>" : "") + (x.c != null ? '<span> · <bdi dir="ltr">S+' + x.c + "</bdi></span>" : "") +
                     '<span class="v-tr-lieu"> · ' + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + '</span><span> · <a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></span></li>";
            }).join("") + "</ul>";
     } else if (r.tropVaries) {
@@ -391,7 +391,7 @@
     // le résumé dit QUEL bien est analysé (celui du formulaire, pas un exemple) et donne le juste prix
     var ouvert = el("v-analyse-d") ? el("v-analyse-d").open : false;
     var o = noms(el("v-t").options[el("v-t").selectedIndex]), li = lieuxDeux();
-    var bien = (ar() ? (o[1] || o[0]) : o[0]) + (r.ch !== null && r.ch !== undefined ? " S+" + r.ch : "") + (r.s ? ", " + nb(r.s) + (ar() ? " م²" : " m²") : "") + ", " + esc(li[ar() ? 1 : 0]);
+    var bien = (ar() ? (o[1] || o[0]) : o[0]) + (r.ch !== null && r.ch !== undefined ? " S+" + r.ch : "") + (r.s ? ", " + nb(r.s) + (ar() ? "\u00a0م²" : "\u00a0m²") : "") + ", " + esc(li[ar() ? 1 : 0]);
     var h = '<details class="pliable" id="v-analyse-d"' + (ouvert ? " open" : "") + "><summary><h2>" + T2("📂 Ouvrir votre analyse complète", "📂 افتح تحليلك الكامل") + "</h2>" +
       '<span class="pli-sous pli-sous-garde"><b>' + bien + "</b> · " + (LOC ? T2("juste loyer : ", "الكراء العادل: ") : T2("juste prix : ", "السعر العادل: ")) + "<b>" + dt(juste) + "</b><br>" +
       T2("Touchez + pour voir toute l’analyse.", "المس + لترى كامل التحليل.") + "</span></summary>";
@@ -417,7 +417,7 @@
       h += "<h3>" + T2("Les annonces de référence (les plus proches de votre bien)", "إعلانات المرجع (الأقرب إلى عقارك)") + '</h3><div class="inv-tableau"><table><thead><tr><th>' +
         T2("Prix", "السعر") + "</th><th>" + T2("Surface", "المساحة") + "</th>" + (logt ? "<th>" + T2("Pièces", "الغرف") + "</th>" : "") + "<th>" + T2("Lieu", "المكان") + "</th><th></th></tr></thead><tbody>" +
         r.proches.map(function (x) {
-          return "<tr><td><b>" + dt(x.p) + "</b>" + (x.s ? "<small>" + dt(x.p / x.s) + "/m²</small>" : "") + "</td><td>" + (x.s ? nb(x.s) + " m²" : "—") + "</td>" + (logt ? "<td>" + (x.c != null ? '<bdi dir="ltr">S+' + x.c + "</bdi>" : "—") + "</td>" : "") +
+          return "<tr><td><b>" + dt(x.p) + "</b>" + (x.s ? "<small>" + dt(x.p / x.s) + "/m²</small>" : "") + "</td><td>" + (x.s ? nb(x.s) + "\u00a0m²" : "—") + "</td>" + (logt ? "<td>" + (x.c != null ? '<bdi dir="ltr">S+' + x.c + "</bdi>" : "—") + "</td>" : "") +
             "<td>" + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + '</td><td><a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></td></tr>";
         }).join("") + "</tbody></table></div>";
     }
@@ -486,13 +486,13 @@
     });
     var etFr = r.et === null || r.et === undefined ? "" : r.et === 0 ? "Rez-de-chaussée." : "Étage : " + r.et + ".";
     var etAr = r.et === null || r.et === undefined ? "" : r.et === 0 ? "الطابق الأرضي." : "الطابق: " + r.et + ".";
-    var titre = (tfr + sn + (r.s ? " " + chiffre(r.s) + " m²" : "") + " – " + li[0].replace(/ \(.*\)$/, "")).slice(0, 70);
-    var fr = [(LOC ? "À louer : " : "À vendre : ") + tfr.toLowerCase() + sn + (r.s ? " de " + chiffre(r.s) + " m²" : "") + ", " + li[0] + ".",
+    var titre = (tfr + sn + (r.s ? " " + chiffre(r.s) + "\u00a0m²" : "") + " – " + li[0].replace(/ \(.*\)$/, "")).slice(0, 70);
+    var fr = [(LOC ? "À louer : " : "À vendre : ") + tfr.toLowerCase() + sn + (r.s ? " de " + chiffre(r.s) + "\u00a0m²" : "") + ", " + li[0] + ".",
               etFr, atFr.length ? "Atouts : " + atFr.join(", ") + "." : "",
-              (LOC ? "Loyer : " + chiffre(prix) + " DT par mois." : "Prix : " + chiffre(prix) + " DT."), "Visite sur rendez-vous."].filter(Boolean).join("\n");
-    var a = [(LOC ? "للكراء: " : "للبيع: ") + tar + sn + (r.s ? " مساحتها " + chiffre(r.s) + " م²" : "") + "، " + li[1] + ".",
+              (LOC ? "Loyer : " + chiffre(prix) + "\u00a0DT par mois." : "Prix : " + chiffre(prix) + "\u00a0DT."), "Visite sur rendez-vous."].filter(Boolean).join("\n");
+    var a = [(LOC ? "للكراء: " : "للبيع: ") + tar + sn + (r.s ? " مساحتها " + chiffre(r.s) + "\u00a0م²" : "") + "، " + li[1] + ".",
              etAr, atAr.length ? "المزايا: " + atAr.join("، ") + "." : "",
-             (LOC ? "الكراء: " + chiffre(prix) + " دينار شهريًا." : "السعر: " + chiffre(prix) + " دينار."), "الزيارة بموعد."].filter(Boolean).join("\n");
+             (LOC ? "الكراء: " + chiffre(prix) + "\u00a0دينار شهريًا." : "السعر: " + chiffre(prix) + "\u00a0دينار."), "الزيارة بموعد."].filter(Boolean).join("\n");
     return { titre: titre, fr: fr, ar: a };
   }
   function prixVoulu(juste) { var p = etat && etat.prix ? etat.prix : 0; return p > 0 ? p : rond(juste); }

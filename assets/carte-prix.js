@@ -16,7 +16,7 @@
   function aUnPrix(x) { return type === "tout" ? TOUT[mode].some(function (c) { return x[c[0]]; }) : !!x[champ()]; }
   function ar() { return document.documentElement.lang === "ar"; }
   function T(fr, a) { return ar() ? a : fr; }
-  function nb(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[  ]/g, " "); }
+  function nb(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f"); }
   // bulle des gouvernorats (17/10/2026, choix d'Ahmed) : 1 000 et plus -> « 2,9 k », « 16 k » (sur une ligne, lisible) ;
   // le nombre exact reste dans l'infobulle et la fenêtre
   function court(x) {
@@ -32,7 +32,7 @@
   function classe(x, b) { var i = 0; while (i < b.length && x > b[i]) i++; return i; }
   function legBleu() { return [T("annonces du gouvernorat (zoomez : délégations, puis quartiers)", "إعلانات الولاية (قرّب: المعتمديات ثم الأحياء)"),
     T("annonces de la délégation (zoomez : quartiers)", "إعلانات المعتمدية (قرّب: الأحياء)"), T("nombre d’annonces du quartier, couleur = prix", "عدد إعلانات الحي، اللون = السعر")][niveau() - 1]; }
-  function unite() { return mode === "m2" ? T(" DT/m²", " دينار/م²") : T(" DT/mois", " دينار/شهر"); }
+  function unite() { return mode === "m2" ? T("\u00a0DT/m²", "\u00a0دينار/م²") : T("\u00a0DT/mois", "\u00a0دينار/شهر"); }
   // nombre de quartiers avec un prix pour un type de bien (tous modes), dans un gouvernorat (ou partout)
   function compter(t, g) {
     var c = {};
@@ -142,7 +142,7 @@
       var h = "<b>" + nom + "</b><br>" + nb(x.t) + T(" annonces dans ce quartier", " إعلانًا في هذا الحي") + "<br><small>" +
         T("Pas encore assez d’annonces pour ce prix ici.", "لا توجد بعد إعلانات كافية لهذا السعر هنا.") + "</small>" +
         connus.map(function (k) {
-          return "<br>" + T(NOM_1[k[2]][0], NOM_1[k[2]][1]) + " : <b>" + nb(x[k[0]]) + (k[3] === "m2" ? T(" DT/m²", " دينار/م²") : T(" DT/mois", " دينار/شهر")) +
+          return "<br>" + T(NOM_1[k[2]][0], NOM_1[k[2]][1]) + " : <b>" + nb(x[k[0]]) + (k[3] === "m2" ? T("\u00a0DT/m²", "\u00a0دينار/م²") : T("\u00a0DT/mois", "\u00a0دينار/شهر")) +
             "</b> <small>(" + T("calculé sur ", "على ") + x[k[1]] + T(" annonces", " إعلانًا") + ")</small>";
         }).join("") +
         '<br><a href="' + racine + x.g + "/" + (x.page ? x.q + "/" : "") + '#liste">' + T("Voir les " + nb(x.t) + " annonces", "شاهد " + nb(x.t) + " إعلانًا") + "</a>";

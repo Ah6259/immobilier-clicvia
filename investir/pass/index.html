@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=93c1bc80e3">
-<script src="../../assets/page.js?v=93c1bc80e3"></script>
+<link rel="stylesheet" href="../../assets/style.css?v=4838fcce42">
+<script src="../../assets/page.js?v=4838fcce42"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body data-maj="2026-10-19" data-cv="0d9e32101b" data-nb="17047" data-page="investir">
@@ -56,7 +56,7 @@
 <div class="pass-etat" id="pass-etat" role="status" aria-live="polite"></div>
 <section class="bloc pass" id="pass-accueil">
   <h2><span data-l="fr">Prendre le Pass Investisseur</span><span data-l="ar">خذ باس المستثمر</span></h2>
-  <p class="pass-prix"><span data-l="fr"><b>49 DT</b> / mois <small>ou 390 DT / an</small></span><span data-l="ar"><b>⁦49⁩ دينار</b> / شهر <small>أو ⁦390⁩ دينار / سنة</small></span></p>
+  <p class="pass-prix"><span data-l="fr"><b>49 DT</b> / mois <small>ou 390 DT / an</small></span><span data-l="ar"><b>⁦49⁩ دينار</b> / شهر <small>أو ⁦390⁩ دينار / سنة</small></span></p>
   <p><span data-l="fr">Ici, sans application ni inscription : vous recevez tout de suite votre <b>code Pass</b> (le motif du paiement) et votre <b>lien personnel</b>. Le Pass s’ouvre sur cette page dès que le paiement est reçu, dans la journée.</span><span data-l="ar">هنا، دون تطبيق أو تسجيل: تحصل فورًا على <b>رمز الباس</b> (سبب الدفع) و<b>رابطك الشخصي</b>. يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.</span></p>
   <a class="btn-exemple" href="../exemple/"><span data-l="fr">👀 Voir d’abord l’exemple complet : tout ce que vous recevez</span><span data-l="ar">👀 شاهد أولًا المثال الكامل: كل ما يصلك</span></a>
   <button type="button" class="btn-paie" id="pass-commencer"><span data-l="fr">Obtenir mon code Pass et payer</span><span data-l="ar">احصل على رمز الباس وادفع</span></button>
@@ -74,7 +74,7 @@
   <div class="calc"><label><span data-l="fr">Quartier 1</span><span data-l="ar">الحي 1</span><select id="p-c1"></select></label><label><span data-l="fr">Quartier 2</span><span data-l="ar">الحي 2</span><select id="p-c2"></select></label><label><span data-l="fr">Quartier 3 (facultatif)</span><span data-l="ar">الحي 3 (اختياري)</span><select id="p-c3"></select></label></div>
   <div class="calc-res" id="p-comp-res"></div></details></section>
 <section class="bloc" id="p-affaires-bloc"><details class="pliable"><summary><h2><span data-l="fr">Bonnes affaires de la semaine</span><span data-l="ar">صفقات الأسبوع الجيدة</span></h2><span class="pli-sous"><span data-l="fr">Ventes nettement sous le prix de leur quartier.</span><span data-l="ar">بيوع أقل بكثير من سعر حيّها.</span></span></summary>
-  <p class="petit"><span data-l="fr">Ventes 15 à 45 % sous le prix médian de leur quartier, dans une zone rentable. Vérifiez toujours le bien et le titre foncier avant d’acheter.</span><span data-l="ar">بيوع أقل بـ 15 إلى 45 % من السعر الوسط لحيّها، في منطقة مربحة. تحقّق دائمًا من العقار والرسم العقاري قبل الشراء.</span></p>
+  <p class="petit"><span data-l="fr">Ventes 15 à 45 % sous le prix médian de leur quartier, dans une zone rentable. Vérifiez toujours le bien et le titre foncier avant d’acheter.</span><span data-l="ar">بيوع أقل بـ 15 إلى 45 % من السعر الوسط لحيّها، في منطقة مربحة. تحقّق دائمًا من العقار والرسم العقاري قبل الشراء.</span></p>
   <label class="tri"><span data-l="fr">Trier</span><span data-l="ar">ترتيب</span> <select data-trier="p-affaires"><option value="pert" data-sens="desc" data-fr="Plus pertinents" data-ar="الأكثر أهمية">Plus pertinents</option><option value="prix" data-sens="asc" data-fr="Moins chers" data-ar="الأقل سعرًا">Moins chers</option><option value="rdt" data-sens="desc" data-fr="Meilleur rendement" data-ar="أفضل مردود">Meilleur rendement</option></select></label><small class="tri-aide"><span data-l="fr">Plus pertinents = plus forte baisse sous le prix du quartier.</span><span data-l="ar">الأكثر أهمية = أكبر انخفاض تحت سعر الحي.</span></small>
   <ul class="p-affaires" id="p-affaires" data-limite="10"></ul>
   <p class="petit"><span data-l="fr">En direct (dès qu’une bonne affaire paraît) : sur Telegram,</span><span data-l="ar">مباشرة (فور ظهور صفقة جيدة): على تيليغرام،</span> <a href="https://t.me/AlerteImmobilierTunisieBot?start=investir" target="_blank" rel="noopener"><span data-l="fr">ouvrir le robot</span><span data-l="ar">افتح الروبوت</span></a>.</p></details></section>
@@ -89,13 +89,13 @@
 </div>
 <section class="bloc pass" id="pass-payer" hidden>
   <h2><span data-l="fr">Continuer avec le Pass</span><span data-l="ar">واصل مع الباس</span></h2>
-  <p class="pass-prix"><span data-l="fr"><b>49 DT</b> / mois <small>ou 390 DT / an</small></span><span data-l="ar"><b>⁦49⁩ دينار</b> / شهر <small>أو ⁦390⁩ دينار / سنة</small></span></p>
+  <p class="pass-prix"><span data-l="fr"><b>49 DT</b> / mois <small>ou 390 DT / an</small></span><span data-l="ar"><b>⁦49⁩ دينار</b> / شهر <small>أو ⁦390⁩ دينار / سنة</small></span></p>
   <p class="petit"><span data-l="fr">Après le paiement, votre Pass est activé sur votre code dans la journée : cette même page reste ouverte, sans rien changer.</span><span data-l="ar">بعد الدفع، يُفعَّل باسك على رمزك في نفس اليوم: تبقى هذه الصفحة مفتوحة، دون تغيير أي شيء.</span></p>
   <details class="paiement"><summary class="btn-paie"><span data-l="fr">Paiement</span><span data-l="ar">الدفع</span></summary>
   <div class="paie"><ol class="paie-etapes">
     <li><span data-l="fr">Ouvrez l'application :</span><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="fr">Sur iPhone :</span><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li>
     <li><span data-l="fr">Dans D17 : « Transfert d’argent » puis « Transfert rapide ». Dans IZI : « Transfert ». Tapez le numéro</span><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم</span> <strong><bdi dir="ltr">24 321 390</bdi></strong>.<br>
-      <span data-l="fr">Montant :</span><span data-l="ar">المبلغ:</span> <strong><span data-l="fr">49 DT pour un mois ou 390 DT pour un an</span><span data-l="ar">⁦49⁩ دينار لشهر أو ⁦390⁩ دينار لسنة</span></strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><span class="tg-tampon" aria-hidden="true"><span data-l="fr">EXEMPLE</span><span data-l="ar">مثال</span></span><img src="../../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><span class="tg-tampon" aria-hidden="true"><span data-l="fr">EXEMPLE</span><span data-l="ar">مثال</span></span><img src="../../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li>
+      <span data-l="fr">Montant :</span><span data-l="ar">المبلغ:</span> <strong><span data-l="fr">49 DT pour un mois ou 390 DT pour un an</span><span data-l="ar">⁦49⁩ دينار لشهر أو ⁦390⁩ دينار لسنة</span></strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><span class="tg-tampon" aria-hidden="true"><span data-l="fr">EXEMPLE</span><span data-l="ar">مثال</span></span><img src="../../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><span class="tg-tampon" aria-hidden="true"><span data-l="fr">EXEMPLE</span><span data-l="ar">مثال</span></span><img src="../../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li>
     <li><span data-l="fr">Motif : <strong>votre code Pass</strong> (affiché sur la page du Pass dès que vous touchez « Prendre le Pass », ou donné par le robot Telegram). Puis envoyez la capture du paiement par WhatsApp (bouton vert).</span><span data-l="ar">سبب الدفع: <strong>رمز الباس</strong> (يظهر في صفحة الباس بمجرد لمس « خذ الباس »، أو يعطيك إياه روبوت تيليغرام). ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li>
   </ol>
   <p class="paie-confiance"><span data-l="fr">Vous payez directement dans l'application officielle de La Poste Tunisienne (D17) ou de Zitouna Paiement (IZI) : nous ne voyons jamais vos codes.</span><span data-l="ar">تدفع مباشرة في التطبيق الرسمي للبريد التونسي (D17) أو لزيتونة للدفع (IZI): لا نطّلع أبدًا على رموزك.</span></p>
@@ -106,6 +106,6 @@
 </main>
 <footer id="pied" class="pied"></footer>
 
-<script src="../../assets/pass.js?v=93c1bc80e3" defer></script>
+<script src="../../assets/pass.js?v=4838fcce42" defer></script>
 </body>
 </html>

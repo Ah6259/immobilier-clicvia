@@ -9,7 +9,7 @@
   function el(id) { return document.getElementById(id); }
   function ar() { return document.documentElement.lang === "ar"; }
   function dt(x) { var r = x >= 20000 ? Math.round(x / 1000) * 1000 : Math.round(x / 10) * 10;
-    return '<bdi dir="ltr">' + r.toLocaleString("fr-FR").replace(/[  ]/g, " ") + "</bdi>" + (ar() ? " دينار" : " DT"); }
+    return '<bdi dir="ltr">' + r.toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f") + "</bdi>" + (ar() ? "\u00a0دينار" : "\u00a0DT"); }
   // version 6 (18/10/2026, décision d'Ahmed) : UN MODÈLE PAR TYPE DE BIEN (M.modeles[tr].types[t]), avec SES paramètres (tm.params :
   // étage pour un appartement, jardin / piscine / niveaux pour une maison…) ; le prix d'un quartier est propre au type et n'existe
   // qu'avec assez d'annonces de ce type (sinon : pas d'estimation) — comme variables() et faits_de() du robot
@@ -141,7 +141,7 @@
          T2("entre ", "بين ") + dt(l[1]) + T2(" et ", " و") + dt(l[2]) + "</small>" : pas) + "</p>";
     if (v && l) {
       var b = l[0] * 12 / v[0] * 100;
-      h += '<p class="ia-ligne ia-rdt"><span>' + T2("Rendement brut estimé", "المردود الخام التقديري") + '</span><b><bdi dir="ltr">' + b.toFixed(1).replace(".", ",") + " %</bdi></b></p>";
+      h += '<p class="ia-ligne ia-rdt"><span>' + T2("Rendement brut estimé", "المردود الخام التقديري") + '</span><b><bdi dir="ltr">' + b.toFixed(1).replace(".", ",") + "\u00a0%</bdi></b></p>";
     }
     var pr = (v || l || [0, 0, 0, null])[3];
     // pas de pourcentage d'erreur affiché (information interne, décision d'Ahmed du 15/10/2026)

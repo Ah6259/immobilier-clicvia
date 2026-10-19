@@ -51,13 +51,13 @@
     return "<p>" + L(fr, a) + "</p>";
   }
   function avisIA(a, loc, racine) {
-    var x = a.ia, LX = window.LIEUX || { g: {}, l: {} }, dt = function (v) { return L(nb(v) + " DT", iso(nb(v)) + " دينار"); };
+    var x = a.ia, LX = window.LIEUX || { g: {}, l: {} }, dt = function (v) { return L(nb(v) + "\u00a0DT", iso(nb(v)) + "\u00a0دينار"); };
     var li = a.l && LX.l[a.g + "/" + a.l], g = LX.g[a.g] || [a.g, a.g];
     // jamais tout le gouvernorat (règle d'Ahmed, 15/10/2026) : même quartier, ou même délégation officielle (x.dl = [FR, AR])
     var ou = x.pr ? L(" à moins de 1,5 km", " على أقل من 1,5 كم") : x.z === "q" ? L(" à " + E(li ? li[0] : (a.n || g[0])), " في " + (li ? li[1] : g[1])) : L(" dans la délégation de " + E((x.dl || [""])[0]), " في معتمدية " + E((x.dl || ["", ""])[1] || (x.dl || [""])[0]));
     // comparaison AU M² quand la surface est connue (15/10/2026) : x.m2 = [ce bien, médiane, bas, haut] en DT/m²
     var m2 = x.m2, m2t = function (v) { return v < 100 ? String(v).replace(".", ",") : nb(v); },
-      dm2 = function (v) { return L(m2t(v) + " DT/m²", iso(m2t(v)) + " دينار/م²"); };
+      dm2 = function (v) { return L(m2t(v) + "\u00a0DT/m²", iso(m2t(v)) + "\u00a0دينار/م²"); };
     // sorte du logement (duplex, villas…) : comparé seulement à la même sorte (15/10/2026)
     var SORTES = { etage_villa: ["étages de villa", "طوابق فيلا"], duplex: ["duplex", "دوبلكس"], penthouse: ["penthouses", "بنتهاوس"], studio: ["studios", "ستوديوهات"], villa: ["villas", "فيلات"], maison_trad: ["maisons traditionnelles", "منازل تقليدية"] };
     var so = SORTES[x.st], ann = L(x.n + " annonces semblables" + (so ? " (" + so[0] + ")" : ""), iso(x.n) + " إعلانات مشابهة" + (so ? " (" + so[1] + ")" : ""));
@@ -70,12 +70,12 @@
     else if (x.x) t = L("Avis partagé", "رأي متباين") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(" : comparé à ", ": مقارنة بـ ") + sembl +
       L(", mais notre modèle d’IA l’estime à ≈ ", "، لكن نموذجنا يقدّره بـ ≈ ") + dt(x.e) + L(" : comparez avec soin", ": قارن بعناية");   // annonces semblables et modèle pas d'accord
     else if (x.v === "n") t = L(quoi[0] + " dans la norme", quoi[1] + " في المعدّل") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl;
-    else if (x.v === "b") t = pre + L(Math.abs(x.p) + " % sous ", iso(Math.abs(x.p)) + " % أقل من ") + sembl + L(" : peut-être une bonne affaire, vérifiez l’état du bien", ": ربما صفقة جيدة، تحقّق من حالة العقار");
-    else t = pre + L(x.p + " % au-dessus de ", iso(x.p) + " % أعلى من ") + sembl + L(" : de la marge pour négocier, sauf vrais atouts", ": هامش للتفاوض، إلا إن كانت له مزايا حقيقية");
+    else if (x.v === "b") t = pre + L(Math.abs(x.p) + "\u00a0% sous ", iso(Math.abs(x.p)) + "\u00a0% أقل من ") + sembl + L(" : peut-être une bonne affaire, vérifiez l’état du bien", ": ربما صفقة جيدة، تحقّق من حالة العقار");
+    else t = pre + L(x.p + "\u00a0% au-dessus de ", iso(x.p) + "\u00a0% أعلى من ") + sembl + L(" : de la marge pour négocier, sauf vrais atouts", ": هامش للتفاوض، إلا إن كانت له مزايا حقيقية");
     var comps = (x.c || []).map(annonceParId).filter(Boolean).map(function (c) {
       var cl = c.l && LX.l[c.g + "/" + c.l];
       var cm = m2 && c.s ? c.p / c.s : null;
-      return "<li>" + dt(c.p) + (c.c != null ? " · " + iso("S+" + c.c) : "") + (c.s ? " · " + L(nb(c.s) + " m²", iso(nb(c.s)) + " م²") : "") +
+      return "<li>" + dt(c.p) + (c.c != null ? " · " + iso("S+" + c.c) : "") + (c.s ? " · " + L(nb(c.s) + "\u00a0m²", iso(nb(c.s)) + "\u00a0م²") : "") +
         (cm ? " (" + dm2(cm < 100 ? Math.round(cm * 10) / 10 : Math.round(cm)) + ")" : "") +
         (cl ? " · " + L(E(cl[0]), cl[1]) : "") + ' · <a href="' + U(c.u) + '" target="_blank" rel="noopener nofollow">' + L("voir", "شاهد") + "</a></li>";
     }).join("");
@@ -103,7 +103,7 @@
       : '<p class="an-prix sans">' + L("Prix communiqué par le vendeur", "السعر لدى البائع") + '</p>';
     if (a.p != null && a.ia) prix += avisIA(a, loc, racine);
     var faits = "";
-    if (a.s) faits += '<li>' + ICO.surface + L(nb(a.s) + " m²", iso(nb(a.s) + " م²")) + '</li>';
+    if (a.s) faits += '<li>' + ICO.surface + L(nb(a.s) + "\u00a0m²", iso(nb(a.s) + "\u00a0م²")) + '</li>';
     if (sn) faits += '<li>' + ICO.chambres + L("S+" + a.c, iso("S+" + a.c)) + '</li>';
     if (a.d) faits += '<li>' + ICO.date + L(dfr(a.d), iso(dfr(a.d))) + '</li>';
     var lieu = lfr ? L(E(lfr) + " · " + E(g[0]), lar + " · " + g[1]) : L(E(g[0]), g[1]);

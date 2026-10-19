@@ -4,8 +4,8 @@
   var f = document.getElementById("calc"), res = document.getElementById("calc-res");
   if (!f || !res) return;
   function n(id) { var v = parseFloat((document.getElementById(id).value || "").replace(",", ".")); return isFinite(v) ? v : 0; }
-  function dt(x) { return Math.round(x).toLocaleString("fr-FR").replace(/ | /g, " ") + (document.documentElement.lang === "ar" ? " دينار" : " DT"); }
-  function pc(x) { return x.toFixed(1).replace(".", ",") + " %"; }
+  function dt(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f") + (document.documentElement.lang === "ar" ? "\u00a0دينار" : "\u00a0DT"); }
+  function pc(x) { return x.toFixed(1).replace(".", ",") + "\u00a0%"; }
   function ligne(fr, ar, val, cls) {
     return '<p class="' + (cls || "") + '"><span>' + T(fr, ar) + '</span><b><bdi dir="ltr">' + val + "</bdi></b></p>";
   }
@@ -42,8 +42,8 @@
               terrain: ["Terrain à bâtir", "أرض للبناء"], terrainind: ["Terrain industriel", "أرض صناعية"], agricole: ["Terrain agricole", "أرض فلاحية"]};
   function el(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
-  function nb(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[  ]/g, " "); }
-  function dt(x) { return '<bdi dir="ltr">' + nb(x) + "</bdi>" + T(" DT", " دينار"); }
+  function nb(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f"); }
+  function dt(x) { return '<bdi dir="ltr">' + nb(x) + "</bdi>" + T("\u00a0DT", "\u00a0دينار"); }
   function pc(x) { return '<bdi dir="ltr">' + String(x).replace(".", ",") + "\u00a0%</bdi>"; }   // « 6,9 % » jamais coupé
   function nom(a) { return a[ar() ? 1 : 0]; }
   function escT(t) { return esc(t).replace(/S\+\d/, '<bdi dir="ltr">$&</bdi>'); }   // « S+2 » dans une phrase arabe
@@ -117,8 +117,8 @@
       if (!g) h += "<h4>" + escT(nomT) + " : " + (terrain ? T("les 3 gouvernorats les moins chers", "أرخص 3 ولايات") : T("les 3 meilleurs gouvernorats", "أفضل 3 ولايات")) + "</h4>";
       h += Lz.map(function (x) {
         return '<div class="res-ligne"><h4 class="res-zone">' + esc(ar() ? x[2] : x[1]) + " <small>" + escT(nomT) + "</small></h4>" + ligneRes("Prix d’achat au m²", "سعر الشراء بالمتر المربع", dt(x[3]) + T("/m²", "/م²")) +
-          (terrain ? "" : ligneRes("Loyer au m² par mois", "الكراء بالمتر المربع في الشهر", '<bdi dir="ltr">' + String(x[4]).replace(".", ",") + "</bdi>" + T(" DT/m²", " دينار/م²")) + ligneRes("Rendement brut", "المردود الخام", pc(x[5]), "fort")) +
-          (b ? ligneRes("Avec votre budget, environ", "بميزانيتك، تقريبًا", '<bdi dir="ltr">' + nb(b / x[3]) + "</bdi>" + T(" m²", " م²")) : "") +
+          (terrain ? "" : ligneRes("Loyer au m² par mois", "الكراء بالمتر المربع في الشهر", '<bdi dir="ltr">' + String(x[4]).replace(".", ",") + "</bdi>" + T("\u00a0DT/m²", "\u00a0دينار/م²")) + ligneRes("Rendement brut", "المردود الخام", pc(x[5]), "fort")) +
+          (b ? ligneRes("Avec votre budget, environ", "بميزانيتك، تقريبًا", '<bdi dir="ltr">' + nb(b / x[3]) + "</bdi>" + T("\u00a0m²", "\u00a0م²")) : "") +
           '<p class="petit">' + T(x[6] + " annonces comparées", x[6] + " إعلان للمقارنة") + (x[7] ? T(" · peu d’annonces : chiffre indicatif", " · إعلانات قليلة: رقم للاستئناس") : "") + "</p></div>";
       }).join("");
     } else h = "<p>" + T("Pas encore assez d’annonces pour ce type de bien.", "لا توجد بعد إعلانات كافية لهذا النوع.") + "</p>";

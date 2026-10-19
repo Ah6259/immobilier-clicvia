@@ -175,7 +175,7 @@
     var lieu = (lo ? (ar ? lo[2] || lo[1] : lo[1]) + " · " : c.l && LX[c.g + "/" + c.l] ? LX[c.g + "/" + c.l][ar ? 1 : 0] + " · " : "") +
                (d ? (ar ? d[1] || d[0] : d[0]) + " · " : "");
     bouts.push(lieu + (c.g && G[c.g] ? G[c.g][ar ? 1 : 0] : T("toute la Tunisie", "كل تونس")));
-    if (parseInt(c.p, 10) > 0) bouts.push(T(nb(parseInt(c.p, 10)) + " DT au plus", "⁦" + nb(parseInt(c.p, 10)) + "⁩ د.ت على الأكثر"));
+    if (parseInt(c.p, 10) > 0) bouts.push(T(nb(parseInt(c.p, 10)) + "\u00a0DT au plus", "⁦" + nb(parseInt(c.p, 10)) + "⁩ د.ت على الأكثر"));
     if (parseInt(c.c, 10) > 0) bouts.push(T("S+" + c.c + " ou plus", "⁦S+" + c.c + "⁩ أو أكثر"));
     return bouts.join(" · ");
   }

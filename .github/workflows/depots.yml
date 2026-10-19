@@ -22,7 +22,7 @@ env:
 jobs:
   depots:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,6 +36,11 @@ jobs:
         run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources (audit du 16/10/2026)
       - name: Annonces déposées (seulement cette source)
         run: mkdir -p journaux; python -u robot/collecter.py --seulement depot > journaux/depots.log 2>&1; c=$?; tail -2 journaux/depots.log; exit $c
+      # 19/10/2026 (Ahmed : « si le client clique sur des liens d'annonces qui n'existent plus, il n'utilisera plus notre site ») :
+      # pages des annonces ouvertes comme un visiteur (absentes de la liste du jour d'abord, puis chaque lien au moins 1 fois / semaine) ;
+      # annonce disparue -> retirée ; annonce Tecnocasa sans prix -> complétée par sa page (robot/liens.py). Jamais bloquant.
+      - name: Liens des annonces (existent-elles encore ?)
+        run: python -u robot/liens.py --minutes 8 >> journaux/depots.log 2>&1 || true; tail -1 journaux/depots.log
       - name: Quelque chose a changé ?
         id: change
         run: |

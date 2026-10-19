@@ -3,6 +3,7 @@
    Les cartes ont la même forme que celles écrites dans la page par robot/construire_site.py. */
 (function () {
   var PAS = 24;
+  var ICO_PART = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>';
   var ICO = {
     lieu: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.8-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.2-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>',
     surface: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 15v5h-5M15 4h5v5M9 20H4v-5"/></svg>',
@@ -122,6 +123,8 @@
       '<div class="an-etiquettes"><span class="an-badge ' + (loc ? "louer" : "vendre") + '">' + (loc ? L("À louer", "للكراء") : L("À vendre", "للبيع")) + '</span>' +
       (a.av ? '<span class="an-badge avant">' + L("⭐ En avant", "⭐ مميّز") + '</span>' : "") + '</div>' +
       // cœur « Ajouter aux favoris » (18/10/2026, IM.15) : assets/page.js (window.FAVORIS), même bouton que bouton_favori() du robot
+      // 19/10/2026 (Ahmed : un visiteur voulait envoyer l'annonce à sa femme) : bouton Partager, géré par assets/page.js
+      '<button type="button" class="an-partage" data-partage="' + E(a.i) + '" data-g="' + E(a.g) + '" aria-label="Partager l’annonce" title="Partager l’annonce">' + ICO_PART + '</button>' +
       (window.FAVORIS ? window.FAVORIS.bouton(a.i) : "") + '</div>' +
       '<div class="an-corps">' + prix + '<ul class="an-faits">' + faits + '</ul>' +
       '<h3 class="an-titre">' + titre + '</h3>' + sous + '<p class="an-lieu">' + ICO.lieu + lieu + '</p>' +
@@ -150,7 +153,7 @@
         '<a class="an-wa" href="https://wa.me/' + a.tel.replace(/\D/g, "") + '" target="_blank" rel="noopener">' + L("WhatsApp", "واتساب") + '</a></div></div>';
     }
     var q = "?ref=" + encodeURIComponent(a.i) + "&amp;t=" + (a.t === "l" ? "location" : "vente") + "&amp;y=" + a.y + "&amp;g=" + a.g + (a.l ? "&amp;l=" + encodeURIComponent(a.l) : "");
-    return origine + '<a class="an-vendeur" href="' + racine + 'deposer/' + q + '">' + L("Vous êtes le vendeur ? <b>Ajoutez votre numéro gratuitement</b>", "أنت البائع؟ <b>أضف رقمك مجانًا</b>") + '</a>';
+    return origine + '<a class="an-vendeur" href="' + racine + 'deposer/' + q + '">' + L("Vendeur ? <b>Ajoutez votre numéro (gratuit)</b>", "أنت البائع؟ <b>أضف رقمك مجانًا</b>") + '</a>';
   }
 
   function demarrer() {
@@ -320,16 +323,29 @@
         var faible = mots[mots.length - 1].length < 3 && tape.length >= 3;
         var colle = mots.join("");
         var vu = {};
-        choix = indexLieux().filter(function (x) { return litOk(x) || mots.every(function (m) { return x.k.indexOf(" " + m) >= 0; })
+        // 19/10/2026 (vérification de 5 210 lieux après « aouina ») : on peut ajouter la ville ou la délégation (« cité erriadh bizerte ») ;
+        // le nom écrit EXACTEMENT passe avant tout (« El Aroussa » avant Ben Arous, « Kesra » avant Kasserine)
+        var sansEsp = function (t) { return cle(t).replace(/ /g, ""); }, tapeSon = sansEsp(champ.value);
+        var nbMots = function (t) { return brut(t).trim().split(" ").length; }, motsTapes = nbMots(champ.value);
+        // nom exact = même prononciation ET même nombre de mots ou mots collés (« hamma » n'est pas « El Hamma » ; Sidi Bousaid = Sidi Bou Said) ; un groupe (« Djerba – toute l'île »)
+        // compte par son nom ; jamais une autre écriture (alias), et un lieu exact sans annonce passe après un lieu exact qui en a
+        var exact = function (x) { var nom = x.fr.split(" – ")[0];
+          return !x.al && tapeSon.length >= 3 && ((sansEsp(nom) === tapeSon && (nbMots(nom) === motsTapes || brut(nom).replace(/ /g, "") === lit.replace(/ /g, ""))) || brut(x.ar).trim() === lit); };
+        var avecVille = function (x) { if (mots.length < 2 || x.k.indexOf(" " + mots[0]) < 0) return false;
+          if (x.kz === undefined) x.kz = cle(x.fr + " " + x.sous[0]);
+          return mots.every(function (m) { return x.kz.indexOf(" " + m) >= 0; }); };
+        choix = indexLieux().filter(function (x) { return litOk(x) || avecVille(x) || mots.every(function (m) { return x.k.indexOf(" " + m) >= 0; })
             || (colle.length >= 4 && (" " + x.k.trim().split(" ").join("")).indexOf(" " + colle) >= 0)
             || (colle.length >= 4 && x.k.split(" ").some(function (w, i, t) { return w && (w + (t[i + 1] || "") + (t[i + 2] || "")).indexOf(colle) === 0; })); })
           // 19/10/2026 (Ahmed : « aouina » ne montrait que « Cité El Wahat (L'Aouina) ») : pour un même lieu, le VRAI nom passe avant
           // ses autres écritures (sinon le doublon retiré était le vrai nom)
           .sort(function (a, b) { return (a.al || 0) - (b.al || 0); })
           .filter(function (x) { var c = x.g + "/" + x.d + "/" + x.l; if (vu[c]) return false; vu[c] = 1; return true; })
-          .map(function (x) { return { x: x, n: compter(x), debut: x.k.indexOf(" " + mots[0]) === 0, lit: litOk(x) }; })
-          .sort(function (a, b) { return (faible ? (b.lit - a.lit) : 0) || ((b.n > 0) - (a.n > 0)) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); })   // lieux avec annonces, puis délégation avant localité
-          .slice(0, 8);
+          .map(function (x) { return { x: x, n: compter(x), debut: x.k.indexOf(" " + mots[0]) === 0, lit: litOk(x), ex: exact(x) }; })
+          // nom exact qui a des annonces (Shotrana = Chotrana), puis lieux avec annonces, puis nom exact sans annonce ; délégation avant localité
+          .sort(function (a, b) { return ((b.ex && b.n > 0) - (a.ex && a.n > 0)) || (faible ? (b.lit - a.lit) : 0) || ((b.n > 0) - (a.n > 0)) || (b.ex - a.ex) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); });
+        var restants = choix.length - 8;
+        choix = choix.slice(0, 8);
         if (!choix.length) {
           boite.innerHTML = '<li class="ou-rien">' + L("Aucun lieu trouvé : vérifiez l’orthographe", "لم نجد هذا المكان: تحقق من الكتابة") + '</li>';
           boite.hidden = false; return;
@@ -338,7 +354,8 @@
         boite.innerHTML = choix.map(function (c, i) {
           return '<li role="option" id="ou-' + i + '" data-i="' + i + '"><span class="ou-nom">' + E(ar ? c.x.ar || c.x.fr : c.x.fr) + '</span>' +
             '<span class="ou-sous">' + E(c.x.sous[ar ? 1 : 0]) + '</span><span class="ou-n">' + L(c.n + " annonce" + (c.n > 1 ? "s" : ""), iso(c.n) + " إعلان") + '</span></li>';
-        }).join("");
+        }).join("") + (restants > 0 ? '<li class="ou-plus" aria-hidden="true">' + L(restants + " autre" + (restants > 1 ? "s" : "") + " lieu" + (restants > 1 ? "x" : "") +
+          " de ce nom : ajoutez la ville (ex. « " + E(champ.value.trim()) + " Sousse »)", iso(restants) + " أماكن أخرى بهذا الاسم: أضف المدينة") + '</li>' : "");
         boite.hidden = false; champ.setAttribute("aria-expanded", "true");
       }
       function choisirLieu(c) {
@@ -515,6 +532,20 @@
     });
     ouChercher();
     filtrer();
+    // lien d'une annonce partagée (?a=<id>, 19/10/2026) : l'annonce en tête de la liste, avec « Annonce partagée avec vous »
+    var qa = q.get("a");
+    if (qa && zone) {
+      var ann = tout.filter(function (x) { return x.i === qa; })[0];
+      if (ann) {
+        var ex = document.getElementById("a-" + qa); if (ex) ex.remove();
+        zone.insertAdjacentHTML("afterbegin", '<div class="annonce-partagee" id="partagee"><p class="partagee-titre">' +
+          L("Annonce partagée avec vous", "إعلان شاركه معك أحدهم") + '</p>' + carte(ann, racine) + '</div>');
+        setTimeout(function () { var el = document.getElementById("partagee"); if (el && el.scrollIntoView) el.scrollIntoView({ block: "start" }); }, 400);
+      } else {
+        zone.insertAdjacentHTML("afterbegin", '<p class="vide-msg partagee-absente">' +
+          L("Cette annonce n’est plus en ligne. Voici d’autres annonces.", "هذا الإعلان لم يعد متاحًا. إليك إعلانات أخرى.") + '</p>');
+      }
+    }
   }
   window.carteAnnonce = carte;   // utilisé par les tests
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", demarrer); else demarrer();

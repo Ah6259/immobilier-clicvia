@@ -44,7 +44,7 @@
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
   function nb(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[  ]/g, " "); }
   function dt(x) { return '<bdi dir="ltr">' + nb(x) + "</bdi>" + T(" DT", " دينار"); }
-  function pc(x) { return '<bdi dir="ltr">' + String(x).replace(".", ",") + " %</bdi>"; }
+  function pc(x) { return '<bdi dir="ltr">' + String(x).replace(".", ",") + "\u00a0%</bdi>"; }   // « 6,9 % » jamais coupé
   function nom(a) { return a[ar() ? 1 : 0]; }
   function escT(t) { return esc(t).replace(/S\+\d/, '<bdi dir="ltr">$&</bdi>'); }   // « S+2 » dans une phrase arabe
   function nomG(g) { for (var i = 0; i < Z.g.length; i++) if (Z.g[i][0] === g) return ar() ? Z.g[i][2] : Z.g[i][1]; return ""; }
@@ -108,7 +108,9 @@
       var top = Z.q.filter(function (x) { return x[4] === a && (!g || x[0] === g) && !x[10] && !x[11] && (!b || x[5] <= b); })
         .sort(function (x, y) { return y[7] - x[7]; }).slice(0, 3);
       h += "<h4>" + T("Les 3 meilleurs quartiers", "أفضل 3 أحياء") + (b ? T(" dans votre budget", " في ميزانيتك") : "") + " · " + escT(nomT) + "</h4>";
-      h += top.length ? "<ol class=\"res-top\">" + top.map(function (x) { return "<li><b>" + esc(ar() ? x[3] : x[2]) + "</b> <small>" + esc(nomG(x[0])) + "</small> : " + pc(x[7]) + T(" brut · achat ", " خام · شراء ") + dt(x[5]) + "</li>"; }).join("") + "</ol>"
+      // 19/10/2026 (Ahmed : « une seule ligne ») : nom à gauche (coupé par « … » si trop long), chiffres à droite, une ligne par quartier
+      if (top.length) h += '<p class="petit rt-legende">' + T("Rendement brut · prix d’achat médian", "المردود الخام · سعر الشراء الوسط") + "</p>";
+      h += top.length ? "<ol class=\"res-top\">" + top.map(function (x) { return '<li><span class="rt-l"><span class="rt-nom"><b>' + esc(ar() ? x[3] : x[2]) + "</b> <small>" + esc(nomG(x[0])) + '</small></span><span class="rt-val">' + pc(x[7]) + " · " + dt(x[5]) + "</span></span></li>"; }).join("") + "</ol>"
         : "<p>" + T("Aucun quartier assez sûr" + (b ? " sous ce budget" : "") + " pour ce choix : élargissez la région" + (b ? " ou le budget" : "") + ".", "لا يوجد حي موثوق بما يكفي" + (b ? " ضمن هذه الميزانية" : "") + " لهذا الاختيار: وسّع الجهة" + (b ? " أو الميزانية" : "") + ".") + "</p>";
     } else if (L.length) {
       var Lz = g ? L.filter(function (x) { return x[0] === g; }) : L.slice().sort(function (x, y) { return terrain ? x[3] - y[3] : y[5] - x[5]; }).slice(0, 3);

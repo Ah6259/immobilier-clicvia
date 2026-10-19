@@ -321,7 +321,7 @@ img,.carte-tn,.an-vignette,.annonce{-webkit-user-select:none;user-select:none;-w
 .an-appel svg,.an-voir svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 html[dir="rtl"] .an-voir svg{transform:scaleX(-1)}
 .an-contact{font-size:15.5px;padding:12px}
-.an-vendeur{display:block;text-align:center;font-size:13px;color:var(--doux);text-decoration:none;border-top:1px dashed var(--ligne);padding-top:9px;margin-top:-2px}
+.an-vendeur{display:block;text-align:center;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--doux);text-decoration:none;border-top:1px dashed var(--ligne);padding-top:9px;margin-top:-2px}
 .an-vendeur b{color:var(--terre-f);font-weight:600;text-decoration:underline;text-underline-offset:2px}
 .an-appel,.an-voir,.an-wa{white-space:nowrap;font-size:14.5px}
 @media (max-width:370px){ .an-appel,.an-voir,.an-wa{font-size:13.5px;gap:5px;padding:10px 5px} }
@@ -974,6 +974,10 @@ html[dir="rtl"] .avantage summary{padding:9px 12px 9px 34px}
 #inv-res h4.res-zone small{font-weight:500;color:var(--doux);font-size:13px;margin-inline-start:6px}
 #inv-res .res-top{margin:4px 0 0;padding-inline-start:20px}
 #inv-res .res-top li{margin:4px 0;line-height:1.4}
+#inv-res .rt-l{display:flex;align-items:baseline;gap:8px}
+#inv-res .rt-nom{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#inv-res .rt-val{white-space:nowrap;font-weight:600}
+#inv-res .rt-legende{margin:0}
 #inv-res .res-ligne + .res-ligne{border-top:1px dashed var(--ligne);margin-top:8px;padding-top:4px}
 .res-verrou{list-style:none;padding:0;margin:0 0 10px}
 .res-verrou li{margin:6px 0;line-height:1.4}
@@ -1158,6 +1162,17 @@ main > .comment-marche:first-child{margin-top:14px}
 .an-fav[aria-pressed="true"]{color:#C8323C;border-color:#E9B4B4;background:#FDF0F0}
 .an-fav[aria-pressed="true"] svg{fill:currentColor}
 .an-fav:focus-visible,.entete-fav:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+/* bouton Partager d'une annonce (19/10/2026) : à côté du cœur, même forme */
+.an-partage{flex:none;width:40px;height:40px;display:grid;place-items:center;padding:0;cursor:pointer;border:1.5px solid var(--ligne);
+  border-radius:999px;background:var(--carte);color:var(--doux)}
+.an-partage svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.an-partage:hover{border-color:var(--terre);color:var(--terre)}
+.an-partage.copie-ok{color:#fff;background:var(--olive);border-color:var(--olive)}
+.an-partage:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.an-media .an-partage{position:absolute;top:8px;inset-inline-end:56px;background:rgba(255,255,255,.95);box-shadow:0 1px 5px rgba(20,30,40,.2)}
+.annonce-partagee{grid-column:1/-1;display:grid;gap:8px;justify-items:start}
+.annonce-partagee .annonce{width:100%;max-width:460px;outline:3px solid var(--or);outline-offset:2px}
+.partagee-titre{margin:0;font-weight:700;color:var(--terre)}
 .fav-anim svg{animation:fav-pouls .35s ease-out}
 @keyframes fav-pouls{50%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.fav-anim svg{animation:none}}
@@ -1216,3 +1231,22 @@ main > .comment-marche:first-child{margin-top:14px}
 /* 18/10/2026 (Ahmed : « l'espace à droite et à gauche de by doit être le même ») : les traits du carré IA dépassent de .32em ;
    la marge les compte, pour le même espace (≈ 5,6 px au téléphone) des deux côtés de « by » */
 .logo-ia{margin-inline-start:calc(.32em + 5.6px)}
+/* « Où ? » : plus de 8 lieux du même nom -> conseil d'ajouter la ville (19/10/2026) */
+.ou-plus{padding:8px 14px;font-size:13px;color:var(--doux);font-style:italic;cursor:default}
+/* 19/10/2026 (Ahmed : « cette phrase doit être sur une seule ligne », tout le site) : sur téléphone, « Comment ça marche ? » =
+   une étape par ligne (petite icône + titre sur UNE ligne) au lieu de 3 colonnes de 114 px où chaque titre se coupait */
+@media (max-width:699px){
+  .etapes-ico,.etapes-ico.etapes-4,.etapes-ico.etapes-2{grid-template-columns:1fr!important;gap:10px!important;text-align:start}
+  .etapes-ico li{flex-direction:row;align-items:center;gap:14px}
+  .etape-ico{width:42px;height:42px;border-radius:12px;flex:none}
+  .etape-ico svg{width:22px;height:22px}
+  .etape-num{width:22px;height:22px;font-size:12px;top:-7px;left:auto;inset-inline-end:-9px;transform:none}
+  .etapes-ico h3{margin:0;font-size:15px;line-height:1.3}
+}
+/* 19/10/2026 (Ahmed : « sur une seule ligne ») : grands titres un peu plus petits sur téléphone, questions de la FAQ en 15 px */
+@media (max-width:480px){
+  .bloc > h2,.bloc-tete h2{font-size:20px}
+  .q-faq summary,.questions summary{font-size:15px}
+  .res-partie h3,#res-titre-b{font-size:16px!important}
+  .q-faq summary h3{font-size:15px}
+}

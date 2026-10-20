@@ -22,7 +22,7 @@ env:
 jobs:
   publier:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45     # 20/10/2026 : 17 666 pages de partage -> contrôles complets ≈ 16 min (limite de 20 trop juste : publication du 19/10 au soir coupée)
     steps:
       - uses: actions/checkout@v4
         with:

@@ -1,0 +1,31 @@
+# 20/10/2026 (Ahmed : « trouver une solution pour toujours l'éviter ») : le code PRIVÉ (Ah6259/immobilier-tunis) n'a pas de robot
+# de tests à chaque envoi ; une erreur n'était vue que par le relevé de la nuit (relevé du 20/10 bloqué toute la journée).
+# Ce robot rejoue CHAQUE HEURE le même test que maj.yml, dans les mêmes conditions. Rouge = la tâche « Réparer les robots rouges »
+# le répare avant la nuit (règle commune § 33).
+name: tests-code
+on:
+  schedule:
+    - cron: "41 * * * *"
+  workflow_dispatch:
+concurrency:
+  group: tests-code
+  cancel-in-progress: true
+permissions:
+  contents: read
+env:
+  TZ: Africa/Tunis
+  PYTHONIOENCODING: utf-8
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Ah6259/immobilier-tunis
+          ssh-key: ${{ secrets.CLE_MOTEUR }}
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -q cryptography pillow
+      - name: Test du robot (sans réseau), comme le relevé de la nuit
+        run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; grep -qE "^ÉCHEC" /tmp/r.log || { echo "Tests arrêtés par un plantage :"; grep -oE "^[A-Za-z_.]*(Error|Exception)" /tmp/r.log | tail -1; }; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources

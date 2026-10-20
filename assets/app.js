@@ -460,6 +460,9 @@
     });
     form.addEventListener("reset", function () { setTimeout(function () { dernierG = null; dernierD = null; suivreGouv(); memoriser(filtrer()); }, 0); });
     if (q.get("tri") && tri) tri.value = q.get("tri");
+    // champs selon le type APRÈS la lecture de l'adresse (20/10/2026 : ?y=commerce&at=mp gardait les atouts visibles et cochés ;
+    // la règle de page.js ne tournait qu'au chargement, avant que le type ne soit relu ici)
+    if (window.appliquerChamps) window.appliquerChamps(form);
 
     function valeurs() {
       var t = form.querySelector('input[name="t"]:checked');

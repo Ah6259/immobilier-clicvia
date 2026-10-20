@@ -553,7 +553,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    caché, sa valeur est effacée (un filtre caché ne filtre jamais). Le type de bien du formulaire est marqué data-type-bien.
    Même liste dans robot/modele_ia.py (TYPES_PIECES) : test croisé dans tools/test_site.mjs. */
 (function () {
-  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"], fonds: ["commerce"] };   // "" = « Tous les biens » ; fonds : 20/10/2026
+  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"], fonds: ["commerce"],   // "" = « Tous les biens » ; fonds : 20/10/2026
+    // ATOUTS (20/10/2026, Ahmed : « pour un local commercial on ne peut pas avoir ces atouts, c'est quelque chose qu'on a déjà réglé »)
+    atouts: ["", "appartement", "maison", "terrain", "bureau"],
+    at_e: ["", "appartement", "maison", "terrain"], at_m: ["", "appartement", "maison", "terrain"],
+    at_p: ["", "appartement", "maison"], at_j: ["", "appartement", "maison"], at_t: ["", "appartement", "maison"],
+    at_g: ["", "appartement", "maison", "bureau"], at_u: ["", "appartement", "maison", "bureau"], at_n: ["", "appartement", "maison", "bureau"],
+    at_a: ["", "appartement", "bureau"] };
   function utile(champ, type) { var l = CHAMPS_TYPE[champ]; return !l || l.indexOf(type || "") >= 0; }
   function appliquer(form) {
     if (!form || !form.querySelector) return;
@@ -562,8 +568,12 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     [].forEach.call(form.querySelectorAll("[data-champ]"), function (b) {
       var ok = utile(b.getAttribute("data-champ"), sel.value);
       b.hidden = !ok;
-      if (!ok) [].forEach.call(b.querySelectorAll("select, input"), function (x) {
-        if (x.value !== "") { x.value = ""; try { x.dispatchEvent(new Event("change", { bubbles: true })); } catch (e) {} }
+      if (!ok) [].forEach.call(b.matches && b.matches("input") ? [b] : b.querySelectorAll("select, input"), function (x) {
+        // case à cocher : décochée (sa valeur ne doit JAMAIS être vidée, 20/10/2026) ; autre champ : vidé
+        if (x.type === "checkbox" ? x.checked : x.value !== "") {
+          if (x.type === "checkbox") x.checked = false; else x.value = "";
+          try { x.dispatchEvent(new Event("change", { bubbles: true })); } catch (e) {}
+        }
       });
     });
   }

@@ -278,7 +278,9 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     // wsrv.nl (le site source freine quand beaucoup de photos arrivent ensemble) ; dessin neutre seulement si le relais échoue aussi
     var src = im.getAttribute("src") || "";
     if (!im.dataset.relais && /^https:\/\//.test(src) && src.indexOf("https://wsrv.nl/") !== 0) {
-      im.dataset.relais = "1"; im.src = "https://wsrv.nl/?url=" + encodeURIComponent(src) + "&w=640"; return;
+      // une NOUVELLE image (pas l'ancienne, cassée) : pendant le 2e essai, rien ne s'affiche cassé (le visiteur simulé l'a vu, 20/10/2026)
+      var n = im.cloneNode(false); n.dataset.relais = "1"; n.src = "https://wsrv.nl/?url=" + encodeURIComponent(src) + "&w=640";
+      im.parentNode.replaceChild(n, im); return;
     }
     var m = im.parentNode; im.remove();
     if (m) { m.classList.add("photo-ko"); var c = m.closest(".annonce"); if (c) c.classList.remove("a-photo"); }
@@ -551,7 +553,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    caché, sa valeur est effacée (un filtre caché ne filtre jamais). Le type de bien du formulaire est marqué data-type-bien.
    Même liste dans robot/modele_ia.py (TYPES_PIECES) : test croisé dans tools/test_site.mjs. */
 (function () {
-  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"] };          // "" = « Tous les biens »
+  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"], fonds: ["commerce"] };   // "" = « Tous les biens » ; fonds : 20/10/2026
   function utile(champ, type) { var l = CHAMPS_TYPE[champ]; return !l || l.indexOf(type || "") >= 0; }
   function appliquer(form) {
     if (!form || !form.querySelector) return;

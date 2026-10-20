@@ -121,7 +121,9 @@
     return '<article class="annonce' + (a.av ? " en-avant" : "") + (PHOTO_OK(a.ph) ? " a-photo" : "") + '" id="a-' + E(a.i) + '" data-t="' + a.t + '" data-y="' + a.y + '" data-v="' + (a.v || "p") + '">' +
       '<div class="an-media v-' + a.y + '">' + media +
       '<div class="an-etiquettes"><span class="an-badge ' + (loc ? "louer" : "vendre") + '">' + (loc ? L("À louer", "للكراء") : L("À vendre", "للبيع")) + '</span>' +
-      (a.av ? '<span class="an-badge avant">' + L("⭐ En avant", "⭐ مميّز") + '</span>' : "") + '</div>' +
+      (a.av ? '<span class="an-badge avant">' + L("⭐ En avant", "⭐ مميّز") + '</span>' : "") +
+      (a.fo === "f" ? '<span class="an-badge fonds">' + L("Fonds de commerce", "أصل تجاري") + '</span>' :     // 20/10/2026 (Ahmed)
+       a.fo === "mf" ? '<span class="an-badge fonds">' + L("Murs + fonds", "المحل مع الأصل التجاري") + '</span>' : "") + '</div>' +
       // cœur « Ajouter aux favoris » (18/10/2026, IM.15) : assets/page.js (window.FAVORIS), même bouton que bouton_favori() du robot
       // 19/10/2026 (Ahmed : un visiteur voulait envoyer l'annonce à sa femme) : bouton Partager, géré par assets/page.js
       '<button type="button" class="an-partage" data-partage="' + E(a.i) + '" data-g="' + E(a.g) + '" aria-label="Partager l’annonce" title="Partager l’annonce">' + ICO_PART + '</button>' +
@@ -413,7 +415,7 @@
       oy.setAttribute("data-fr", "Bureau / local (tous)"); oy.setAttribute("data-ar", "مكتب / محل (الكل)");
       oy.textContent = document.documentElement.lang === "ar" ? "مكتب / محل (الكل)" : "Bureau / local (tous)"; selY.appendChild(oy);
     }
-    ["y", "g", "p", "pmin", "smin", "smax", "c", "v"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k)) c.value = q.get(k); });
+    ["y", "g", "p", "pmin", "smin", "smax", "c", "v", "fo"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k)) c.value = q.get(k); });
     var casePh = form.querySelector('[name="ph"]'); if (casePh && q.get("ph")) casePh.checked = true;   // ?ph=1 : seulement avec photo
     suivreGouv();
     // ?d=raoued&l=… ; un ancien lien avec seulement ?l=<quartier> retrouve sa délégation
@@ -429,7 +431,7 @@
     // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
     // « Estimer » montre les deux estimations (prix de vente, loyer)
     var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
-    var CLES_F = ["y", "d", "l", "c", "pmin", "p", "smin", "smax", "v", "ph"].concat(gFixe ? [] : ["g"]);
+    var CLES_F = ["y", "d", "l", "c", "fo", "pmin", "p", "smin", "smax", "v", "ph"].concat(gFixe ? [] : ["g"]);
     function compterFiltres() {
       var n = CLES_F.filter(function (k) { var c = form.querySelector('[name="' + k + '"]'); return c && (c.type === "checkbox" ? c.checked : c.value); }).length;
       if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
@@ -463,6 +465,7 @@
       var n = function (k) { var x = parseInt((form.querySelector('[name="' + k + '"]') || {}).value, 10); return x > 0 ? x : 0; };
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
       return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
+               fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"),
                p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, tri: tri ? tri.value : "photo" };
     }
     function filtrer() {
@@ -476,6 +479,7 @@
         if (v.d && !dansDeleg(a, v.d)) return false;
         if (v.l && !dansLoc(a, v.l)) return false;
         if (v.c && (a.c == null || (v.c >= 5 ? a.c < 5 : a.c !== v.c))) return false;
+        if (v.fo && a.fo !== v.fo) return false;     // local seul / murs + fonds / fonds de commerce (20/10/2026) ; inconnu : jamais montré sous un choix
         if (v.v && (a.v || "a") !== v.v && !(v.v === "p" && a.v === "d")) return false;   // « Particulier » : aussi les annonces déposées ici
         if (v.p || v.pmin) { if (a.p == null) { sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
         if (v.ph && !PHOTO_OK(a.ph)) return false;
@@ -515,7 +519,7 @@
     }
     function memoriser(v) {
       var p = new URLSearchParams();
-      ["t", "y", "g", "d", "l", "c", "v", "p", "pmin", "smin", "smax", "ph"].forEach(function (k) { if (v[k]) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
+      ["t", "y", "g", "d", "l", "c", "fo", "v", "p", "pmin", "smin", "smax", "ph"].forEach(function (k) { if (v[k]) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
       var l = new URLSearchParams(location.search).get("lang"); if (l) p.set("lang", l);
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
     }

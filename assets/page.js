@@ -274,6 +274,12 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
   document.addEventListener("error", function (e) {
     var im = e.target;
     if (!im || im.tagName !== "IMG" || !im.classList || !im.classList.contains("an-img")) return;
+    // 20/10/2026 (Ahmed : annonce Tayara sans photo chez nous, avec photo chez Tayara) : 1er échec -> 2e essai par le relais https
+    // wsrv.nl (le site source freine quand beaucoup de photos arrivent ensemble) ; dessin neutre seulement si le relais échoue aussi
+    var src = im.getAttribute("src") || "";
+    if (!im.dataset.relais && /^https:\/\//.test(src) && src.indexOf("https://wsrv.nl/") !== 0) {
+      im.dataset.relais = "1"; im.src = "https://wsrv.nl/?url=" + encodeURIComponent(src) + "&w=640"; return;
+    }
     var m = im.parentNode; im.remove();
     if (m) { m.classList.add("photo-ko"); var c = m.closest(".annonce"); if (c) c.classList.remove("a-photo"); }
   }, true);

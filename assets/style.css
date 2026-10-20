@@ -148,6 +148,9 @@ main{padding-bottom:30px}
 .tri{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--doux)}
 .tri select{width:auto;min-height:40px;padding:7px 10px;font-size:15px}
 .resultat{margin:4px 0 14px;font-size:14px;color:var(--doux)}
+.bloc-tete>div:first-child{min-width:0;max-width:100%}.bloc-sous{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.bloc-sous .resultat{margin:0;font-size:inherit}
+.bloc-sous.long{white-space:normal}
+@media (max-width:420px){.bloc-sous{font-size:13px}}
 .grille-annonces{display:grid;gap:14px;grid-template-columns:1fr}
 @media (min-width:640px){ .grille-annonces{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (min-width:980px){ .grille-annonces{grid-template-columns:repeat(3,minmax(0,1fr))} }
@@ -711,15 +714,15 @@ html[dir="rtl"] .paie-etapes>li::before{left:auto;right:12px}
 /* (les longueurs animées sont des nombres × 1em : @property n'accepte pas « em » comme valeur de départ)
    16/10/2026 (demande d'Ahmed) : le carré « IA » est une PUCE vivante : 2 petits traits sur chacun des 4 côtés, qui s'allongent
    et rétrécissent, chacun à son propre rythme. CSS seulement (marche partout où il y a .mot-ia) ; fixes si « réduire les animations » */
-@property --ia1{syntax:"<number>";inherits:false;initial-value:.16}
-@property --ia2{syntax:"<number>";inherits:false;initial-value:.16}
-@property --ia3{syntax:"<number>";inherits:false;initial-value:.16}
-@property --ia4{syntax:"<number>";inherits:false;initial-value:.16}
-@property --ia5{syntax:"<number>";inherits:false;initial-value:.16}
-@property --ia6{syntax:"<number>";inherits:false;initial-value:.16}
-@property --ia7{syntax:"<number>";inherits:false;initial-value:.16}
-@property --ia8{syntax:"<number>";inherits:false;initial-value:.16}
-.mot-ia::after{content:"";position:absolute;inset:-.32em;pointer-events:none;--pin:var(--bleu);--e:.32em;--t:max(1.5px,.08em);
+@property --ia1{syntax:"<number>";inherits:false;initial-value:.1}
+@property --ia2{syntax:"<number>";inherits:false;initial-value:.1}
+@property --ia3{syntax:"<number>";inherits:false;initial-value:.1}
+@property --ia4{syntax:"<number>";inherits:false;initial-value:.1}
+@property --ia5{syntax:"<number>";inherits:false;initial-value:.1}
+@property --ia6{syntax:"<number>";inherits:false;initial-value:.1}
+@property --ia7{syntax:"<number>";inherits:false;initial-value:.1}
+@property --ia8{syntax:"<number>";inherits:false;initial-value:.1}
+.mot-ia::after{content:"";position:absolute;inset:-.32em;pointer-events:none;--pin:var(--bleu);--e:.32em;--t:max(2.5px,.13em);   /* 20/10/2026 (Ahmed) : traits plus épais, mieux vus sur téléphone */
   background:
     linear-gradient(var(--pin),var(--pin)) left 32% top calc(var(--e) - calc(var(--ia1) * 1em)) / var(--t) calc(var(--ia1) * 1em),
     linear-gradient(var(--pin),var(--pin)) left 68% top calc(var(--e) - calc(var(--ia2) * 1em)) / var(--t) calc(var(--ia2) * 1em),
@@ -733,8 +736,8 @@ html[dir="rtl"] .paie-etapes>li::before{left:auto;right:12px}
   animation:ia-p1 1.3s ease-in-out infinite alternate,ia-p2 1.9s ease-in-out .4s infinite alternate,ia-p3 1.6s ease-in-out .2s infinite alternate,
     ia-p4 1.1s ease-in-out .7s infinite alternate,ia-p5 1.75s ease-in-out .1s infinite alternate,ia-p6 1.4s ease-in-out .9s infinite alternate,
     ia-p7 2.1s ease-in-out .3s infinite alternate,ia-p8 1.25s ease-in-out .55s infinite alternate}
-@keyframes ia-p1{to{--ia1:.3}} @keyframes ia-p2{to{--ia2:.3}} @keyframes ia-p3{to{--ia3:.3}} @keyframes ia-p4{to{--ia4:.3}}
-@keyframes ia-p5{to{--ia5:.3}} @keyframes ia-p6{to{--ia6:.3}} @keyframes ia-p7{to{--ia7:.3}} @keyframes ia-p8{to{--ia8:.3}}
+@keyframes ia-p1{to{--ia1:.34}} @keyframes ia-p2{to{--ia2:.34}} @keyframes ia-p3{to{--ia3:.34}} @keyframes ia-p4{to{--ia4:.34}}
+@keyframes ia-p5{to{--ia5:.34}} @keyframes ia-p6{to{--ia6:.34}} @keyframes ia-p7{to{--ia7:.34}} @keyframes ia-p8{to{--ia8:.34}}
 .ia-tete .mot-ia::after,.barre-ia .mot-ia::after{--pin:rgba(255,255,255,.75)}   /* sur fond sombre : traits clairs */
 @media (prefers-reduced-motion:reduce){.mot-ia::after{animation:none}}
 h1 .mot-ia{font-family:var(--texte);font-size:.82em;vertical-align:.08em}

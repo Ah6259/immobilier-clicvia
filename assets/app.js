@@ -496,6 +496,7 @@
       if (nbB) nbB.innerHTML = L("les " + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f") + " ", iso(n) + " ");   // espace fine insécable : le nombre ne se coupe pas
       res.innerHTML = L(n + " annonce" + (n > 1 ? "s" : "") + (sansPrix ? " (" + sansPrix + " sans prix affiché, masquées par le prix maximum)" : ""),
                         iso(n) + " إعلان" + (sansPrix ? " (" + iso(sansPrix) + " دون سعر، أُخفيت بسبب السعر الأقصى)" : ""));
+      if (res.parentNode && res.parentNode.classList) res.parentNode.classList.toggle("long", !!sansPrix);   // précision ajoutée : la ligne peut passer à la ligne
       if (!n) {
         // localité ou délégation vide : on propose tout de suite le niveau au-dessus (délégation, puis gouvernorat)
         var plusLarge = "";

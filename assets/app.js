@@ -417,6 +417,8 @@
     }
     ["y", "g", "p", "pmin", "smin", "smax", "c", "v", "fo"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k)) c.value = q.get(k); });
     var casePh = form.querySelector('[name="ph"]'); if (casePh && q.get("ph")) casePh.checked = true;   // ?ph=1 : seulement avec photo
+    // ATOUTS (20/10/2026, Ahmed : « une maison pied dans l'eau ») : ?at=em -> cases cochées (codes de a.at, robot/collecter.py)
+    (q.get("at") || "").split("").forEach(function (c) { var x = form.querySelector('input[name="at"][value="' + c + '"]'); if (x) x.checked = true; });
     suivreGouv();
     // ?d=raoued&l=… ; un ancien lien avec seulement ?l=<quartier> retrouve sa délégation
     function delegDeLoc(g, l) {      // délégation d'un quartier (LIEUX.o) ou d'une localité officielle (DECOUPAGE)
@@ -431,9 +433,9 @@
     // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
     // « Estimer » montre les deux estimations (prix de vente, loyer)
     var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
-    var CLES_F = ["y", "d", "l", "c", "fo", "pmin", "p", "smin", "smax", "v", "ph"].concat(gFixe ? [] : ["g"]);
+    var CLES_F = ["y", "d", "l", "c", "fo", "pmin", "p", "smin", "smax", "v", "ph", "at"].concat(gFixe ? [] : ["g"]);
     function compterFiltres() {
-      var n = CLES_F.filter(function (k) { var c = form.querySelector('[name="' + k + '"]'); return c && (c.type === "checkbox" ? c.checked : c.value); }).length;
+      var n = CLES_F.filter(function (k) { return [].some.call(form.querySelectorAll('[name="' + k + '"]'), function (c) { return c.type === "checkbox" ? c.checked : c.value; }); }).length;
       if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
       return n;
     }
@@ -466,7 +468,8 @@
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
       return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
                fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"),
-               p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, tri: tri ? tri.value : "photo" };
+               p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, tri: tri ? tri.value : "photo",
+               at: [].map.call(form.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).join("") };
     }
     function filtrer() {
       suivreGouv();
@@ -484,11 +487,14 @@
         if (v.p || v.pmin) { if (a.p == null) { sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
         if (v.ph && !PHOTO_OK(a.ph)) return false;
         if (v.smin || v.smax) { if (a.s == null) return false; if ((v.smin && a.s < v.smin) || (v.smax && a.s > v.smax)) return false; }
+        if (v.at && !v.at.split("").every(function (c) { return (a.at || "").indexOf(c) >= 0; })) return false;   // tous les atouts cochés
         return true;
       });
       var cle = { "prix-asc": function (a, b) { return (a.p == null) - (b.p == null) || a.p - b.p; },
                   "prix-desc": function (a, b) { return (a.p == null) - (b.p == null) || b.p - a.p; },
                   "surface": function (a, b) { return (b.s || 0) - (a.s || 0); },
+                  // prix au m² le moins cher (20/10/2026) : seulement prix SÛR et surface connue ; les autres à la fin
+                  "m2-asc": function (a, b) { var x = a.p && a.s ? a.p / a.s : null, y = b.p && b.s ? b.p / b.s : null; return (x == null) - (y == null) || x - y; },
                   "photo": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (PHOTO_OK(b.ph) - PHOTO_OK(a.ph)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
                   "date": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); } }[v.tri] || null;
       if (cle) liste.sort(cle);
@@ -519,7 +525,7 @@
     }
     function memoriser(v) {
       var p = new URLSearchParams();
-      ["t", "y", "g", "d", "l", "c", "fo", "v", "p", "pmin", "smin", "smax", "ph"].forEach(function (k) { if (v[k]) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
+      ["t", "y", "g", "d", "l", "c", "fo", "v", "p", "pmin", "smin", "smax", "ph", "at"].forEach(function (k) { if (v[k]) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
       var l = new URLSearchParams(location.search).get("lang"); if (l) p.set("lang", l);
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
     }

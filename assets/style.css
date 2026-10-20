@@ -341,6 +341,10 @@ html[lang="ar"] .an-prix.sans{font-style:normal}
 .plus-filtres > summary::before{content:"+ ";font-weight:700}
 .plus-filtres[open] > summary::before{content:"− "}
 .plus-filtres .champs{margin-top:6px}
+.atouts-filtre{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:10px 12px;border:1.5px solid var(--ligne);border-radius:var(--r-petit);background:var(--carte)}
+.atouts-filtre legend{font-weight:700;padding:0 6px}
+.case-atout{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 10px;border:1px solid var(--ligne);border-radius:999px;cursor:pointer;font-weight:600;white-space:nowrap}
+.case-atout:has(input:checked){border-color:var(--bleu);background:#EAF1F5}
 .case-photo{grid-column:1/-1;display:flex;align-items:center;gap:10px;min-height:46px;padding:8px 12px;border:1.5px solid var(--ligne);border-radius:var(--r-petit);background:var(--carte);font-weight:600;cursor:pointer}
 .case-photo input{width:22px;height:22px;flex:none;accent-color:var(--terre);margin:0}
 .actions-recherche{margin-top:12px;align-items:center}

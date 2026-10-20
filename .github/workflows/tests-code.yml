@@ -26,6 +26,6 @@ jobs:
           ssh-key: ${{ secrets.CLE_MOTEUR }}
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: pip install -q cryptography pillow
+      - run: pip install -q cryptography pillow pyflakes
       - name: Test du robot (sans réseau), comme le relevé de la nuit
         run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; grep -qE "^ÉCHEC" /tmp/r.log || { echo "Tests arrêtés par un plantage :"; grep -oE "^[A-Za-z_.]*(Error|Exception)" /tmp/r.log | tail -1; }; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources

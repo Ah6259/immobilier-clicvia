@@ -96,7 +96,7 @@ jobs:
           git add -A
           git diff --cached --quiet && { echo "Rien de nouveau"; exit 0; }
           git commit -qm "Site publié le $(date +'%d/%m/%Y %H:%M')"
-          for essai in 1 2 3; do git pull --rebase -q && git push -q && exit 0; sleep $((essai * 10)); done
+          for essai in 1 2 3; do git pull --rebase --autostash -q && git push -q && exit 0; sleep $((essai * 10)); done
           exit 1
       - name: Audit après publication (le code est-il toujours privé ? le site publié contient-il un fichier interdit ?)
         if: steps.v.outputs.pub == 'oui'

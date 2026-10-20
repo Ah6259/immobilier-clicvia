@@ -39,7 +39,12 @@ jobs:
           if [ "$a" = "$b" ] && [ "${{ github.event.inputs.force }}" != "oui" ]; then
             echo "pub=non" >> "$GITHUB_OUTPUT"; echo "Déjà publié : rien à faire"
           else
-            echo "pub=oui" >> "$GITHUB_OUTPUT"
+            # 20/10/2026 (règle commune § 34) : les pages vont-elles avec les données ? Relevé enregistré mais pages pas encore
+            # refaites -> on attend la publication suivante (pas d'erreur) ; écart de plus de 3 h -> rouge
+            set +e; python3 moteur/tools/pages_a_jour.py; c=$?; set -e
+            if [ "$c" = "3" ]; then echo "pub=non" >> "$GITHUB_OUTPUT"
+            elif [ "$c" != "0" ]; then exit 1
+            else echo "pub=oui" >> "$GITHUB_OUTPUT"; fi
           fi
       - uses: actions/setup-python@v5
         if: steps.v.outputs.pub == 'oui'

@@ -33,7 +33,7 @@ jobs:
       - name: Bibliothèque de chiffrement (Pass chiffré, 17/10/2026)
         run: pip install -q cryptography pillow
       - name: Test du robot (sans réseau)
-        run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources (audit du 16/10/2026)
+        run: python tools/test_robot.py > /tmp/r.log 2>&1 || { grep -E "^ÉCHEC" /tmp/r.log | cut -c1-90; grep -qE "^ÉCHEC" /tmp/r.log || { echo "Tests arrêtés par un plantage :"; grep -oE "^[A-Za-z_.]*(Error|Exception)" /tmp/r.log | tail -1; }; exit 1; }; tail -1 /tmp/r.log   # journal muet : il citerait nos sources (audit du 16/10/2026)
       - name: Annonces déposées (seulement cette source)
         run: mkdir -p journaux; python -u robot/collecter.py --seulement depot > journaux/depots.log 2>&1; c=$?; tail -2 journaux/depots.log; exit $c
       # 19/10/2026 (Ahmed : « si le client clique sur des liens d'annonces qui n'existent plus, il n'utilisera plus notre site ») :

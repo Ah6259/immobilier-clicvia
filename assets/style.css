@@ -341,6 +341,10 @@ html[lang="ar"] .an-prix.sans{font-style:normal}
 .plus-filtres > summary::before{content:"+ ";font-weight:700}
 .plus-filtres[open] > summary::before{content:"− "}
 .plus-filtres .champs{margin-top:6px}
+.ligne-vendeur-photo{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:10px;align-items:end}
+.ligne-vendeur-photo .case-photo{grid-column:auto;min-height:46px;padding:8px 10px;gap:8px;line-height:1.25}
+.ico-photo{width:24px;height:24px;flex:none;fill:none;stroke:var(--terre);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transform-origin:50% 60%;animation:cloche-secoue 2.6s ease-in-out .9s infinite}
+@media (prefers-reduced-motion:reduce){.ico-photo{animation:none}}
 .atouts-filtre{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:10px 12px;border:1.5px solid var(--ligne);border-radius:var(--r-petit);background:var(--carte)}
 .atouts-filtre legend{font-weight:700;padding:0 6px}
 .case-atout{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 10px;border:1px solid var(--ligne);border-radius:999px;cursor:pointer;font-weight:600;white-space:nowrap}

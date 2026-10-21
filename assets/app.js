@@ -415,7 +415,19 @@
       oy.setAttribute("data-fr", "Bureau / local (tous)"); oy.setAttribute("data-ar", "مكتب / محل (الكل)");
       oy.textContent = document.documentElement.lang === "ar" ? "مكتب / محل (الكل)" : "Bureau / local (tous)"; selY.appendChild(oy);
     }
-    ["y", "g", "p", "pmin", "smin", "smax", "c", "v", "fo"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k)) c.value = q.get(k); });
+    ["y", "g", "p", "pmin", "smin", "smax", "c", "v", "fo", "et", "nv", "st", "eb"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k) !== null && q.get(k) !== "") c.value = q.get(k); });
+    // 21/10/2026 (Ahmed) : atouts COMMUNS avec l'estimation (donnees/criteres.js) : refaits selon le type et l'onglet Acheter / Louer,
+    // AVANT la lecture de « ?at=… » et avant chaque nouveau filtrage (phase de capture)
+    var contAt = form.querySelector('.cases-atouts[data-atouts="at"]');
+    function refaireAtouts() {
+      if (!contAt || !window.remplirAtouts) return;
+      var t = form.querySelector('input[name="t"]:checked'), tv = t ? t.value : "";
+      var n = window.remplirAtouts(contAt, tv === "v" ? "vente" : tv === "l" ? "location" : "", selY ? selY.value : "", "at", false);
+      if (contAt.parentNode) contAt.parentNode.hidden = !n;
+    }
+    refaireAtouts();
+    form.addEventListener("change", function (e) { if (e.target === selY || e.target.name === "t") refaireAtouts(); }, true);
+    form.addEventListener("reset", function () { setTimeout(refaireAtouts, 0); });
     var casePh = form.querySelector('[name="ph"]'); if (casePh && q.get("ph")) casePh.checked = true;   // ?ph=1 : seulement avec photo
     // ATOUTS (20/10/2026, Ahmed : « une maison pied dans l'eau ») : ?at=em -> cases cochées (codes de a.at, robot/collecter.py)
     (q.get("at") || "").split("").forEach(function (c) { var x = form.querySelector('input[name="at"][value="' + c + '"]'); if (x) x.checked = true; });
@@ -433,7 +445,7 @@
     // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
     // « Estimer » montre les deux estimations (prix de vente, loyer)
     var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
-    var CLES_F = ["y", "d", "l", "c", "fo", "pmin", "p", "smin", "smax", "v", "ph", "at"].concat(gFixe ? [] : ["g"]);
+    var CLES_F = ["y", "d", "l", "c", "fo", "pmin", "p", "smin", "smax", "v", "ph", "at", "et", "nv", "st", "eb"].concat(gFixe ? [] : ["g"]);
     function compterFiltres() {
       var n = CLES_F.filter(function (k) { return [].some.call(form.querySelectorAll('[name="' + k + '"]'), function (c) { return c.type === "checkbox" ? c.checked : c.value; }); }).length;
       if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
@@ -469,10 +481,13 @@
       var g = form.querySelector('[name="g"]');
       var n = function (k) { var x = parseInt((form.querySelector('[name="' + k + '"]') || {}).value, 10); return x > 0 ? x : 0; };
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
+      var utileY = function (champ) { return !window.champUtile || window.champUtile(champ, val("y")); };
       return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
                fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"),
                p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, tri: tri ? tri.value : "photo",
-               at: [].map.call(form.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).join("") };
+               at: [].map.call(form.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).join(""),
+               // mêmes champs que l'estimation (21/10/2026) : un champ caché pour ce type ne filtre jamais
+               et: utileY("etage") ? val("et") : "", nv: utileY("niveaux") ? val("nv") : "", st: utileY("standing") ? val("st") : "", eb: utileY("etat") ? val("eb") : "" };
     }
     function filtrer() {
       suivreGouv();
@@ -485,7 +500,14 @@
         if (v.d && !dansDeleg(a, v.d)) return false;
         if (v.l && !dansLoc(a, v.l)) return false;
         if (v.c && (a.c == null || (v.c >= 5 ? a.c < 5 : a.c !== v.c))) return false;
-        if (v.fo && a.fo !== v.fo) return false;     // local seul / murs + fonds / fonds de commerce (20/10/2026) ; inconnu : jamais montré sous un choix
+        if (v.fo && a.fo !== v.fo) return false;
+        // étage, niveaux, standing, état (21/10/2026, mêmes critères que l'estimation ; codes de robot/criteres.py)
+        if (v.et !== "" && a.et !== +v.et) return false;
+        if (v.nv && a.nv !== +v.nv) return false;
+        var aat = a.at || "";
+        if (v.st === "haut" && aat.indexOf("s") < 0) return false;
+        if (v.st === "normal" && aat.indexOf("s") >= 0) return false;
+        if (v.eb && { neuf: aat.indexOf("n") < 0, renove: aat.indexOf("w") < 0, a_renover: aat.indexOf("x") < 0, bon: aat.indexOf("x") >= 0 }[v.eb]) return false;     // local seul / murs + fonds / fonds de commerce (20/10/2026) ; inconnu : jamais montré sous un choix
         if (v.v && (a.v || "a") !== v.v && !(v.v === "p" && a.v === "d")) return false;   // « Particulier » : aussi les annonces déposées ici
         if (v.p || v.pmin) { if (a.p == null) { sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
         if (v.ph && !PHOTO_OK(a.ph)) return false;
@@ -539,7 +561,7 @@
     }
     function memoriser(v) {
       var p = new URLSearchParams();
-      ["t", "y", "g", "d", "l", "c", "fo", "v", "p", "pmin", "smin", "smax", "ph", "at"].forEach(function (k) { if (v[k]) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
+      ["t", "y", "g", "d", "l", "c", "fo", "v", "p", "pmin", "smin", "smax", "ph", "at", "et", "nv", "st", "eb"].forEach(function (k) { if (v[k] || (k === "et" && v[k] === "0")) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
       var l = new URLSearchParams(location.search).get("lang"); if (l) p.set("lang", l);
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
     }

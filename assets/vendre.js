@@ -209,15 +209,13 @@
     // type que notre IA n'estime pas encore (local commercial…), pas de cases « notre IA en tient compte » du tout
     var pret = window.IA_IMMO && IA_IMMO.pret && IA_IMMO.pret();
     var estime = !!(t && pret && IA_IMMO.estime && IA_IMMO.estime(TR, t));
-    var fs = form.querySelector(".v-atouts");
-    [].forEach.call(form.querySelectorAll('input[name="atout"]'), function (b) {
-      var ok = estime && utilise(b.value, t); b.parentNode.hidden = !ok; if (!ok) b.checked = false;
-    });
-    if (fs) fs.hidden = !estime || ![].some.call(form.querySelectorAll('input[name="atout"]'), function (b) { return !b.parentNode.hidden; });
-    var std = el("v-std"), etb = el("v-etb"), niv = el("v-niv-l");
-    if (std) { std.parentNode.hidden = !estime || !utilise("haut_standing", t); if (std.parentNode.hidden) std.value = ""; }
-    if (etb) { etb.parentNode.hidden = !estime || !ETATS.some(function (n) { return utilise(n, t); }); if (etb.parentNode.hidden) etb.value = ""; }
-    if (niv) niv.hidden = t !== "maison" || !estime;
+    // 21/10/2026 (Ahmed : « le filtre des estimations et le filtre de recherche devraient être les mêmes ») : les MÊMES cases que la
+    // recherche (donnees/criteres.js, assets/page.js remplirAtouts), marquées « IA » quand le modèle de ce type les utilise ; étage,
+    // niveaux, standing et état suivent la règle commune des champs (data-champ, assets/page.js), comme dans la recherche
+    var fs = form.querySelector(".v-atouts"), cont = form.querySelector('.cases-atouts[data-atouts="atout"]');
+    var n = t && window.remplirAtouts ? window.remplirAtouts(cont, TR, t, "atout", estime) : 0;
+    if (fs) fs.hidden = !t || !n;
+    if (window.appliquerChamps) window.appliquerChamps(form);
   }
   function libelleChoix(id) { var x = el(id); if (!x || !x.value) return null; return noms(x.options[x.selectedIndex]); }
 
@@ -288,7 +286,8 @@
     var et = el("v-e") && el("v-e").value !== "" ? parseInt(el("v-e").value, 10) : null;
     if (el("v-e-l")) el("v-e-l").hidden = !(t === "appartement" || t === "bureau" || t === "commerce");
     // sorte (villa, étage de villa, duplex…) et nombre de niveaux d'une maison : paramètres du modèle de ce type (v6)
-    var niv = el("v-niv") && el("v-niv").value !== "" && t === "maison" ? parseInt(el("v-niv").value, 10) : null;
+    var avecNiv = window.champUtile ? window.champUtile("niveaux", t) : t === "maison";   // maison, usine, immeuble (21/10/2026)
+    var niv = el("v-niv") && el("v-niv").value !== "" && avecNiv ? parseInt(el("v-niv").value, 10) : null;
     var plus = {st: (t === "appartement" || t === "maison") ? sorte : null, niveaux: niv};
     var ia = window.IA_IMMO && IA_IMMO.pret() ? IA_IMMO.estimer(TR, t, g, q, s, ch, at, et, plus) : null;
     // RÈGLE d'Ahmed (18/10/2026) : « notre estimation se base sur le modèle, sinon pas d'estimation » -> sans l'IA, AUCUN chiffre
@@ -314,7 +313,7 @@
     if (el("v-etb") && !el("v-etb").parentNode.hidden) champs.push([!!el("v-etb").value, T2("l’état du bien", "حالة العقار")]);
     if (!t || t === "appartement" || t === "maison") champs.push([el("v-p").value !== "", T2("le nombre de pièces", "عدد الغرف")]);
     if (t === "appartement" || t === "bureau" || t === "commerce") champs.push([el("v-e").value !== "", T2("l’étage", "الطابق")]);
-    if (t === "maison" && el("v-niv")) champs.push([el("v-niv").value !== "", T2("le nombre de niveaux", "عدد الطوابق")]);
+    if ((window.champUtile ? window.champUtile("niveaux", t) : t === "maison") && el("v-niv")) champs.push([el("v-niv").value !== "", T2("le nombre de niveaux", "عدد الطوابق")]);
     var n = champs.filter(function (c) { return c[0]; }).length, manque = champs.filter(function (c) { return !c[0]; }).map(function (c) { return c[1]; });
     var pts = Math.round(n / champs.length * 5), barre = "";
     for (var i = 0; i < 5; i++) barre += '<span class="pt' + (i < pts ? " plein" : "") + '"></span>';

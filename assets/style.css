@@ -147,6 +147,9 @@ main{padding-bottom:30px}
 .bloc-sous{margin:4px 0 0;color:var(--doux);font-size:14px}
 .tri{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--doux)}
 .tri select{width:auto;min-height:40px;padding:7px 10px;font-size:15px}
+/* 21/10/2026 : les choix « avis de l'IA » sont longs ; le menu ne dépasse jamais l'écran du téléphone */
+.tri{max-width:100%;min-width:0}
+.tri select{max-width:100%;min-width:0;text-overflow:ellipsis}
 .resultat{margin:4px 0 14px;font-size:14px;color:var(--doux)}
 .bloc-tete>div:first-child{min-width:0;max-width:100%}.bloc-sous{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.bloc-sous .resultat{margin:0;font-size:inherit}
 .bloc-sous.long{white-space:normal}
@@ -347,6 +350,7 @@ html[lang="ar"] .an-prix.sans{font-style:normal}
 @media (prefers-reduced-motion:reduce){.ico-photo{animation:none}}
 .atouts-filtre{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:10px 12px;border:1.5px solid var(--ligne);border-radius:var(--r-petit);background:var(--carte)}
 .atouts-filtre legend{font-weight:700;padding:0 6px}
+.cases-atouts{display:flex;flex-wrap:wrap;gap:8px;width:100%}   /* 21/10/2026 : cadre commun des cases (recherche et estimation) */
 .case-atout{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 10px;border:1px solid var(--ligne);border-radius:999px;cursor:pointer;font-weight:600;white-space:nowrap}
 .case-atout:has(input:checked){border-color:var(--bleu);background:#EAF1F5}
 .case-photo{grid-column:1/-1;display:flex;align-items:center;gap:10px;min-height:46px;padding:8px 12px;border:1.5px solid var(--ligne);border-radius:var(--r-petit);background:var(--carte);font-weight:600;cursor:pointer}
@@ -883,6 +887,8 @@ html[dir="rtl"] .avantage summary{padding:9px 12px 9px 34px}
 .pliable[open] > summary .pli-sous{display:none}
 .pliable[open] > summary{margin-bottom:10px}
 .ia-ligne .indicatif{display:block;margin-top:4px;font-style:italic;color:var(--doux)}
+.atout-ia{display:inline-block;margin-left:5px;padding:0 5px;border-radius:5px;background:#2C5872;color:#fff;font-size:.7rem;font-weight:800;line-height:1.5;vertical-align:middle}   /* 21/10/2026 : atout utilisé par l'IA de ce type */
+.atout-ia-aide{font-weight:400;color:var(--doux);font-size:.8rem}
 .ia-ligne .v-croise{display:block;margin-top:4px;color:var(--doux)}   /* 21/10/2026 : quartier estimé à partir de l'autre marché */
 .pliable[open] > summary .pli-sous-garde{display:none}
 .v-pour{margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#EEF4F8;border:1px solid #C9DAE6;font-size:14px;line-height:1.45}

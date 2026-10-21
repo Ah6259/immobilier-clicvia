@@ -561,7 +561,37 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     at_e: ["", "appartement", "maison", "terrain"], at_m: ["", "appartement", "maison", "terrain"],
     at_p: ["", "appartement", "maison"], at_j: ["", "appartement", "maison"], at_t: ["", "appartement", "maison"],
     at_g: ["", "appartement", "maison", "bureau"], at_u: ["", "appartement", "maison", "bureau"], at_n: ["", "appartement", "maison", "bureau"],
-    at_a: ["", "appartement", "bureau"] };
+    at_a: ["", "appartement", "bureau"],
+    // 21/10/2026 (Ahmed) : MÊMES champs dans la recherche et l'estimation (robot/criteres.py CHAMPS : test croisé)
+    niveaux: ["maison", "industriel", "autre"], etage: ["appartement", "bureau", "commerce"],
+    standing: ["", "appartement", "maison", "bureau"], etat: ["", "appartement", "maison", "bureau", "commerce"] };
+  if (window.CRITERES && window.CRITERES.champs) Object.keys(window.CRITERES.champs).forEach(function (k) { CHAMPS_TYPE[k] = window.CRITERES.champs[k]; });
+  /* ATOUTS COMMUNS (21/10/2026, Ahmed : « le filtre des estimations et le filtre de recherche devraient être les mêmes ») : la liste
+     d'un type de bien vient de donnees/criteres.js (robot/criteres.py) pour les DEUX formulaires. cont : le cadre des cases ;
+     nom : « at » (recherche : valeur = code d'une lettre) ou « atout » (estimation : valeur = nom de l'atout) ; ia : marquer les atouts
+     que le modèle d'IA de ce type utilise. Les cases déjà cochées le restent si elles existent encore. */
+  function atoutsDe(tr, t) {
+    var C = window.CRITERES;
+    if (!C) return [];
+    var trs = tr === "vente" || tr === "location" ? [tr] : ["vente", "location"], vus = {}, out = [];
+    trs.forEach(function (x) { ((C[x] || {})[t || ""] || []).forEach(function (a) { if (!vus[a[0]]) { vus[a[0]] = 1; out.push(a); } }); });
+    return out;
+  }
+  function remplirAtouts(cont, tr, t, nom, ia) {
+    if (!cont || !window.CRITERES) return 0;
+    var coches = {};
+    [].forEach.call(cont.querySelectorAll('input[name="' + nom + '"]:checked'), function (x) { coches[x.value] = 1; });
+    var liste = atoutsDe(tr, t), e = function (x) { return String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"); };
+    cont.innerHTML = liste.map(function (a) {
+      var v = nom === "at" ? a[1] : a[0];
+      return '<label class="case-atout" data-atout="' + a[0] + '"><input type="checkbox" name="' + nom + '" value="' + v + '"' + (coches[v] ? " checked" : "") + '><span>' +
+        '<span data-l="fr">' + e(a[2]) + '</span><span data-l="ar">' + e(a[3]) + '</span></span>' +
+        (ia && a[4] ? '<b class="atout-ia" title="Notre IA en tient compte">IA</b>' : "") + '</label>';
+    }).join("");
+    return liste.length;
+  }
+  window.atoutsDe = atoutsDe;
+  window.remplirAtouts = remplirAtouts;
   function utile(champ, type) { var l = CHAMPS_TYPE[champ]; return !l || l.indexOf(type || "") >= 0; }
   function appliquer(form) {
     if (!form || !form.querySelector) return;

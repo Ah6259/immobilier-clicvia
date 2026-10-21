@@ -13,6 +13,13 @@
        p : prix maximum en DT, 1 à 8 chiffres | x
        c : pièces minimum S+1 à S+5 (1 à 5) | x
      Exemple : v1_l_appartement_sousse_x_1000_2 = louer un appartement à Sousse, 1 000 DT au plus, S+2 ou plus.
+
+   FORMAT VERSION 2 (21/10/2026, Ahmed : « tout ce qui est sélectionné par le client dans le filtre doit être utilisé dans l'alerte ») :
+     v2_<t><y>_<g>_<l>_<options>   y en forme courte (ap, ma…), g en 2 lettres (G2), l comme en v1 ;
+     options « -<clé><valeur> » : p prix max, n prix min, s surface min, m surface max, c pièces min, a atouts (codes de
+     robot/criteres.py), e étage, h niveaux, t standing (h|n), b état (n|r|b|a), v vendeur (a|p), f avec photo, o local (m|b|f).
+     Utilisé seulement si une option en plus de la v1 est choisie ; trop long : les options les moins importantes d'abord retirées.
+     Lu par tools/alertes.py (lire_code2) du dépôt privé.
    Telegram : 64 caractères au plus, lettres, chiffres, « _ » et « - » seulement. Aucun script en ligne (CSP). */
 (function () {
   var ROBOT = "AlerteImmobilierTunisieBot";
@@ -26,6 +33,13 @@
   var COURT = { appartement: "ap", maison: "ma", terrain: "te", local: "lo", autre: "au", bureau: "bu", commerce: "co",
                 industriel: "in", terrainind: "ti", agricole: "ag", pro: "pr" };
   var SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+  var G2 = { "tunis": "tu", "ariana": "an", "ben-arous": "ba", "manouba": "mn", "nabeul": "na", "zaghouan": "za", "bizerte": "bz", "beja": "be",
+    "jendouba": "je", "le-kef": "ke", "siliana": "si", "sousse": "so", "monastir": "mo", "mahdia": "md", "sfax": "sf", "kairouan": "ka",
+    "kasserine": "ks", "sidi-bouzid": "sb", "gabes": "gb", "medenine": "me", "tataouine": "ta", "gafsa": "gf", "tozeur": "to", "kebili": "kb" };
+  // options v2, les plus importantes d'abord : [clé du code, critère, valeur valable]
+  var OPTIONS = [["p", "p", /^[1-9]\d{0,7}$/], ["c", "c", /^[1-5]$/], ["a", "at", /^[a-z0-9]{1,27}$/], ["n", "pmin", /^[1-9]\d{0,7}$/],
+    ["s", "smin", /^[1-9]\d{0,6}$/], ["m", "smax", /^[1-9]\d{0,6}$/], ["e", "et", /^(\d|10)$/], ["h", "nv", /^([1-9]|10)$/], ["t", "st", /^[hn]$/],
+    ["b", "eb", /^[nrba]$/], ["o", "fo", /^[mbf]$/], ["v", "ve", /^[ap]$/], ["f", "ph", /^1$/]];
 
   function T(fr, ar) { return document.documentElement.lang === "ar" ? ar : fr; }
   function E(t) { return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
@@ -34,6 +48,8 @@
   // critères -> code (v1). Toute valeur inattendue devient « x » (indifférent).
   function code(c, reserve) {      // reserve : place gardée pour la langue (« _ar », 19/10/2026)
     c = c || {}; var max = 64 - (reserve || 0);
+    var opts = OPTIONS.filter(function (o) { return o[0] !== "p" && o[0] !== "c" && o[2].test(String(c[o[1]] == null ? "" : c[o[1]])); });
+    if (opts.length) return code2(c, max);
     var t = c.t === "v" || c.t === "l" ? c.t : "x";
     var y = COURT[c.y] ? c.y : "x";
     var g = SLUG.test(c.g || "") && String(c.g).length <= 20 ? c.g : "x";
@@ -46,6 +62,20 @@
     if (k.length > max && l !== dl) k = ["v1", t, y === "x" ? "x" : COURT[y], g, dl, p, n].join("_");   // trop long : la délégation seule
     if (k.length > max) k = ["v1", t, y === "x" ? "x" : COURT[y], g, "x", p, n].join("_");   // dernier recours : sans le quartier
     return k;
+  }
+  // version 2 (21/10/2026) : tous les filtres de la recherche
+  function code2(c, max) {
+    var t = c.t === "v" || c.t === "l" ? c.t : "x", y = COURT[c.y] || "x", g = G2[c.g] || "x";
+    var dl = g !== "x" && SLUG.test(c.d || "") ? "d-" + c.d : "x";
+    var l = g !== "x" && SLUG.test(c.l || "") ? c.l : dl;
+    var opts = OPTIONS.filter(function (o) { return o[2].test(String(c[o[1]] == null ? "" : c[o[1]])); }).map(function (o) { return "-" + o[0] + c[o[1]]; });
+    var faire = function (ll, n) { return ["v2", t + y, g, ll, opts.slice(0, n).join("")].join("_"); };
+    for (var n = opts.length; n >= 0; n--) {                 // trop long : d'abord les options les moins importantes, puis le lieu précis
+      if (faire(l, n).length <= max) return faire(l, n);
+      if (faire(dl, n).length <= max) return faire(dl, n);
+      if (faire("x", n).length <= max) return faire("x", n);
+    }
+    return faire("x", 0);
   }
   function lien(c) { var sfx = window.suffixeTG ? window.suffixeTG() : ""; return "https://t.me/" + ROBOT + "?start=" + code(c, sfx.length) + sfx; }
   window.codeAlerte = code;      // utilisés par les tests
@@ -68,8 +98,18 @@
     if (!c.d && c.l && o[c.g + "/" + c.l]) c.d = slug(o[c.g + "/" + c.l][0]);   // page d'un quartier : sa délégation
     c.p = val("p");
     c.c = (window.champUtile && !window.champUtile("pieces", c.y)) ? "" : val("c");
+    // 21/10/2026 (Ahmed) : TOUS les autres filtres choisis (un champ caché pour ce type ne compte jamais)
+    var utile = function (ch) { return !window.champUtile || window.champUtile(ch, c.y); };
+    c.pmin = val("pmin"); c.smin = val("smin"); c.smax = val("smax");
+    c.at = [].map.call(f.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).filter(function (x) { return /^[a-z0-9]$/.test(x); }).join("");
+    c.et = utile("etage") ? val("et") : ""; c.nv = utile("niveaux") ? val("nv") : "";
+    c.st = utile("standing") ? ({ haut: "h", normal: "n" }[val("st")] || "") : "";
+    c.eb = utile("etat") ? ({ neuf: "n", renove: "r", bon: "b", a_renover: "a" }[val("eb")] || "") : "";
+    c.ve = { a: "a", p: "p" }[val("v")] || ""; c.ph = (f.querySelector('[name="ph"]') || {}).checked ? "1" : "";
+    c.fo = utile("fonds") ? ({ m: "m", mf: "b", f: "f" }[val("fo")] || "") : "";
     return c;
   }
+  var enPlus = {};      // options de la recherche reprises dans l'alerte (la fenêtre ne montre que t, y, g, d, l, p, c)
 
   function slug(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
   // mêmes listes que la recherche (assets/app.js) : délégations officielles + nos quartiers sans rattachement sûr
@@ -161,8 +201,18 @@
   function criteres() {
     var f = document.getElementById("alerte-form"), t = f.querySelector('input[name="at"]:checked');
     var v = function (k) { return f.querySelector('[name="' + k + '"]').value; };
-    return { t: t ? t.value : "", y: v("ay"), g: v("ag"), d: v("ad"), l: v("al"), p: v("ap"),
+    var c = { t: t ? t.value : "", y: v("ay"), g: v("ag"), d: v("ad"), l: v("al"), p: v("ap"),
              c: (window.champUtile && !window.champUtile("pieces", v("ay"))) ? "" : v("ac") };   // règle commune (assets/page.js)
+    // options de la recherche (21/10/2026) : gardées si elles ont encore un sens pour le type choisi dans la fenêtre
+    var utile = function (ch) { return !window.champUtile || window.champUtile(ch, c.y); };
+    Object.keys(enPlus).forEach(function (k) { c[k] = enPlus[k]; });
+    if (!utile("etage")) c.et = ""; if (!utile("niveaux")) c.nv = ""; if (!utile("standing")) c.st = ""; if (!utile("etat")) c.eb = "";
+    if (!utile("fonds")) c.fo = "";
+    if (c.at && window.atoutsDe) {
+      var ok = window.atoutsDe(c.t === "v" ? "vente" : c.t === "l" ? "location" : "", c.y).map(function (a) { return a[1]; });
+      c.at = c.at.split("").filter(function (x) { return ok.indexOf(x) >= 0; }).join("");
+    }
+    return c;
   }
 
   function resume(c) {
@@ -177,6 +227,20 @@
     bouts.push(lieu + (c.g && G[c.g] ? G[c.g][ar ? 1 : 0] : T("toute la Tunisie", "كل تونس")));
     if (parseInt(c.p, 10) > 0) bouts.push(T(nb(parseInt(c.p, 10)) + "\u00a0DT au plus", "⁦" + nb(parseInt(c.p, 10)) + "⁩ د.ت على الأكثر"));
     if (parseInt(c.c, 10) > 0) bouts.push(T("S+" + c.c + " ou plus", "⁦S+" + c.c + "⁩ أو أكثر"));
+    // options de la recherche reprises (21/10/2026)
+    if (parseInt(c.pmin, 10) > 0) bouts.push(T(nb(parseInt(c.pmin, 10)) + "\u00a0DT au moins", "⁦" + nb(parseInt(c.pmin, 10)) + "⁩ د.ت على الأقل"));
+    if (parseInt(c.smin, 10) > 0 || parseInt(c.smax, 10) > 0) bouts.push((c.smin || "0") + (c.smax ? "–" + c.smax : "+") + "\u00a0m²");
+    if (c.at && window.CRITERES) {
+      var lib = {}; ["vente", "location"].forEach(function (x) { Object.keys(window.CRITERES[x] || {}).forEach(function (y) { (window.CRITERES[x][y] || []).forEach(function (a) { lib[a[1]] = ar ? a[3] : a[2]; }); }); });
+      c.at.split("").forEach(function (x) { if (lib[x]) bouts.push(lib[x]); });
+    }
+    if (c.et !== undefined && c.et !== "") bouts.push(c.et === "0" ? T("rez-de-chaussée", "الطابق الأرضي") : T(c.et + "e étage", "الطابق ⁦" + c.et + "⁩"));
+    if (c.nv) bouts.push(T(c.nv + " niveau(x)", "⁦" + c.nv + "⁩ طوابق"));
+    if (c.st) bouts.push(c.st === "h" ? T("haut standing", "راقٍ") : T("standing normal", "مستوى عادي"));
+    if (c.eb) bouts.push({ n: T("neuf", "جديد"), r: T("rénové", "مجدَّد"), b: T("bon état", "حالة جيدة"), a: T("à rénover", "يحتاج ترميمًا") }[c.eb]);
+    if (c.ve) bouts.push(c.ve === "a" ? T("agence", "وكالة") : T("particulier", "خاص"));
+    if (c.ph) bouts.push(T("avec photo", "بالصور فقط"));
+    if (c.fo) bouts.push({ m: T("local seul", "المحل فقط"), b: T("murs + fonds", "المحل والأصل التجاري"), f: T("fonds de commerce", "أصل تجاري") }[c.fo]);
     return bouts.join(" · ");
   }
 
@@ -218,7 +282,9 @@
     var b = e.target && e.target.closest && e.target.closest(".btn-alerte");
     if (!b) return;
     e.preventDefault();
-    ouvrir(depuisRecherche());
+    var dr = depuisRecherche();
+    enPlus = {}; ["pmin", "smin", "smax", "at", "et", "nv", "st", "eb", "ve", "ph", "fo"].forEach(function (k) { if (dr[k] !== undefined && dr[k] !== "") enPlus[k] = dr[k]; });
+    ouvrir(dr);
   });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") fermer(); });
   // changement de langue pendant que la fenêtre est ouverte : on la refait dans l'autre langue, avec les mêmes choix

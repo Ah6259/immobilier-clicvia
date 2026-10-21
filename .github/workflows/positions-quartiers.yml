@@ -17,6 +17,7 @@ permissions:
 env:
   TZ: Africa/Tunis
   PYTHONIOENCODING: utf-8
+  CROISE_RAPIDE: "1"         # 21/10/2026 : lien vente / location, la mesure de la nuit (maj.yml) est reprise (limite de temps)
 jobs:
   positions:
     runs-on: ubuntu-latest

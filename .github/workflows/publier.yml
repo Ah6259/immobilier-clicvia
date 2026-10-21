@@ -51,10 +51,15 @@ jobs:
         with: { python-version: "3.12" }
       - name: Bibliothèque de chiffrement (Pass chiffré, 17/10/2026)
         if: steps.v.outputs.pub == 'oui'
-        run: pip install -q cryptography
+        run: pip install -q cryptography pillow   # pillow : même lot que les autres robots (fabricant des pages)
       - uses: actions/setup-node@v4
         if: steps.v.outputs.pub == 'oui'
         with: { node-version: "22" }
+      # 21/10/2026 (décidé avec Ahmed) : les 17 000 pages de partage annonce/<id>/ ne sont plus enregistrées dans le code privé
+      # (99 % des fichiers : conflits d'envoi, dépôt lent depuis le téléphone) ; elles sont fabriquées ICI, avec les annonces du code
+      - name: Pages de partage des annonces (fabriquées au moment de publier)
+        if: steps.v.outputs.pub == 'oui'
+        run: python moteur/robot/construire_site.py --partage
       - name: Copier le site (aucun fichier privé, sinon rien n'est publié)
         if: steps.v.outputs.pub == 'oui'
         run: python moteur/tools/publier.py public

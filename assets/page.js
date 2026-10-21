@@ -222,6 +222,8 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
           '<a href="' + racine + 'a-propos/">' + T("Comment fonctionne le site ?", "كيف يعمل الموقع؟") + '</a>' +
           '<a href="' + racine + '#avis">' + T("Votre avis", "رأيك") + '</a>' +
           '<a href="' + racine + 'video/">' + T("Vidéo de présentation", "الفيديو التقديمي") + '</a>' +
+          // 21/10/2026 (Ahmed, contrepartie des accords des agences) : la liste des agences immobilières de Tunisie, sur notre annuaire
+          '<a href="https://pros.clicvia.com/metier/agence-immobiliere/" rel="noopener" target="_blank">' + T("Agences immobilières en Tunisie", "الوكالات العقارية في تونس") + '</a>' +
         '<a href="https://clicvia.com/" rel="noopener" target="_blank">' + T("Tous nos services", "كل خدماتنا") + '</a>' +
         '</nav>' +
         '<p>' + T("Annonces publiques de réseaux d’agences immobilières et annonces déposées sur le site. Seuls des faits sont repris (type, lieu, prix, surface, pièces, date), jamais les textes ; la photo s’affiche depuis le site d’origine, sans être copiée ; chaque annonce mène au vendeur.",

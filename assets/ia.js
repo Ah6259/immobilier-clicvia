@@ -13,8 +13,9 @@
   // version 6 (18/10/2026, décision d'Ahmed) : UN MODÈLE PAR TYPE DE BIEN (M.modeles[tr].types[t]), avec SES paramètres (tm.params :
   // étage pour un appartement, jardin / piscine / niveaux pour une maison…) ; le prix d'un quartier est propre au type et n'existe
   // qu'avec assez d'annonces de ce type (sinon : pas d'estimation) — comme variables() et faits_de() du robot
-  function variables(g, q, s, ch, nv, f, params) {
-    var lg = nv.g[g] !== undefined ? nv.g[g] : 0, lq = nv.q[g + "|" + q], geo = nv.geo || {}, c = geo[g + "|" + q] || geo[g + "|"] || null;
+  // lx (21/10/2026) : niveau du quartier DÉDUIT de l'autre marché (loyers <-> prix de vente), comme variables(lq=…) du robot
+  function variables(g, q, s, ch, nv, f, params, lx) {
+    var lg = nv.g[g] !== undefined ? nv.g[g] : 0, lq = lx || nv.q[g + "|" + q], geo = nv.geo || {}, c = geo[g + "|" + q] || geo[g + "|"] || null;
     return [lg, lq ? lq[0] : lg, lq ? Math.log(lq[1] + 1) : 0, s ? Math.log(s) : null, ch, c ? c[0] : null, c ? c[1] : null]
       .concat(params.map(function (n) { var v = f[n]; return v === undefined ? null : v; }))
       .concat(nv.m2 ? [pm2(nv, g, q, s)] : []);
@@ -51,22 +52,29 @@
   function estimer(tr, t, g, q, s, ch, at, et, plus) {
     var m = M && M.modeles && M.modeles[tr], pr = m && m.precision && m.precision[t], tm = m && m.types && m.types[t];
     if (!tm || !tm.params || !pr || !pr.fiable) return null;                  // (modèle v6 : chaque type a ses paramètres)
+    // 21/10/2026 : quartier sans assez d'annonces de ce type ici mais avec un niveau DÉDUIT de l'autre marché, méthode mesurée fiable :
+    // estimé avec sa fourchette propre (plus large), marquée « deduit » pour la page — comme quartier_croise() / estimer(croise=True)
+    var k = g + "|" + (q || ""), cr = !!(q && !tm.niveaux.q[k] && tm.niveaux.qx && tm.niveaux.qx[k] && pr.croise && pr.croise.fiable);
+    if (cr) pr = {fiable: true, bas: pr.croise.bas, haut: pr.croise.haut, deduit: true};   // « deduit » (pas « croise » : nom déjà pris par la mesure)
     if (!s && (M.surface_obligatoire || []).indexOf(t) >= 0) return null;     // terrains : seulement avec leur surface
     ch = (t === "appartement" || t === "maison") && typeof ch === "number" ? ch : null;
     if (t === "maison" && !s && ch === null) return null;                      // maison : sa surface ou son nombre de pièces
     if (ch !== null && tm.ch_n && ((tm.ch_n[String(ch)] || 0) < (tm.min_ch || 30) || ((tm.ch_g || {})[g + "|" + ch] || 0) < (tm.min_ch_g || 5))) return null;   // trop peu d'annonces avec ce nombre de pièces (ici ou dans le pays)
     if ((tm.gt[g] || 0) < (m.min_gt || 10)) return null;                      // trop peu d'annonces de ce type dans ce gouvernorat
-    var p = predireLieu(tm, g, q || "", s, ch, faits(at, et, plus));
+    var p = predireLieu(tm, g, q || "", s, ch, faits(at, et, plus), cr);
     if (p === null) return null;                                               // quartier sans assez d'annonces de ce type
     return [Math.exp(p), Math.exp(p + pr.bas), Math.exp(p + pr.haut), pr];
   }
   // écart propre au quartier appris par le robot (correction() de robot/modele_ia.py)
   function corr(nv, g, q) { return (q && nv.cal && nv.cal[g + "|" + q]) || 0; }
   function predire(m, x) { var p = m.depart; for (var i = 0; i < m.arbres.length; i++) p += arbre(m.arbres[i], x); return p; }
-  function estBrut(tm, g, q, s, ch, x) {
+  function estBrut(tm, g, q, s, ch, x, cr) {
     var nv = tm.niveaux;
-    if (!q || !nv.q[g + "|" + q]) return null;
-    return predire(tm, variables(g, q, s, ch, nv, x, tm.params || [])) + corr(nv, g, q) + ((nv.depart_taille || {})[String(ch)] || 0);
+    if (!q) return null;
+    if (nv.q[g + "|" + q]) return predire(tm, variables(g, q, s, ch, nv, x, tm.params || [])) + corr(nv, g, q) + ((nv.depart_taille || {})[String(ch)] || 0);
+    var lx = cr && nv.qx ? nv.qx[g + "|" + q] : null;                     // niveau déduit de l'autre marché (sans correction du quartier)
+    if (!lx) return null;
+    return predire(tm, variables(g, q, s, ch, nv, x, tm.params || [], lx)) + ((nv.depart_taille || {})[String(ch)] || 0) + (nv.qx_dec || 0);
   }
   // PLUS GRAND = PLUS CHER (19/10/2026) : à pièces égales, le prix monte au moins comme surface^elast (pente apprise sur les vraies
   // annonces) — comme _est_type() de robot/modele_ia.py
@@ -74,20 +82,20 @@
   function piecesOk(tm, g, k) {
     return ((tm.ch_n || {})[String(k)] || 0) >= (tm.min_ch || 30) && ((tm.ch_g || {})[g + "|" + k] || 0) >= (tm.min_ch_g || 5);
   }
-  function estPieces(tm, g, q, ch, x) {
+  function estPieces(tm, g, q, ch, x, cr) {
     var cur = null, prec = null;
     for (var k = 0; k <= ch; k++) {
       if (k !== ch && !piecesOk(tm, g, k)) continue;
-      var pk = estBrut(tm, g, q, null, k, x);
+      var pk = estBrut(tm, g, q, null, k, x, cr);
       if (pk === null) continue;
       cur = cur === null ? pk : Math.max(pk, cur + tm.gamma * (k - prec));
       prec = k;
     }
     return prec === ch ? cur : null;
   }
-  function estType(tm, g, q, s, ch, x) {
-    if (!s && ch !== null && ch !== undefined && (tm.gamma || 0) > 0) return estPieces(tm, g, q, ch, x);
-    var p = estBrut(tm, g, q, s, ch, x), b = tm.elast || 0;
+  function estType(tm, g, q, s, ch, x, cr) {
+    if (!s && ch !== null && ch !== undefined && (tm.gamma || 0) > 0) return estPieces(tm, g, q, ch, x, cr);
+    var p = estBrut(tm, g, q, s, ch, x, cr), b = tm.elast || 0;
     if (p === null || !s || b <= 0 || !tm.s_min) return p;
     var ls = Math.log(s), lmin = Math.log(tm.s_min);
     if (lmin >= ls) return p;
@@ -98,14 +106,14 @@
     cands.forEach(function (c) {
       var c2 = c + 1e-9;
       if (c2 >= ls) return;
-      var pc = estBrut(tm, g, q, Math.exp(c2), ch, x);
+      var pc = estBrut(tm, g, q, Math.exp(c2), ch, x, cr);
       if (pc !== null && pc + b * (ls - c2) > p) p = pc + b * (ls - c2);
     });
     return p;
   }
   // « Tout le gouvernorat » : moyenne des quartiers CONNUS de ce type, pondérée par leur nombre d'annonces (comme predire_lieu du robot)
-  function predireLieu(tm, g, q, s, ch, x) {
-    if (q) return estType(tm, g, q, s, ch, x);
+  function predireLieu(tm, g, q, s, ch, x, cr) {
+    if (q) return estType(tm, g, q, s, ch, x, cr);
     var nv = tm.niveaux, ks = Object.keys(nv.q).filter(function (k) { return k.split("|")[0] === g; }).sort(), tot = 0, som = 0;
     if (!ks.length) return null;
     ks.forEach(function (k) { var n = nv.q[k][1]; tot += n; som += estType(tm, g, k.slice(g.length + 1), s, ch, x) * n; });

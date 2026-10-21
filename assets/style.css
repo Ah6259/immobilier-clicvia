@@ -878,6 +878,7 @@ html[dir="rtl"] .avantage summary{padding:9px 12px 9px 34px}
 .pliable[open] > summary .pli-sous{display:none}
 .pliable[open] > summary{margin-bottom:10px}
 .ia-ligne .indicatif{display:block;margin-top:4px;font-style:italic;color:var(--doux)}
+.ia-ligne .v-croise{display:block;margin-top:4px;color:var(--doux)}   /* 21/10/2026 : quartier estimé à partir de l'autre marché */
 .pliable[open] > summary .pli-sous-garde{display:none}
 .v-pour{margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#EEF4F8;border:1px solid #C9DAE6;font-size:14px;line-height:1.45}
 /* tampon « EXEMPLE » sur TOUS les exemples (règle générale d'Ahmed, 15/10/2026) */

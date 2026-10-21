@@ -500,6 +500,17 @@
                   "m2-asc": function (a, b) { var x = a.p && a.s ? a.p / a.s : null, y = b.p && b.s ? b.p / b.s : null; return (x == null) - (y == null) || x - y; },
                   "photo": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (PHOTO_OK(b.ph) - PHOTO_OK(a.ph)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
                   "date": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); } }[v.tri] || null;
+      // 21/10/2026 (Ahmed) : trier par AVIS DE L'IA (le même que sous chaque annonce, avisIA) : les annonces qui ont cet avis d'abord
+      // (plus forte baisse ou hausse d'abord), puis les autres, les plus récentes d'abord
+      if (!cle && /^avis-[bnhxi]$/.test(v.tri || "")) {
+        var voulu = v.tri.slice(5), sorte = function (a) { var x = a.p != null && a.ia; return !x ? "" : x.i ? "i" : x.x ? "x" : x.v; };
+        cle = function (a, b) {
+          var ma = sorte(a) === voulu, mb = sorte(b) === voulu;
+          if (ma !== mb) return ma ? -1 : 1;
+          if (ma && (voulu === "b" || voulu === "h")) { var d = Math.abs(b.ia.p || 0) - Math.abs(a.ia.p || 0); if (d) return d; }
+          return a.d < b.d ? 1 : a.d > b.d ? -1 : 0;
+        };
+      }
       if (cle) liste.sort(cle);
       montre = 0; zone.innerHTML = "";
       afficher(premier);

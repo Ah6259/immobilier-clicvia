@@ -335,6 +335,10 @@
     if (r.ia) {
       h += '<p class="ia-ligne"><span>' + T2("Prix estimé par notre IA", "السعر الذي يقدّره ذكاؤنا الاصطناعي") + "</span><b>" + dt(r.ia[0]) + "</b><small>" +
            T2("fourchette probable : ", "المجال المرجّح: ") + dt(r.ia[1]) + " – " + dt(r.ia[2]) + "</small>" +
+           // 21/10/2026 : quartier estimé avec son niveau déduit de l'autre marché (peu d'annonces de ce type ici) : on le dit
+           (r.ia[3] && r.ia[3].deduit ? '<small class="v-croise">' + (TR === "location"
+             ? T2("Peu d’annonces de location de ce type ici : estimé à partir des prix de vente du quartier (fourchette plus large).", "إعلانات كراء قليلة من هذا النوع هنا: قُدّر انطلاقًا من أسعار البيع في الحي (مجال أوسع).")
+             : T2("Peu d’annonces de vente de ce type ici : estimé à partir des loyers du quartier (fourchette plus large).", "إعلانات بيع قليلة من هذا النوع هنا: قُدّر انطلاقًا من أسعار الكراء في الحي (مجال أوسع).")) + "</small>" : "") +
            (acces().ok ? "" : '<small class="indicatif">' + T2("Estimation gratuite à titre indicatif, non complète.", "تقدير مجاني للاستئناس، غير كامل.") + "</small>") + "</p>";
     } else if (r.refPrix) {
       h += '<p class="ia-ligne"><span>' + T2("Prix de référence des annonces semblables", "سعر المرجع للإعلانات المشابهة") + "</span><b>" + dt(r.refPrix) + "</b><small>" +

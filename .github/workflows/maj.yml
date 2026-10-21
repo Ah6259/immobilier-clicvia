@@ -58,6 +58,13 @@ jobs:
       - name: Quartiers automatiques (noms des annonces retrouvés dans la liste officielle des localités)
         if: steps.jour.outputs.oui == '1'
         run: python tools/lieux_auto.py
+      # 21/10/2026 (Ahmed, contrepartie des accords des agences) : liste publique des agences (donnees/agences.json, lue par l'annuaire)
+      # et DÉCOUVERTE des agences de l'annuaire au même logiciel (lues dès cette collecte) ; une panne n'arrête jamais le relevé
+      - name: Agences immobilières (liste publique + découverte parmi les agences de l'annuaire)
+        if: steps.jour.outputs.oui == '1'
+        continue-on-error: true
+        timeout-minutes: 20
+        run: python tools/agences.py
       # 15/10/2026 (Ahmed) : toutes les sources lues EN MÊME TEMPS (chaque site garde 1 s entre deux de ses pages) ; chaque source
       # finie est enregistrée et envoyée sur GitHub tout de suite (SAUVER_PAR_SOURCE) : une panne plus loin ne perd plus rien
       - name: Collecte des annonces (toutes les sources en parallèle, lecture polie)
@@ -80,6 +87,7 @@ jobs:
           git config user.name "robot-immobilier"
           git config user.email "robot-immobilier@users.noreply.github.com"
           git add donnees/annonces.json donnees/lieux-auto.json journaux/ donnees-internes/archive-annonces.jsonl
+          git add donnees/agences.json donnees/agences-decouvertes.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
           git commit -qm "Annonces lues le $(date +%d/%m/%Y) (avant les pages)"
           for essai in 1 2 3 4; do git pull --rebase --autostash -q && git push -q && exit 0; sleep $((essai * 10)); done

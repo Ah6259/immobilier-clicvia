@@ -70,6 +70,8 @@
     if (x.dx) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + " (" + L("de ", "من ") + dt(x.lo) + L(" à ", " إلى ") + dt(x.hi) + ")" +
       L(" ; trop peu d’annonces semblables ici pour dire si c’est cher ou une bonne affaire", "؛ إعلانات مشابهة قليلة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة");
     else if (x.i) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + L(" ; les prix sont trop différents dans ce secteur pour dire si c’est cher ou une bonne affaire : comparez avec soin", "؛ الأسعار متفاوتة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة: قارن بعناية");
+    else if (x.tv) t = L("Prix très variés ici", "أسعار متفاوتة جدًا هنا") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl +
+      L(" : impossible de dire si c’est cher ou une bonne affaire, comparez avec soin", ": لا يمكن الحكم إن كان غاليًا أو صفقة جيدة، قارن بعناية");   // 22/10/2026
     else if (x.x) t = L("Avis partagé", "رأي متباين") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(" : comparé à ", ": مقارنة بـ ") + sembl +
       L(", mais notre modèle d’IA l’estime à ≈ ", "، لكن نموذجنا يقدّره بـ ≈ ") + dt(x.e) + L(" : comparez avec soin", ": قارن بعناية");   // annonces semblables et modèle pas d'accord
     else if (x.v === "n") t = L(quoi[0] + " dans la norme", quoi[1] + " في المعدّل") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl;
@@ -79,6 +81,9 @@
     // annonces semblables (pas de chiffre sans un minimum de données), jamais sur l'estimation du modèle seul
     var barre = "";
     if (!x.i && x.z !== "m" && x.n >= 5) barre = m2 ? barrePrix(m2[0], m2[2], m2[3], dm2) : (x.lo && x.hi ? barrePrix(a.p, x.lo, x.hi, dt) : "");
+    // 22/10/2026 (Ahmed : « pourquoi cette annonce n'a pas la barre ? ») : sans annonces semblables, barre sur la FOURCHETTE ESTIMÉE
+    // par notre IA, et elle le dit (jamais confondue avec de vraies annonces)
+    else if (x.z === "m" && x.lo && x.hi) barre = barrePrix(a.p, x.lo, x.hi, dt, L("Zone foncée : fourchette estimée par notre IA", "المنطقة الداكنة: تقدير ذكائنا الاصطناعي"));
     var comps = (x.c || []).map(annonceParId).filter(Boolean).map(function (c) {
       // 22/10/2026 (Ahmed) : le nom du lieu seulement s'il n'est pas celui de l'annonce (le visiteur sait déjà où il cherche)
       var cl = c.l && c.l !== a.l && LX.l[c.g + "/" + c.l];
@@ -97,14 +102,14 @@
     return '<div class="an-ia an-ia-' + x.v + '">' + ICO_IA + '<div><p><b>' + L("Avis de l’IA", "رأي الذكاء الاصطناعي") + "</b> : " + t + "</p>" + barre +
       '<details class="an-ia-plus"><summary>' + L("Pourquoi ?", "لماذا؟") + "</summary>" + plus + "</details></div></div>";
   }
-  function barrePrix(v, bas, haut, f) {
+  function barrePrix(v, bas, haut, f, note) {
     if (!(haut > bas) || !(v > 0)) return "";
     var e = haut - bas, mn = Math.max(0, Math.min(bas, v) - e * 0.35), mx = Math.max(haut, v) + e * 0.35;
     var p = function (z) { return Math.max(0, Math.min(100, Math.round((z - mn) / (mx - mn) * 20) * 5)); };
     var pl = p(bas), pw = Math.max(5, p(haut) - pl), pv = p(v);
     return '<div class="barre-prix"><span class="bp-bulle bp-l-' + pv + (pv < 40 ? " bp-g" : pv > 60 ? " bp-d" : "") + '">' + L("Cette annonce : ", "هذا الإعلان: ") + f(v) + "</span>" +
       '<div class="bp-axe"><i class="bp-zone bp-l-' + pl + " bp-w-" + Math.min(100 - pl, pw) + '"></i><b class="bp-pt bp-l-' + pv + '"></b></div>' +
-      '<div class="bp-bornes"><span>' + L("moins cher", "أرخص") + "</span><span>" + L("plus cher", "أغلى") + "</span></div></div>";
+      '<div class="bp-bornes"><span>' + L("moins cher", "أرخص") + "</span><span>" + L("plus cher", "أغلى") + "</span></div>" + (note ? '<small class="bp-note">' + note + "</small>" : "") + "</div>";
   }
   // pied de chaque carte (22/10/2026, Ahmed) : « Estimer le prix d'un bien avec notre IA » (remplace « Vendeur ? Ajoutez votre numéro »)
   function lienEstimer(a, racine) {

@@ -66,7 +66,10 @@
       : ann + ou + " (" + L("de ", "من ") + dt(x.lo) + L(" à ", " إلى ") + dt(x.hi) + ")";
     var quoi = loc ? ["Loyer", "الكراء"] : ["Prix", "السعر"], t, pre = m2 ? dm2(m2[0]) + L(", ", "، ") : "";
     // modèle seul et prix très dispersés (17/10/2026) : pas de verdict, seulement l'estimation
-    if (x.i) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + L(" ; les prix sont trop différents dans ce secteur pour dire si c’est cher ou une bonne affaire : comparez avec soin", "؛ الأسعار متفاوتة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة: قارن بعناية");
+    // estimation DÉDUITE de l'autre marché (22/10/2026, lien vente / location) : estimation prudente avec fourchette, jamais de verdict
+    if (x.dx) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + " (" + L("de ", "من ") + dt(x.lo) + L(" à ", " إلى ") + dt(x.hi) + ")" +
+      L(" ; trop peu d’annonces semblables ici pour dire si c’est cher ou une bonne affaire", "؛ إعلانات مشابهة قليلة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة");
+    else if (x.i) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + L(" ; les prix sont trop différents dans ce secteur pour dire si c’est cher ou une bonne affaire : comparez avec soin", "؛ الأسعار متفاوتة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة: قارن بعناية");
     else if (x.x) t = L("Avis partagé", "رأي متباين") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(" : comparé à ", ": مقارنة بـ ") + sembl +
       L(", mais notre modèle d’IA l’estime à ≈ ", "، لكن نموذجنا يقدّره بـ ≈ ") + dt(x.e) + L(" : comparez avec soin", ": قارن بعناية");   // annonces semblables et modèle pas d'accord
     else if (x.v === "n") t = L(quoi[0] + " dans la norme", quoi[1] + " في المعدّل") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl;
@@ -87,6 +90,8 @@
     var quatre = (x.c || []).length === 4 && x.n > 4;
     var plus = (comps ? "<p>" + L("Annonces comparées" + (quatre ? " (la moins chère, deux au milieu, la plus chère)" : "") + " :", "الإعلانات المقارنة" + (quatre ? " (الأرخص، اثنان في الوسط، الأغلى)" : "") + ":") + "</p><ul>" + comps + "</ul>" : "") +
       (x.e && x.z !== "m" ? "<p>" + L("Second avis, notre modèle d’IA : ≈ ", "رأي ثانٍ، نموذج الذكاء الاصطناعي: ≈ ") + dt(x.e) + ".</p>" : "") +
+      (x.dx ? "<p>" + (loc ? L("Peu d’annonces de location de ce type dans ce quartier : loyer estimé à partir des prix de vente du quartier (lien entre loyers et prix de vente appris sur les quartiers qui ont les deux), fourchette plus large.", "إعلانات كراء قليلة من هذا النوع في هذا الحي: قُدّر الكراء انطلاقًا من أسعار البيع في الحي (علاقة بين الكراء وأسعار البيع مستخلصة من الأحياء التي فيها الاثنان)، مجال أوسع.")
+        : L("Peu d’annonces de vente de ce type dans ce quartier : prix estimé à partir des loyers du quartier (lien entre loyers et prix de vente appris sur les quartiers qui ont les deux), fourchette plus large.", "إعلانات بيع قليلة من هذا النوع في هذا الحي: قُدّر السعر انطلاقًا من أسعار الكراء في الحي (علاقة بين الكراء وأسعار البيع مستخلصة من الأحياء التي فيها الاثنان)، مجال أوسع.")) + "</p>" : "") +
       (x.d ? "<p>" + L("⚠️ Les prix sont très différents dans ce secteur (meublé, saison, standing…) : comparez avec soin.", "⚠️ الأسعار متفاوتة جدًا هنا (مفروش، موسم، مستوى…): قارن بعناية.") + "</p>" : "") +
       prisEnCompte(x);
     return '<div class="an-ia an-ia-' + x.v + '">' + ICO_IA + '<div><p><b>' + L("Avis de l’IA", "رأي الذكاء الاصطناعي") + "</b> : " + t + "</p>" + barre +
@@ -515,16 +520,14 @@
                // mêmes champs que l'estimation (21/10/2026) : un champ caché pour ce type ne filtre jamais
                et: utileY("etage") ? val("et") : "", nv: utileY("niveaux") ? val("nv") : "", st: utileY("standing") ? val("st") : "", eb: utileY("etat") ? val("eb") : "" };
     }
-    function filtrer() {
-      suivreGouv();
-      var v = valeurs();
-      sansPrix = 0;
-      liste = tout.filter(function (a) {
+    // 22/10/2026 (Ahmed : « Béni Khalled (13) mais Voir les 0 annonces ») : UN seul test d'annonce pour la liste ET pour les nombres
+    // des menus ; sauf = filtres à ignorer (le nombre d'une délégation compte les annonces qui passent TOUS les autres filtres)
+    function passe(a, v, sauf) {
         if (v.t && a.t !== v.t) return false;
-        if (v.y && !typeVoulu(a, v.y)) return false;
-        if (v.g && a.g !== v.g) return false;
-        if (v.d && !dansDeleg(a, v.d)) return false;
-        if (v.l && !dansLoc(a, v.l)) return false;
+        if (!sauf.y && v.y && !typeVoulu(a, v.y)) return false;
+        if (!sauf.g && v.g && a.g !== v.g) return false;
+        if (!sauf.d && v.d && !dansDeleg(a, v.d)) return false;
+        if (!sauf.l && v.l && !dansLoc(a, v.l)) return false;
         if (v.c && (a.c == null || (v.c >= 5 ? a.c < 5 : a.c !== v.c))) return false;
         if (v.fo && a.fo !== v.fo) return false;
         // durée de la location (22/10/2026, Ahmed : « la location par jour, par journée ou par nuit ») : c = à la nuit / au jour /
@@ -540,13 +543,43 @@
         if (v.eb && { neuf: aat.indexOf("n") < 0, renove: aat.indexOf("w") < 0, a_renover: aat.indexOf("x") < 0, bon: aat.indexOf("x") >= 0 }[v.eb]) return false;     // local seul / murs + fonds / fonds de commerce (20/10/2026) ; inconnu : jamais montré sous un choix
         if (v.v && (a.v || "a") !== v.v && !(v.v === "p" && a.v === "d")) return false;   // « Particulier » : aussi les annonces déposées ici
         // un prix à la nuit n'est jamais comparé à un loyer au mois (22/10/2026)
-        if (v.p || v.pmin) { if (a.p == null || (a.lc && v.du !== "c")) { sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
+        if (v.p || v.pmin) { if (a.p == null || (a.lc && v.du !== "c")) { if (sauf.compte !== false) sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
         if (v.ph && !PHOTO_OK(a.ph)) return false;
         if (v.smin || v.smax) { if (a.s == null) return false; if ((v.smin && a.s < v.smin) || (v.smax && a.s > v.smax)) return false; }
         if (v.at && !v.at.split("").every(function (c) { return (a.at || "").indexOf(c) >= 0; })) return false;   // tous les atouts cochés
         return true;
-      });
-      var cle = { "prix-asc": function (a, b) { return (a.p == null) - (b.p == null) || a.p - b.p; },
+    }
+    // nombres entre parenthèses des menus (gouvernorat, type, délégation, localité) : ceux de la recherche en cours
+    function avecNombre(o, n, brut) {     // brut : nombre sans séparateur (menus délégation / localité, comme remplirDelegs)
+      var ara = document.documentElement.lang === "ar", nf = brut ? String(n) : nb(n);
+      ["fr", "ar"].forEach(function (l) { var x = o.getAttribute("data-" + l); if (x) o.setAttribute("data-" + l, x.replace(/ \([^()]*\)$/, "") + " (" + (l === "ar" ? iso(nf) : nf) + ")"); });
+      o.textContent = o.getAttribute(ara ? "data-ar" : "data-fr") || o.textContent;
+    }
+    function majComptes(v) {
+      var sansD = { d: 1, l: 1, compte: false }, sel;
+      if ((sel = form.querySelector('[name="g"]')) && sel.tagName === "SELECT") {
+        var ng = {}; tout.forEach(function (a) { if (passe(a, v, { g: 1, d: 1, l: 1, compte: false })) ng[a.g] = (ng[a.g] || 0) + 1; });
+        [].forEach.call(sel.options, function (o) { if (o.value) avecNombre(o, ng[o.value] || 0); });
+      }
+      if ((sel = form.querySelector('[name="y"]'))) {
+        var base = tout.filter(function (a) { return passe(a, v, { y: 1, compte: false }); });
+        [].forEach.call(sel.options, function (o) { if (o.value) avecNombre(o, base.filter(function (a) { return typeVoulu(a, o.value); }).length); });
+      }
+      if (selD && !selD.disabled) {
+        var dans = tout.filter(function (a) { return a.g === gCourant() && passe(a, v, sansD); });
+        [].forEach.call(selD.options, function (o) { if (o.value) avecNombre(o, dans.filter(function (a) { return dansDeleg(a, o.value); }).length, 1); });
+        if (selL && !selL.disabled) {
+          var dansd = v.d ? dans.filter(function (a) { return dansDeleg(a, v.d); }) : dans;
+          [].forEach.call(selL.options, function (o) { if (o.value) avecNombre(o, dansd.filter(function (a) { return dansLoc(a, o.value); }).length, 1); });
+        }
+      }
+    }
+    function filtrer() {
+      suivreGouv();
+      var v = valeurs();
+      sansPrix = 0;
+      liste = tout.filter(function (a) { return passe(a, v, {}); });
+      majComptes(v);      var cle = { "prix-asc": function (a, b) { return (a.p == null) - (b.p == null) || a.p - b.p; },
                   "prix-desc": function (a, b) { return (a.p == null) - (b.p == null) || b.p - a.p; },
                   "surface": function (a, b) { return (b.s || 0) - (a.s || 0); },
                   // prix au m² le moins cher (20/10/2026) : seulement prix SÛR et surface connue ; les autres à la fin

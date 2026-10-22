@@ -560,8 +560,9 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     atouts: ["", "appartement", "maison", "terrain", "bureau"],
     at_e: ["", "appartement", "maison", "terrain"], at_m: ["", "appartement", "maison", "terrain"],
     at_p: ["", "appartement", "maison"], at_j: ["", "appartement", "maison"], at_t: ["", "appartement", "maison"],
-    at_g: ["", "appartement", "maison", "bureau"], at_u: ["", "appartement", "maison", "bureau"], at_n: ["", "appartement", "maison", "bureau"],
+    at_g: ["", "appartement", "maison", "bureau", "commerce", "industriel"], at_u: ["", "appartement", "maison", "bureau"], at_n: ["", "appartement", "maison", "bureau"],
     at_a: ["", "appartement", "bureau"],
+    at_k: ["", "appartement", "maison", "bureau"], at_h: ["", "appartement", "maison"],   // climatisation, chauffage (22/10/2026, Ahmed)
     // 21/10/2026 (Ahmed) : MÊMES champs dans la recherche et l'estimation (robot/criteres.py CHAMPS : test croisé)
     niveaux: ["maison", "industriel", "autre"], etage: ["appartement", "bureau", "commerce"],
     standing: ["", "appartement", "maison", "bureau"], etat: ["", "appartement", "maison", "bureau", "commerce"] };

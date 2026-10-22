@@ -81,6 +81,42 @@
   window.codeAlerte = code;      // utilisés par les tests
   window.lienAlerte = lien;
 
+  /* « MES CRITÈRES » (22/10/2026, assets/mescriteres.js) : alerte avec les MÊMES critères, code v2 marqué « -k1 » :
+       indispensables = filtres (p budget max, s surface min, c pièces min, e0 rez-de-chaussée, j étage max, a atouts) ;
+       « un plus » = mêmes clés + « -q » qui les nomme (p, s, c, e, j : ne filtrent pas) et « -r » pour les atouts « un plus ».
+     Lieu : celui de la recherche en cours. Trop long (64 caractères) : d'abord les atouts « un plus » retirés, puis les autres
+     « un plus », puis le lieu précis (délégation, puis tout le gouvernorat) ; les indispensables restent toujours.
+     Lu par tools/alertes.py (lire_code2, evaluer) du dépôt privé : un indispensable absent n'est pas envoyé, non précisé = « à vérifier ». */
+  function codeCriteres(cr, reserve) {
+    var max = 64 - (reserve || 0), r = depuisRecherche(), y = cr.y;
+    var t = cr.t || r.t; t = t === "v" || t === "l" ? t : "x";
+    var yy = COURT[y] || "x", g = G2[r.g] || "x";
+    var dl = g !== "x" && SLUG.test(r.d || "") ? "d-" + r.d : "x", l = g !== "x" && SLUG.test(r.l || "") ? r.l : dl;
+    var g1 = ["-k1"], g2 = [], q = "", ind = "", plus = "";
+    var met = function (cle, drapeau, v, im) { if (im === 2) g1.push("-" + cle + v); else { g2.push("-" + cle + v); q += drapeau; } };
+    var utileY = function (ch) { return !window.champUtile || window.champUtile(ch, y); };
+    if (cr.b) met("p", "p", cr.b[0], cr.b[1]);
+    if (cr.c && utileY("pieces")) met("c", "c", cr.c[0], cr.c[1]);
+    if (cr.s) met("s", "s", cr.s[0], cr.s[1]);
+    if (cr.e && utileY("etage")) { if (cr.e[0] === "rdc") met("e", "e", 0, cr.e[1]); else met("j", "j", cr.e[0], cr.e[1]); }
+    Object.keys(cr.at || {}).sort().forEach(function (k) { if (cr.at[k] === 2) ind += k; else plus += k; });
+    if (ind) g1.push("-a" + ind.slice(0, 27));
+    if (q) g2.push("-q" + q);
+    var g3 = plus ? ["-r" + plus.slice(0, 27)] : [];
+    var faire = function (ll, o) { return ["v2", t + yy, g, ll, o.join("")].join("_"); };
+    var essais = [g1.concat(g2, g3), g1.concat(g2), g1], lieux = [l, dl, "x"];
+    for (var i = 0; i < lieux.length; i++) for (var j = 0; j < essais.length; j++) {
+      var k = faire(lieux[i], essais[j]);
+      if (k.length <= max) return { code: k, complet: j === 0 || (!g2.length && !g3.length) || (j === 1 && !g3.length) };
+    }
+    return { code: faire("x", g1).slice(0, max), complet: false };      // jamais atteint avec 27 atouts au plus
+  }
+  window.codeCriteres = codeCriteres;
+  window.lienCriteres = function (cr) {
+    var sfx = window.suffixeTG ? window.suffixeTG() : "", k = codeCriteres(cr, sfx.length);
+    return { href: "https://t.me/" + ROBOT + "?start=" + k.code + sfx, code: k.code, complet: k.complet };
+  };
+
   var fen = null;
 
   // recherche en cours (formulaire #recherche de la page) -> critères de départ

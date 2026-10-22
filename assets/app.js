@@ -133,7 +133,12 @@
       : a.p != null
       ? '<p class="an-prix"><strong>' + nb(a.p) + '</strong> <span class="dt">DT</span><span class="an-prix-note">' + (a.pn ? L("à partir de (programme neuf)", "ابتداءً من (مشروع جديد)") : loc ? L("loyer demandé", "الكراء المطلوب") : L("prix demandé", "السعر المطلوب")) + '</span></p>'
       : '<p class="an-prix sans">' + (loc && a.lc ? L("Location courte durée : prix chez le vendeur", "كراء قصير المدة: السعر لدى البائع") : L("Prix communiqué par le vendeur", "السعر لدى البائع")) + '</p>';
-    if (a.p != null && a.ia && !court) prix += avisIA(a, loc, racine);
+    if (a.p != null && a.ia && !court) {
+      prix += avisIA(a, loc, racine);
+      // « Mes critères » (22/10/2026) : le visiteur peut masquer l'avis sur le prix (gardé dans le téléphone) et le remettre
+      if (window.MESCRITERES) prix += '<button type="button" class="avis-bascule avis-masquer">' + L("Masquer l’avis sur le prix", "إخفاء رأي السعر") + '</button>' +
+        '<button type="button" class="avis-bascule avis-montrer">' + L("Afficher l’avis sur le prix", "إظهار رأي السعر") + '</button>';
+    }
     var faits = "";
     if (a.s) faits += '<li>' + ICO.surface + L(nb(a.s) + "\u00a0m²", iso(nb(a.s) + "\u00a0م²")) + '</li>';
     if (sn) faits += '<li>' + ICO.chambres + L("S+" + a.c, iso("S+" + a.c)) + '</li>';
@@ -161,6 +166,8 @@
       '<button type="button" class="an-partage" data-partage="' + E(a.i) + '" data-g="' + E(a.g) + '" aria-label="Partager l’annonce" title="Partager l’annonce">' + ICO_PART + '</button>' +
       (window.FAVORIS ? window.FAVORIS.bouton(a.i) : "") + '</div>' +
       '<div class="an-corps">' + prix + '<ul class="an-faits">' + faits + '</ul>' +
+      // ligne « Pour vous : 4 sur 5 ✓ · manque : … » (assets/mescriteres.js) ; rien si aucun critère choisi
+      (window.MESCRITERES ? window.MESCRITERES.ligne(a) : "") +
       '<h3 class="an-titre">' + titre + '</h3>' + sous + '<p class="an-lieu">' + ICO.lieu + lieu + '</p>' +
       // a.an : annonce de plus de 2 mois gardée pour un gouvernorat faible (17/10/2026), même texte que construire_site.py
       (a.an ? '<p class="an-ancienne">' + L("⏳ Annonce de plus de 2 mois : vérifiez qu’elle est toujours disponible.", "⏳ إعلان عمره أكثر من شهرين: تأكّد أنه ما زال متاحًا.") + '</p>' : "") +
@@ -602,6 +609,11 @@
           return a.d < b.d ? 1 : a.d > b.d ? -1 : 0;
         };
       }
+      // « Correspond le mieux à mes critères » (22/10/2026) : indispensables d'abord, puis le nombre de critères remplis, puis les plus récentes
+      if (!cle && v.tri === "crit" && window.MESCRITERES && window.MESCRITERES.actif()) {
+        var sc = {}; liste.forEach(function (a) { sc[a.i] = window.MESCRITERES.score(a); });
+        cle = function (a, b) { var x = sc[a.i], y = sc[b.i]; for (var k = 0; k < 4; k++) if (x[k] !== y[k]) return x[k] - y[k]; return a.d < b.d ? 1 : a.d > b.d ? -1 : 0; };
+      }
       if (cle) liste.sort(cle);
       montre = 0; zone.innerHTML = "";
       afficher(premier);
@@ -641,6 +653,8 @@
     });
     form.addEventListener("change", function () { memoriser(filtrer()); });
     if (tri) tri.addEventListener("change", function () { memoriser(filtrer()); });
+    // critères changés (fenêtre « Mes critères ») : cartes refaites (ligne « Pour vous », tri)
+    document.addEventListener("criteres", function () { filtrer(); });
     if (plus) plus.addEventListener("click", function () { afficher(PAS); });
     zone.addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest(".btn-elargir");

@@ -555,7 +555,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    caché, sa valeur est effacée (un filtre caché ne filtre jamais). Le type de bien du formulaire est marqué data-type-bien.
    Même liste dans robot/modele_ia.py (TYPES_PIECES) : test croisé dans tools/test_site.mjs. */
 (function () {
-  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"], fonds: ["commerce"],   // "" = « Tous les biens » ; fonds : 20/10/2026
+  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"], fonds: ["commerce"], duree: ["", "appartement", "maison"],   // durée : location d'habitation (22/10/2026)   // "" = « Tous les biens » ; fonds : 20/10/2026
     // ATOUTS (20/10/2026, Ahmed : « pour un local commercial on ne peut pas avoir ces atouts, c'est quelque chose qu'on a déjà réglé »)
     atouts: ["", "appartement", "maison", "terrain", "bureau"],
     at_e: ["", "appartement", "maison", "terrain"], at_m: ["", "appartement", "maison", "terrain"],

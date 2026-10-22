@@ -116,10 +116,14 @@
     var sn = a.c != null && (a.y === "appartement" || a.y === "maison");
     var tfr = (a.pn ? "Programme neuf : " + a.pn + " logements, " : "") + ((a.pn ? (TYPE_FR[a.y] || "bien").toLowerCase() : TYPE_FR[a.y]) || "Bien immobilier") + (sn ? " S+" + a.c : "") + (loc ? " à louer" : " à vendre");
     var tar = (a.pn ? "مشروع جديد: " + iso(a.pn) + " مسكن، " : "") + (TYPE_AR[a.y] || "عقار") + (sn ? " " + iso("S+" + a.c) : "") + (loc ? " للكراء" : " للبيع");
-    var prix = a.p != null
+    // location à la nuit / au jour (22/10/2026, Ahmed) : « 120 DT / nuit », jamais d'avis de l'IA (elle juge des loyers au mois)
+    var court = loc && (a.lc === "n" || a.lc === "j") && a.p != null;
+    var prix = court
+      ? '<p class="an-prix"><strong>' + nb(a.p) + '</strong> <span class="dt">DT</span><span class="dt-per">' + (a.lc === "j" ? L(" / jour", " / اليوم") : L(" / nuit", " / الليلة")) + '</span><span class="an-prix-note">' + L("location courte durée", "كراء قصير المدة") + '</span></p>'
+      : a.p != null
       ? '<p class="an-prix"><strong>' + nb(a.p) + '</strong> <span class="dt">DT</span><span class="an-prix-note">' + (a.pn ? L("à partir de (programme neuf)", "ابتداءً من (مشروع جديد)") : loc ? L("loyer demandé", "الكراء المطلوب") : L("prix demandé", "السعر المطلوب")) + '</span></p>'
-      : '<p class="an-prix sans">' + L("Prix communiqué par le vendeur", "السعر لدى البائع") + '</p>';
-    if (a.p != null && a.ia) prix += avisIA(a, loc, racine);
+      : '<p class="an-prix sans">' + (loc && a.lc ? L("Location courte durée : prix chez le vendeur", "كراء قصير المدة: السعر لدى البائع") : L("Prix communiqué par le vendeur", "السعر لدى البائع")) + '</p>';
+    if (a.p != null && a.ia && !court) prix += avisIA(a, loc, racine);
     var faits = "";
     if (a.s) faits += '<li>' + ICO.surface + L(nb(a.s) + "\u00a0m²", iso(nb(a.s) + "\u00a0م²")) + '</li>';
     if (sn) faits += '<li>' + ICO.chambres + L("S+" + a.c, iso("S+" + a.c)) + '</li>';
@@ -432,7 +436,7 @@
       oy.setAttribute("data-fr", "Bureau / local (tous)"); oy.setAttribute("data-ar", "مكتب / محل (الكل)");
       oy.textContent = document.documentElement.lang === "ar" ? "مكتب / محل (الكل)" : "Bureau / local (tous)"; selY.appendChild(oy);
     }
-    ["y", "g", "p", "pmin", "smin", "smax", "c", "v", "fo", "et", "nv", "st", "eb"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k) !== null && q.get(k) !== "") c.value = q.get(k); });
+    ["y", "g", "p", "pmin", "smin", "smax", "c", "v", "fo", "du", "et", "nv", "st", "eb"].forEach(function (k) { var c = form.querySelector('[name="' + k + '"]'); if (c && q.get(k) !== null && q.get(k) !== "") c.value = q.get(k); });
     // 21/10/2026 (Ahmed) : atouts COMMUNS avec l'estimation (donnees/criteres.js) : refaits selon le type et l'onglet Acheter / Louer,
     // AVANT la lecture de « ?at=… » et avant chaque nouveau filtrage (phase de capture)
     var contAt = form.querySelector('.cases-atouts[data-atouts="at"]');
@@ -463,7 +467,7 @@
     // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
     // « Estimer » montre les deux estimations (prix de vente, loyer)
     var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
-    var CLES_F = ["y", "d", "l", "c", "fo", "pmin", "p", "smin", "smax", "v", "ph", "at", "et", "nv", "st", "eb"].concat(gFixe ? [] : ["g"]);
+    var CLES_F = ["y", "d", "l", "c", "fo", "du", "pmin", "p", "smin", "smax", "v", "ph", "at", "et", "nv", "st", "eb"].concat(gFixe ? [] : ["g"]);
     function compterFiltres() {
       var n = CLES_F.filter(function (k) { return [].some.call(form.querySelectorAll('[name="' + k + '"]'), function (c) { return c.type === "checkbox" ? c.checked : c.value; }); }).length;
       if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
@@ -505,7 +509,7 @@
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
       var utileY = function (champ) { return !window.champUtile || window.champUtile(champ, val("y")); };
       return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
-               fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"),
+               fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"), du: utileY("duree") ? val("du") : "",
                p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, tri: tri ? tri.value : "photo",
                at: [].map.call(form.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).join(""),
                // mêmes champs que l'estimation (21/10/2026) : un champ caché pour ce type ne filtre jamais
@@ -523,6 +527,10 @@
         if (v.l && !dansLoc(a, v.l)) return false;
         if (v.c && (a.c == null || (v.c >= 5 ? a.c < 5 : a.c !== v.c))) return false;
         if (v.fo && a.fo !== v.fo) return false;
+        // durée de la location (22/10/2026, Ahmed : « la location par jour, par journée ou par nuit ») : c = à la nuit / au jour /
+        // vacances, m = au mois (location habituelle)
+        if (v.du === "c" && !(a.t === "l" && a.lc)) return false;
+        if (v.du === "m" && !(a.t === "l" && !a.lc)) return false;
         // étage, niveaux, standing, état (21/10/2026, mêmes critères que l'estimation ; codes de robot/criteres.py)
         if (v.et !== "" && a.et !== +v.et) return false;
         if (v.nv && a.nv !== +v.nv) return false;
@@ -531,7 +539,8 @@
         if (v.st === "normal" && aat.indexOf("s") >= 0) return false;
         if (v.eb && { neuf: aat.indexOf("n") < 0, renove: aat.indexOf("w") < 0, a_renover: aat.indexOf("x") < 0, bon: aat.indexOf("x") >= 0 }[v.eb]) return false;     // local seul / murs + fonds / fonds de commerce (20/10/2026) ; inconnu : jamais montré sous un choix
         if (v.v && (a.v || "a") !== v.v && !(v.v === "p" && a.v === "d")) return false;   // « Particulier » : aussi les annonces déposées ici
-        if (v.p || v.pmin) { if (a.p == null) { sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
+        // un prix à la nuit n'est jamais comparé à un loyer au mois (22/10/2026)
+        if (v.p || v.pmin) { if (a.p == null || (a.lc && v.du !== "c")) { sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
         if (v.ph && !PHOTO_OK(a.ph)) return false;
         if (v.smin || v.smax) { if (a.s == null) return false; if ((v.smin && a.s < v.smin) || (v.smax && a.s > v.smax)) return false; }
         if (v.at && !v.at.split("").every(function (c) { return (a.at || "").indexOf(c) >= 0; })) return false;   // tous les atouts cochés
@@ -583,7 +592,7 @@
     }
     function memoriser(v) {
       var p = new URLSearchParams();
-      ["t", "y", "g", "d", "l", "c", "fo", "v", "p", "pmin", "smin", "smax", "ph", "at", "et", "nv", "st", "eb"].forEach(function (k) { if (v[k] || (k === "et" && v[k] === "0")) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
+      ["t", "y", "g", "d", "l", "c", "fo", "du", "v", "p", "pmin", "smin", "smax", "ph", "at", "et", "nv", "st", "eb"].forEach(function (k) { if (v[k] || (k === "et" && v[k] === "0")) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
       var l = new URLSearchParams(location.search).get("lang"); if (l) p.set("lang", l);
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
     }

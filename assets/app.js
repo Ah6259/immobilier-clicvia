@@ -109,7 +109,15 @@
     var pl = p(bas), pw = Math.max(5, p(haut) - pl), pv = p(v);
     return '<div class="barre-prix"><span class="bp-bulle bp-l-' + pv + (pv < 40 ? " bp-g" : pv > 60 ? " bp-d" : "") + '">' + L("Cette annonce : ", "هذا الإعلان: ") + f(v) + "</span>" +
       '<div class="bp-axe"><i class="bp-zone bp-l-' + pl + " bp-w-" + Math.min(100 - pl, pw) + '"></i><b class="bp-pt bp-l-' + pv + '"></b></div>' +
-      '<div class="bp-bornes"><span>' + L("moins cher", "أرخص") + "</span><span>" + L("plus cher", "أغلى") + "</span></div>" + (note ? '<small class="bp-note">' + note + "</small>" : "") + "</div>";
+      bornesBarre(pl, Math.min(100 - pl, pw), f(bas), f(haut)) + (note ? '<small class="bp-note">' + note + "</small>" : "") + "</div>";
+  }
+  // 22/10/2026 (Ahmed : « mettre les prix plutôt que moins cher / plus cher ») : prix des DEUX BORDS de la zone foncée, sous ces bords
+  // (jamais le plus bas ni le plus haut : souvent des cas à part) ; zone étroite : « bas – haut » au milieu. Même texte que bornes_barre()
+  function bornesBarre(pl, pw, tb, th) {
+    var cote = function (x) { return x < 15 ? " bp-g" : x > 85 ? " bp-d" : ""; };
+    if (pw >= 40) return '<div class="bp-bornes"><span class="bp-b bp-l-' + pl + cote(pl) + '">' + tb + '</span><span class="bp-b bp-l-' + (pl + pw) + cote(pl + pw) + '">' + th + "</span></div>";
+    var pm = Math.round((pl + pw / 2) / 5) * 5;
+    return '<div class="bp-bornes"><span class="bp-b bp-l-' + pm + cote(pm) + '">' + tb + " – " + th + "</span></div>";
   }
   // pied de chaque carte (22/10/2026, Ahmed) : « Estimer le prix d'un bien avec notre IA » (remplace « Vendeur ? Ajoutez votre numéro »)
   function lienEstimer(a, racine) {

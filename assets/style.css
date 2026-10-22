@@ -1300,7 +1300,9 @@ main > .comment-marche:first-child{margin-top:14px}
 .bp-pt{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--encre);border:3px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35)}
 .bp-bulle{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;font-size:12.5px;font-weight:700;background:var(--encre);color:#fff;border-radius:6px;padding:2px 7px}
 .bp-bulle.bp-g{left:0!important;transform:none}.bp-bulle.bp-d{left:auto!important;right:0;transform:none}   /* collée au bord proche : jamais hors de la carte */
-.bp-bornes{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-size:12.5px;color:var(--doux)}
+.bp-bornes{position:relative;height:18px;margin-top:5px;font-size:12.5px;color:var(--encre)}   /* 22/10/2026 : prix des bords de la zone foncée */
+.bp-b{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;font-weight:700}
+.bp-b.bp-g{left:0!important;transform:none}.bp-b.bp-d{left:auto!important;right:0;transform:none}
 .bp-bornes b{color:var(--encre);font-weight:700}
 .bp-note{display:block;font-size:12px;color:var(--doux);margin-top:2px}
 .bp-l-0{left:0%}

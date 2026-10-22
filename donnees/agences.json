@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-21",
+ "maj": "2026-10-22",
  "agences": [
   {
    "nom": "AKNAR Immo",
@@ -42,7 +42,7 @@
    "site": "https://cabinetimmo.com/",
    "facebook": null,
    "adresse": "Immeuble aicha médical Bloc B bureau B2-1 Les jardins de l'Aouina",
-   "tel": "+216 26 126 000",
+   "tel": "+216 70 750 980",
    "gouvernorat": "tunis",
    "annonces": 0
   },
@@ -116,7 +116,7 @@
    "adresse": null,
    "tel": "+216 20 400 655",
    "gouvernorat": "ben-arous",
-   "annonces": 567
+   "annonces": 565
   },
   {
    "nom": "Immoland",
@@ -150,7 +150,7 @@
    "site": "https://leboulevardimmo.com/",
    "facebook": "https://www.facebook.com/LeBoulevard.immobiliere",
    "adresse": "Rue ibnou sina, oued souhil, Nabeul - 8000",
-   "tel": "+216 55 982 862",
+   "tel": "+216 22 232 885",
    "gouvernorat": "nabeul",
    "annonces": 0
   },
@@ -168,7 +168,7 @@
    "site": "https://luxury-house.tn/",
    "facebook": "https://www.facebook.com/pg/luxuryHouse.Tunisie/posts",
    "adresse": "131 Avenue Khaled Ibn El Walid, l’Aouina 2045, Tunis.",
-   "tel": "+216 94 990 579",
+   "tel": "+216 99 308 359",
    "gouvernorat": "tunis",
    "annonces": 0
   },
@@ -186,7 +186,7 @@
    "site": "https://narjess-immo.tn/",
    "facebook": "https://www.facebook.com/profile.php?id=100092324713150",
    "adresse": "93 Route de la plage 4011 - Hammam Sousse, Tunisie.",
-   "tel": "+216 52 502 988",
+   "tel": "+216 55 153 800",
    "gouvernorat": "sousse",
    "annonces": 0
   },
@@ -312,7 +312,7 @@
    "site": "https://zarzidar.com/",
    "facebook": "https://www.facebook.com/profile.php?id=61565868279605",
    "adresse": "1ere etage,Bureau N° 2 Immeuble Baaboura",
-   "tel": "+216 75 693 221",
+   "tel": "+216 22 285 809",
    "gouvernorat": "medenine",
    "annonces": 18
   },

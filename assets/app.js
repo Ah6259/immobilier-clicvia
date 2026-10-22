@@ -72,8 +72,13 @@
     else if (x.v === "n") t = L(quoi[0] + " dans la norme", quoi[1] + " في المعدّل") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl;
     else if (x.v === "b") t = pre + L(Math.abs(x.p) + "\u00a0% sous ", iso(Math.abs(x.p)) + "\u00a0% أقل من ") + sembl + L(" : peut-être une bonne affaire, vérifiez l’état du bien", ": ربما صفقة جيدة، تحقّق من حالة العقار");
     else t = pre + L(x.p + "\u00a0% au-dessus de ", iso(x.p) + "\u00a0% أعلى من ") + sembl + L(" : de la marge pour négocier, sauf vrais atouts", ": هامش للتفاوض، إلا إن كانت له مزايا حقيقية");
+    // BARRE DE PRIX (22/10/2026, Ahmed) : zone foncée = la moitié des annonces semblables, point = cette annonce ; au moins 5
+    // annonces semblables (pas de chiffre sans un minimum de données), jamais sur l'estimation du modèle seul
+    var barre = "";
+    if (!x.i && x.z !== "m" && x.n >= 5) barre = m2 ? barrePrix(m2[0], m2[2], m2[3], dm2) : (x.lo && x.hi ? barrePrix(a.p, x.lo, x.hi, dt) : "");
     var comps = (x.c || []).map(annonceParId).filter(Boolean).map(function (c) {
-      var cl = c.l && LX.l[c.g + "/" + c.l];
+      // 22/10/2026 (Ahmed) : le nom du lieu seulement s'il n'est pas celui de l'annonce (le visiteur sait déjà où il cherche)
+      var cl = c.l && c.l !== a.l && LX.l[c.g + "/" + c.l];
       var cm = m2 && c.s ? c.p / c.s : null;
       return "<li>" + dt(c.p) + (c.c != null ? " · " + iso("S+" + c.c) : "") + (c.s ? " · " + L(nb(c.s) + "\u00a0m²", iso(nb(c.s)) + "\u00a0م²") : "") +
         (cm ? " (" + dm2(cm < 100 ? Math.round(cm * 10) / 10 : Math.round(cm)) + ")" : "") +
@@ -83,10 +88,23 @@
     var plus = (comps ? "<p>" + L("Annonces comparées" + (quatre ? " (la moins chère, deux au milieu, la plus chère)" : "") + " :", "الإعلانات المقارنة" + (quatre ? " (الأرخص، اثنان في الوسط، الأغلى)" : "") + ":") + "</p><ul>" + comps + "</ul>" : "") +
       (x.e && x.z !== "m" ? "<p>" + L("Second avis, notre modèle d’IA : ≈ ", "رأي ثانٍ، نموذج الذكاء الاصطناعي: ≈ ") + dt(x.e) + ".</p>" : "") +
       (x.d ? "<p>" + L("⚠️ Les prix sont très différents dans ce secteur (meublé, saison, standing…) : comparez avec soin.", "⚠️ الأسعار متفاوتة جدًا هنا (مفروش، موسم، مستوى…): قارن بعناية.") + "</p>" : "") +
-      prisEnCompte(x) +
-      '<p><a href="' + (racine || "") + (loc ? "louer/" : "vendre/") + '">' + L(loc ? "Estimer le loyer d’un bien avec notre IA" : "Estimer le prix d’un bien avec notre IA", loc ? "قدّر كراء عقار بذكائنا الاصطناعي" : "قدّر سعر عقار بذكائنا الاصطناعي") + "</a></p>";
-    return '<div class="an-ia an-ia-' + x.v + '">' + ICO_IA + '<div><p><b>' + L("Avis de l’IA", "رأي الذكاء الاصطناعي") + "</b> : " + t + "</p>" +
+      prisEnCompte(x);
+    return '<div class="an-ia an-ia-' + x.v + '">' + ICO_IA + '<div><p><b>' + L("Avis de l’IA", "رأي الذكاء الاصطناعي") + "</b> : " + t + "</p>" + barre +
       '<details class="an-ia-plus"><summary>' + L("Pourquoi ?", "لماذا؟") + "</summary>" + plus + "</details></div></div>";
+  }
+  function barrePrix(v, bas, haut, f) {
+    if (!(haut > bas) || !(v > 0)) return "";
+    var e = haut - bas, mn = Math.max(0, Math.min(bas, v) - e * 0.35), mx = Math.max(haut, v) + e * 0.35;
+    var p = function (z) { return Math.max(0, Math.min(100, Math.round((z - mn) / (mx - mn) * 20) * 5)); };
+    var pl = p(bas), pw = Math.max(5, p(haut) - pl), pv = p(v);
+    return '<div class="barre-prix"><span class="bp-bulle bp-l-' + pv + (pv < 40 ? " bp-g" : pv > 60 ? " bp-d" : "") + '">' + L("Cette annonce : ", "هذا الإعلان: ") + f(v) + "</span>" +
+      '<div class="bp-axe"><i class="bp-zone bp-l-' + pl + " bp-w-" + Math.min(100 - pl, pw) + '"></i><b class="bp-pt bp-l-' + pv + '"></b></div>' +
+      '<div class="bp-bornes"><span>' + L("moins cher", "أرخص") + "</span><span>" + L("plus cher", "أغلى") + "</span></div></div>";
+  }
+  // pied de chaque carte (22/10/2026, Ahmed) : « Estimer le prix d'un bien avec notre IA » (remplace « Vendeur ? Ajoutez votre numéro »)
+  function lienEstimer(a, racine) {
+    var loc = a.t === "l";
+    return '<a class="an-estimer" href="' + (racine || "") + (loc ? "louer/" : "vendre/") + '">' + L(loc ? "Estimer le loyer d’un bien avec notre IA" : "Estimer le prix d’un bien avec notre IA", loc ? "قدّر كراء عقار بذكائنا الاصطناعي" : "قدّر سعر عقار بذكائنا الاصطناعي") + "</a>";
   }
   function carte(a, racine) {
     var LX = window.LIEUX || { g: {}, l: {} };
@@ -132,7 +150,7 @@
       '<h3 class="an-titre">' + titre + '</h3>' + sous + '<p class="an-lieu">' + ICO.lieu + lieu + '</p>' +
       // a.an : annonce de plus de 2 mois gardée pour un gouvernorat faible (17/10/2026), même texte que construire_site.py
       (a.an ? '<p class="an-ancienne">' + L("⏳ Annonce de plus de 2 mois : vérifiez qu’elle est toujours disponible.", "⏳ إعلان عمره أكثر من شهرين: تأكّد أنه ما زال متاحًا.") + '</p>' : "") +
-      texte + actions(a, racine) + '</div></article>';
+      texte + actions(a, racine) + lienEstimer(a, racine) + '</div></article>';
   }
   function PHOTO_OK(u) { return /^https:\/\/[^\s"'<>]+$/.test(u || ""); }
 
@@ -154,8 +172,7 @@
         '<div class="an-actions" hidden><a class="an-appel revele" href="tel:' + E(a.tel.replace(/ /g, "")) + '">' + E(a.tel) + '</a>' +
         '<a class="an-wa" href="https://wa.me/' + a.tel.replace(/\D/g, "") + '" target="_blank" rel="noopener">' + L("WhatsApp", "واتساب") + '</a></div></div>';
     }
-    var q = "?ref=" + encodeURIComponent(a.i) + "&amp;t=" + (a.t === "l" ? "location" : "vente") + "&amp;y=" + a.y + "&amp;g=" + a.g + (a.l ? "&amp;l=" + encodeURIComponent(a.l) : "");
-    return origine + '<a class="an-vendeur" href="' + racine + 'deposer/' + q + '">' + L("Vendeur ? <b>Ajoutez votre numéro (gratuit)</b>", "أنت البائع؟ <b>أضف رقمك مجانًا</b>") + '</a>';
+    return origine;   // 22/10/2026 (Ahmed) : plus de « Vendeur ? Ajoutez votre numéro (gratuit) »
   }
 
   function demarrer() {
@@ -430,7 +447,8 @@
     form.addEventListener("reset", function () { setTimeout(refaireAtouts, 0); });
     var casePh = form.querySelector('[name="ph"]'); if (casePh && q.get("ph")) casePh.checked = true;   // ?ph=1 : seulement avec photo
     // ATOUTS (20/10/2026, Ahmed : « une maison pied dans l'eau ») : ?at=em -> cases cochées (codes de a.at, robot/collecter.py)
-    (q.get("at") || "").split("").forEach(function (c) { var x = form.querySelector('input[name="at"][value="' + c + '"]'); if (x) x.checked = true; });
+    // 22/10/2026 : « Pied dans l'eau » (e) fusionné dans « Vue ou bord de mer » (m) : un ancien lien ?at=e coche « bord de mer »
+    (q.get("at") || "").replace(/e/g, "m").split("").forEach(function (c) { var x = form.querySelector('input[name="at"][value="' + c + '"]'); if (x) x.checked = true; });
     suivreGouv();
     // ?d=raoued&l=… ; un ancien lien avec seulement ?l=<quartier> retrouve sa délégation
     function delegDeLoc(g, l) {      // délégation d'un quartier (LIEUX.o) ou d'une localité officielle (DECOUPAGE)
@@ -454,22 +472,26 @@
     if (plusF && (CLES_F.some(function (k) { return q.get(k); }) || compterFiltres())) plusF.open = true;
     form.addEventListener("change", compterFiltres); form.addEventListener("input", compterFiltres);
     form.addEventListener("reset", function () { setTimeout(compterFiltres, 0); });
-    [].forEach.call(form.querySelectorAll('.onglet input[name="t"]'), function (r) {
+    // Acheter / Louer (dans l'onglet « Annonces », 22/10/2026) : un choix déjà fait se désélectionne d'un 2e toucher (= tout)
+    [].forEach.call(form.querySelectorAll('.seg input[name="t"], .onglet input[name="t"]'), function (r) {
       var avant = false;
       r.parentNode.addEventListener("pointerdown", function () { avant = r.checked; });
       r.addEventListener("click", function () {
         if (avant) { r.checked = false; avant = false; r.dispatchEvent(new Event("change", { bubbles: true })); }
-        form.classList.remove("mode-estimer");
-        var b = form.querySelector(".onglet-estimer"), pe = form.querySelector(".panneau-estimer");
-        if (b) b.setAttribute("aria-pressed", "false"); if (pe) pe.hidden = true;
       });
     });
-    var bEst = form.querySelector(".onglet-estimer");
-    if (bEst) bEst.addEventListener("click", function () {
-      var on = bEst.getAttribute("aria-pressed") !== "true", pe = form.querySelector(".panneau-estimer");
-      bEst.setAttribute("aria-pressed", on ? "true" : "false"); form.classList.toggle("mode-estimer", on); if (pe) pe.hidden = !on;
-      if (on) [].forEach.call(form.querySelectorAll('input[name="t"]'), function (r) { r.checked = false; });
-    });
+    // 3 onglets (22/10/2026, Ahmed) : « Annonces » (recherche, filtres, bouton « Être alerté ») ou « Estimer votre bien » (prix de
+    // vente, loyer ; PAS d'alerte : « le bouton alerte ne doit apparaître que dans la section annonces »)
+    var bEst = form.querySelector(".onglet-estimer"), bAnn = form.querySelector(".onglet-annonces");
+    function mode(estimer) {
+      var pe = form.querySelector(".panneau-estimer"), al = document.getElementById("c-alerte");
+      if (bEst) bEst.setAttribute("aria-pressed", estimer ? "true" : "false");
+      if (bAnn) bAnn.setAttribute("aria-pressed", estimer ? "false" : "true");
+      form.classList.toggle("mode-estimer", estimer); if (pe) pe.hidden = !estimer;
+      if (al) (al.closest("nav") || al).hidden = estimer;
+    }
+    if (bEst) bEst.addEventListener("click", function () { mode(true); });
+    if (bAnn) bAnn.addEventListener("click", function () { mode(false); });
     form.addEventListener("reset", function () { setTimeout(function () { dernierG = null; dernierD = null; suivreGouv(); memoriser(filtrer()); }, 0); });
     if (q.get("tri") && tri) tri.value = q.get("tri");
     // champs selon le type APRÈS la lecture de l'adresse (20/10/2026 : ?y=commerce&at=mp gardait les atouts visibles et cochés ;

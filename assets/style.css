@@ -328,7 +328,7 @@ img,.carte-tn,.an-vignette,.annonce{-webkit-user-select:none;user-select:none;-w
 .an-appel svg,.an-voir svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 html[dir="rtl"] .an-voir svg{transform:scaleX(-1)}
 .an-contact{font-size:15.5px;padding:12px}
-.an-vendeur{display:block;text-align:center;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--doux);text-decoration:none;border-top:1px dashed var(--ligne);padding-top:9px;margin-top:-2px}
+.an-vendeur,.an-estimer{display:block;text-align:center;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--doux);text-decoration:none;border-top:1px dashed var(--ligne);padding-top:9px;margin-top:-2px}
 .an-vendeur b{color:var(--terre-f);font-weight:600;text-decoration:underline;text-underline-offset:2px}
 .an-appel,.an-voir,.an-wa{white-space:nowrap;font-size:14.5px}
 @media (max-width:370px){ .an-appel,.an-voir,.an-wa{font-size:13.5px;gap:5px;padding:10px 5px} }
@@ -1257,15 +1257,17 @@ main > .comment-marche:first-child{margin-top:14px}
 .logo-ia{margin-inline-start:calc(.32em + 5.6px)}
 /* « Où ? » : plus de 8 lieux du même nom -> conseil d'ajouter la ville (19/10/2026) */
 .ou-plus{padding:8px 14px;font-size:13px;color:var(--doux);font-style:italic;cursor:default}
-/* 19/10/2026 (Ahmed : « cette phrase doit être sur une seule ligne », tout le site) : sur téléphone, « Comment ça marche ? » =
-   une étape par ligne (petite icône + titre sur UNE ligne) au lieu de 3 colonnes de 114 px où chaque titre se coupait */
+/* 22/10/2026 (Ahmed : « mettre les étapes sur une ligne de gauche à droite comme avant », toutes les pages, tous les sites) :
+   sur téléphone, les 3 étapes restent CÔTE À CÔTE (icône au-dessus, titre court dessous, 2 lignes au plus) — plus d'empilement */
 @media (max-width:699px){
-  .etapes-ico,.etapes-ico.etapes-4,.etapes-ico.etapes-2{grid-template-columns:1fr!important;gap:10px!important;text-align:start}
-  .etapes-ico li{flex-direction:row;align-items:center;gap:14px}
-  .etape-ico{width:42px;height:42px;border-radius:12px;flex:none}
-  .etape-ico svg{width:22px;height:22px}
-  .etape-num{width:22px;height:22px;font-size:12px;top:-7px;left:auto;inset-inline-end:-9px;transform:none}
-  .etapes-ico h3{margin:0;font-size:15px;line-height:1.3}
+  .etapes-ico{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;text-align:center}
+  .etapes-ico.etapes-4{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .etapes-ico.etapes-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .etapes-ico li{flex-direction:column;align-items:center;gap:4px}
+  .etape-ico{width:46px;height:46px;border-radius:12px;flex:none}
+  .etape-ico svg{width:24px;height:24px}
+  .etape-num{width:22px;height:22px;font-size:12px;top:-8px;left:auto;inset-inline-end:-10px;transform:none}
+  .etapes-ico h3{margin:2px 0 0;font-size:13px;line-height:1.25;overflow-wrap:anywhere;hyphens:auto}
 }
 /* 19/10/2026 (Ahmed : « sur une seule ligne ») : grands titres un peu plus petits sur téléphone, questions de la FAQ en 15 px */
 @media (max-width:480px){
@@ -1274,3 +1276,72 @@ main > .comment-marche:first-child{margin-top:14px}
   .res-partie h3,#res-titre-b{font-size:16px!important}
   .q-faq summary h3{font-size:15px}
 }
+/* 22/10/2026 (Ahmed) : 3 onglets (Annonces · Estimer votre bien · Investir) ; Acheter / Louer DANS « Annonces » ; recherche plus
+   compacte : « + Plus de filtres » en petit lien, bouton « Voir les annonces » moins haut, espaces réduits */
+.onglets.onglets-3{grid-template-columns:repeat(3,1fr);margin-bottom:10px}
+.onglets-3 .onglet{padding:8px 4px 7px}
+.onglets-3 .onglet span{line-height:1.2;text-align:center}
+.ligne-transaction{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 10px;padding:3px;background:var(--sable);border:1px solid var(--ligne);border-radius:999px}
+.seg{display:flex;align-items:center;justify-content:center;min-height:36px;border-radius:999px;cursor:pointer;font-weight:600;color:var(--doux);position:relative}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg:has(input:checked){background:var(--terre);color:#fff;box-shadow:0 1px 4px rgba(30,42,48,.18)}
+.seg:has(input:focus-visible){outline:3px solid var(--or);outline-offset:1px}
+.mode-estimer .ligne-transaction{display:none!important}
+.recherche-simple .champ-ou{margin-bottom:6px}
+.recherche-simple .plus-filtres{margin:0 0 8px}
+.recherche-simple .plus-filtres > summary{display:inline-block;padding:4px 6px;border:0;border-radius:6px;background:none;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.recherche-simple .actions-recherche .btn-chercher{min-height:48px;font-size:16.5px}
+.choix-accueil[hidden]{display:none!important}
+/* 22/10/2026 (Ahmed, idée d'un site allemand) : BARRE DE PRIX dans l'avis de l'IA — zone foncée = la moitié des annonces semblables
+   (entre le 1er et le 3e quart), point = cette annonce. Positions par pas de 5 % (classes : la CSP interdit les styles en ligne) */
+.barre-prix{margin:8px 0 4px;padding:28px 2px 0;position:relative}
+.bp-axe{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,#CFE3C8,#E8E3D6 50%,#F2D2C4)}
+.bp-zone{position:absolute;top:0;bottom:0;border-radius:999px;background:rgba(44,88,114,.45)}
+.bp-pt{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--encre);border:3px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.bp-bulle{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;font-size:12.5px;font-weight:700;background:var(--encre);color:#fff;border-radius:6px;padding:2px 7px}
+.bp-bulle.bp-g{left:0!important;transform:none}.bp-bulle.bp-d{left:auto!important;right:0;transform:none}   /* collée au bord proche : jamais hors de la carte */
+.bp-bornes{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-size:12.5px;color:var(--doux)}
+.bp-bornes b{color:var(--encre);font-weight:700}
+.bp-note{display:block;font-size:12px;color:var(--doux);margin-top:2px}
+.bp-l-0{left:0%}
+.bp-l-5{left:5%}
+.bp-l-10{left:10%}
+.bp-l-15{left:15%}
+.bp-l-20{left:20%}
+.bp-l-25{left:25%}
+.bp-l-30{left:30%}
+.bp-l-35{left:35%}
+.bp-l-40{left:40%}
+.bp-l-45{left:45%}
+.bp-l-50{left:50%}
+.bp-l-55{left:55%}
+.bp-l-60{left:60%}
+.bp-l-65{left:65%}
+.bp-l-70{left:70%}
+.bp-l-75{left:75%}
+.bp-l-80{left:80%}
+.bp-l-85{left:85%}
+.bp-l-90{left:90%}
+.bp-l-95{left:95%}
+.bp-l-100{left:100%}
+.bp-w-5{width:5%}
+.bp-w-10{width:10%}
+.bp-w-15{width:15%}
+.bp-w-20{width:20%}
+.bp-w-25{width:25%}
+.bp-w-30{width:30%}
+.bp-w-35{width:35%}
+.bp-w-40{width:40%}
+.bp-w-45{width:45%}
+.bp-w-50{width:50%}
+.bp-w-55{width:55%}
+.bp-w-60{width:60%}
+.bp-w-65{width:65%}
+.bp-w-70{width:70%}
+.bp-w-75{width:75%}
+.bp-w-80{width:80%}
+.bp-w-85{width:85%}
+.bp-w-90{width:90%}
+.bp-w-95{width:95%}
+.bp-w-100{width:100%}
+.an-estimer{color:var(--terre-f);font-weight:600;text-decoration:underline;text-underline-offset:2px}   /* 22/10/2026 : pied de chaque carte */

@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=5afa746646">
-<script src="../assets/page.js?v=5afa746646"></script>
+<link rel="stylesheet" href="../assets/style.css?v=f92b6d8272">
+<script src="../assets/page.js?v=f92b6d8272"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://immobilier.clicvia.com/"}, {"@type": "ListItem", "position": 2, "name": "Déposer une annonce", "item": "https://immobilier.clicvia.com/deposer/"}]}</script>
 </head>
@@ -47,7 +47,7 @@
   </div>
 </section>
 <main class="wrap">
-<section class="bloc comment-marche"><h2><span data-l="fr">Comment ça marche ?</span><span data-l="ar">كيف يعمل؟</span></h2><ol class="etapes-ico etapes-3"><li><span class="etape-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><span class="etape-num">1</span></span><h3><span data-l="fr">Remplissez</span><span data-l="ar">املأ</span></h3><p><span data-l="fr"></span><span data-l="ar"></span></p></li><li><span class="etape-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span class="etape-num">2</span></span><h3><span data-l="fr">Vérification auto</span><span data-l="ar">تحقق آلي</span></h3><p><span data-l="fr"></span><span data-l="ar"></span></p></li><li><span class="etape-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg><span class="etape-num">3</span></span><h3><span data-l="fr">En ligne en 2 h, modifiable</span><span data-l="ar">يُنشر في ساعتين، قابل للتعديل</span></h3><p><span data-l="fr"></span><span data-l="ar"></span></p></li></ol></section>
+<section class="bloc comment-marche"><h2><span data-l="fr">Comment ça marche ?</span><span data-l="ar">كيف يعمل؟</span></h2><ol class="etapes-ico etapes-3"><li><span class="etape-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><span class="etape-num">1</span></span><h3><span data-l="fr">Remplissez</span><span data-l="ar">املأ</span></h3><p><span data-l="fr"></span><span data-l="ar"></span></p></li><li><span class="etape-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span class="etape-num">2</span></span><h3><span data-l="fr">Vérification auto</span><span data-l="ar">تحقق آلي</span></h3><p><span data-l="fr"></span><span data-l="ar"></span></p></li><li><span class="etape-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg><span class="etape-num">3</span></span><h3><span data-l="fr">En ligne en 2 h</span><span data-l="ar">يُنشر في ساعتين</span></h3><p><span data-l="fr"></span><span data-l="ar"></span></p></li></ol></section>
 <section class="bloc formulaire-depot">
   <!-- Envoi : Google Forms d'Ahmed (assets/deposer.js, DEPOT_URL). Publication : robot depots.yml toutes les 2 h -->
   <!-- (robot/sources/depot.py lit l'onglet « public » de la feuille des réponses : jamais l'e-mail ni l'adresse).   -->
@@ -75,8 +75,8 @@
     <label class="champ"><span><span data-l="fr">Titre (sans « Vente », « Location »… dans le titre)</span><span data-l="ar">العنوان (دون «بيع» أو «كراء»…)</span></span><input name="titre" required maxlength="70" placeholder="ex. Appartement S+2 lumineux près de la plage"></label>
     <label class="champ"><span><span data-l="fr">Texte (1 200 caractères au plus, sans e-mail ni lien web)</span><span data-l="ar">النص (1200 حرف على الأكثر، دون بريد أو روابط)</span></span><textarea name="description" maxlength="1200" rows="6"></textarea></label>
     <label class="champ"><span><span data-l="fr">Validité de l’annonce</span><span data-l="ar">مدة صلاحية الإعلان</span></span><select name="validite" required>
-      <option value="15" data-fr="15 jours" data-ar="15 يومًا">15 jours</option><option value="30" data-fr="30 jours" data-ar="30 يومًا">30 jours</option>
-      <option value="45" selected data-fr="45 jours" data-ar="45 يومًا">45 jours</option><option value="60" data-fr="60 jours" data-ar="60 يومًا">60 jours</option></select></label>
+      <option value="15" data-fr="15 jours" data-ar="15 يومًا">15 jours</option><option value="30" data-fr="30 jours" data-ar="30 يومًا">30 jours</option>
+      <option value="45" selected data-fr="45 jours" data-ar="45 يومًا">45 jours</option><option value="60" data-fr="60 jours" data-ar="60 يومًا">60 jours</option></select></label>
     <p class="aide"><span data-l="fr">Photos (jusqu’à 5) : bientôt. Une annonce sans photo est possible ; nous effacerons la position GPS des photos avant de les publier.</span><span data-l="ar">الصور (حتى 5): قريبًا. يمكن نشر إعلان دون صور؛ سنحذف موقع GPS من الصور قبل نشرها.</span></p>
     <legend class="sous"><span data-l="fr">Contact</span><span data-l="ar">الاتصال</span></legend>
     <div class="grille-champs">
@@ -96,11 +96,11 @@
   <h2><span data-l="fr">Les règles, simplement</span><span data-l="ar">القواعد ببساطة</span></h2>
   <ul>
     <li><span data-l="fr"><strong>Publication automatique en 2 heures environ</strong>, après une vérification automatique (pas d’e-mail de confirmation à attendre).</span><span data-l="ar"><strong>نشر آلي في حوالي ساعتين</strong> بعد تحقق آلي (لا حاجة لانتظار رسالة تأكيد).</span></li>
-    <li><span data-l="fr"><strong>Durée choisie : 15, 30, 45 ou 60 jours</strong>, puis retrait automatique. Pour la prolonger, déposez-la de nouveau.</span><span data-l="ar"><strong>المدة التي تختارها: ⁦15⁩ أو ⁦30⁩ أو ⁦45⁩ أو ⁦60⁩ يومًا</strong>، ثم حذف آلي. لتمديدها، انشرها من جديد.</span></li>
+    <li><span data-l="fr"><strong>Durée choisie : 15, 30, 45 ou 60 jours</strong>, puis retrait automatique. Pour la prolonger, déposez-la de nouveau.</span><span data-l="ar"><strong>المدة التي تختارها: ⁦15⁩ أو ⁦30⁩ أو ⁦45⁩ أو ⁦60⁩ يومًا</strong>، ثم حذف آلي. لتمديدها، انشرها من جديد.</span></li>
     <li><span data-l="fr"><strong>Modifier ou retirer :</strong> écrivez-nous avec le formulaire « Votre avis » (page d’accueil) en indiquant le titre de l’annonce.</span><span data-l="ar"><strong>للتعديل أو الحذف:</strong> راسلنا عبر استمارة «رأيك» (الصفحة الرئيسية) مع ذكر عنوان الإعلان.</span></li>
     <li><span data-l="fr"><strong>Votre e-mail n’est jamais publié.</strong> Votre téléphone seulement si vous cochez la case, et il n’apparaît qu’au clic sur « Afficher le numéro ».</span><span data-l="ar"><strong>بريدك لا يُنشر أبدًا.</strong> هاتفك فقط إذا وافقت، ويظهر عند النقر على «إظهار الرقم» فقط.</span></li>
     <li><span data-l="fr">Seuls la délégation ou le quartier sont publiés, jamais votre adresse exacte.</span><span data-l="ar">تُنشر المعتمدية أو الحي فقط، وليس عنوانك الدقيق.</span></li>
-    <li><span data-l="fr">3 annonces actives au plus par numéro de téléphone ; pas de lien web, d’e-mail ni de mots injurieux dans le texte ; prix vraisemblable ; pas de doublon. Une annonce qui ne respecte pas ces règles n’est pas publiée.</span><span data-l="ar">3 إعلانات نشطة على الأكثر لكل رقم هاتف؛ دون روابط أو بريد أو كلمات مسيئة في النص؛ سعر معقول؛ دون تكرار. الإعلان الذي لا يحترم هذه القواعد لا يُنشر.</span></li>
+    <li><span data-l="fr">3 annonces actives au plus par numéro de téléphone ; pas de lien web, d’e-mail ni de mots injurieux dans le texte ; prix vraisemblable ; pas de doublon. Une annonce qui ne respecte pas ces règles n’est pas publiée.</span><span data-l="ar">3 إعلانات نشطة على الأكثر لكل رقم هاتف؛ دون روابط أو بريد أو كلمات مسيئة في النص؛ سعر معقول؛ دون تكرار. الإعلان الذي لا يحترم هذه القواعد لا يُنشر.</span></li>
     <li><span data-l="fr">Les demandes (« je cherche ») ne sont pas encore publiées.</span><span data-l="ar">الطلبات («أبحث عن») لا تُنشر حاليًا.</span></li>
     <li><span data-l="fr">Données personnelles traitées selon la loi organique n° 2004-63 ; vous pouvez demander leur suppression à tout moment (formulaire « Votre avis »).</span><span data-l="ar">تُعالج المعطيات الشخصية وفق القانون الأساسي عدد ⁦2004-63⁩؛ يمكنك طلب حذفها في أي وقت.</span></li>
   </ul>
@@ -108,6 +108,6 @@
 </main>
 <footer id="pied" class="pied"></footer>
 <script src="../donnees/decoupage.js?v=d4e3f18d33" defer></script>
-<script src="../assets/deposer.js?v=5afa746646" defer></script>
+<script src="../assets/deposer.js?v=f92b6d8272" defer></script>
 </body>
 </html>

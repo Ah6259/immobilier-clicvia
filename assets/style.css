@@ -1346,3 +1346,5 @@ main > .comment-marche:first-child{margin-top:14px}
 .bp-w-100{width:100%}
 .an-estimer{color:var(--terre-f);font-weight:600;text-decoration:underline;text-underline-offset:2px}   /* 22/10/2026 : pied de chaque carte */
 .an-prix .dt-per{font-weight:700;font-size:14px;color:var(--encre);margin-inline-start:-4px}   /* « / nuit », « / jour » (22/10/2026) */
+/* 22/10/2026 : menu grisé (« D’abord la délégation ») : le texte passe à la ligne au lieu d’être coupé sur le téléphone */
+.sj-bouton:disabled,.sj-bouton:disabled>span{white-space:normal}

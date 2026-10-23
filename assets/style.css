@@ -1370,3 +1370,17 @@ html.avis-ferme .an-ia-bascule .ab-moins{display:none}
 .ab-fort{color:#1F6E43}
 .ab-faible{color:#B3261E}
 .ab-np{margin:4px 0 0!important;font-size:12.5px;color:var(--doux)}
+/* 23/10/2026 (Ahmed) : ligne pointillée entre la barre des prix et « Sur le prix » ; « Pourquoi ? » de l'avis sur le bien */
+.an-ia-corps .barre-prix + .an-ia-prix{border-top:1px dashed rgba(44,88,114,.35);margin-top:8px;padding-top:7px}
+.ab-faits{margin:4px 0 0;padding-inline-start:18px}
+.ab-faits li{margin:2px 0}
+/* 4e onglet « Agences » (23/10/2026) : recherche des agences de l'annuaire pros.clicvia.com */
+.onglets.onglets-4{grid-template-columns:repeat(4,1fr)}
+.onglets-4 .onglet span{font-size:14px}
+.mode-agences .champ-ou,.mode-agences .actions-recherche,.mode-agences .plus-filtres,.mode-agences .ligne-transaction{display:none!important}
+.panneau-agences{padding:2px 0 4px}
+.panneau-agences p{margin:0 0 10px;color:var(--doux);font-size:15px;text-align:center}
+.panneau-agences .champ{display:block;margin-bottom:10px}
+.panneau-agences select,.panneau-agences input{width:100%;box-sizing:border-box}
+.panneau-agences .btn-agences{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:999px;text-decoration:none;font-size:17px}
+@media (max-width:400px){.onglets-4 .onglet span{font-size:12.5px}.onglets-4 .onglet svg{width:22px;height:22px}}

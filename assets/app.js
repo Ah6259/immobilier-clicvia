@@ -129,9 +129,7 @@
   function avisBien(a) {
     var x = a.ab;
     if (!x) return "";
-    var at = nomsAtouts(a), zone = x.z === "q" ? ["du quartier", "الحي"] : ["de la délégation", "المعتمدية"];
-    var V = { h: ["au-dessus de la moyenne " + zone[0], "أفضل من متوسط " + zone[1]], n: ["dans la moyenne " + zone[0], "في متوسط " + zone[1]],
-              b: ["en dessous de la moyenne " + zone[0], "أقل من متوسط " + zone[1]] };
+    var at = nomsAtouts(a), V = verdictsBien(x.z);
     var li = [];
     // ce que le visiteur cherche (atouts cochés dans la recherche) : confirmé sur cette annonce
     var voulu = String(window.FILTRE_AT || "").split("").filter(function (c) { return at[c] && (a.at || "").indexOf(c) >= 0; });
@@ -140,10 +138,42 @@
     (x.w || []).forEach(function (j) { var t = pointBien(j, a, at, false); if (t) li.push('<li class="ab-faible">✗ ' + t + "</li>"); });
     var np = String(x.np || "").split("").filter(function (c) { return at[c]; });
     if (!x.v && !li.length && !np.length) return "";
-    return '<div class="an-ia-bien"><p><b>' + L("Sur le bien", "عن العقار") + "</b> : " + (x.v ? L(V[x.v][0], V[x.v][1]) : L("à noter", "للملاحظة")) +
-      ' <small class="ab-n">' + L("(comparé à " + x.n + " biens semblables)", "(مقارنة بـ" + iso(x.n) + " عقارات مشابهة)") + "</small></p>" +
+    return '<div class="an-ia-bien"><p><b>' + L("Sur le bien", "عن العقار") + "</b> : " + (x.v ? L(V[x.v][0], V[x.v][1]) : L("à noter", "للملاحظة")) + "</p>" +
       (li.length ? '<ul class="ab-points">' + li.join("") + "</ul>" : "") +
-      (np.length ? '<p class="ab-np">' + L("Non précisé (texte de l’annonce non lu) : " + np.map(function (c) { return at[c][0]; }).join(", "), "غير مذكور (نص الإعلان غير مقروء): " + np.map(function (c) { return at[c][1]; }).join("، ")) + "</p>" : "") + "</div>";
+      (np.length ? '<p class="ab-np">' + L("Non précisé (texte de l’annonce non lu) : " + np.map(function (c) { return at[c][0]; }).join(", "), "غير مذكور (نص الإعلان غير مقروء): " + np.map(function (c) { return at[c][1]; }).join("، ")) + "</p>" : "") +
+      '<details class="an-ia-plus"><summary>' + L("Pourquoi ?", "لماذا؟") + "</summary>" + pourquoiBien(a, x, at) + "</details></div>";
+  }
+  // 23/10/2026 (Ahmed : « l'avis sur le bien doit parler comme un agent immobilier, du bien en général, pas du prix ») ; même texte
+  // que verdicts_bien() du robot
+  function verdictsBien(z) {
+    var q = z === "q";
+    return { h: [q ? "un bon bien pour le quartier, mieux équipé que la plupart" : "un bon bien pour la délégation, mieux équipé que la plupart",
+                 q ? "عقار جيد بالنسبة للحي، أفضل تجهيزًا من أغلب عقاراته" : "عقار جيد بالنسبة للمعتمدية، أفضل تجهيزًا من أغلب عقاراتها"],
+             n: [q ? "un bien classique pour le quartier" : "un bien classique pour la délégation", q ? "عقار عادي بالنسبة للحي" : "عقار عادي بالنسبة للمعتمدية"],
+             b: [q ? "un bien moins complet que la plupart du quartier" : "un bien moins complet que la plupart de la délégation",
+                 q ? "عقار أقل اكتمالًا من أغلب عقارات الحي" : "عقار أقل اكتمالًا من أغلب عقارات المعتمدية"] };
+  }
+  // « Pourquoi ? » de l'avis sur le bien (23/10/2026, Ahmed) : comment l'IA juge, et ce que l'annonce dit ou ne dit pas
+  function pourquoiBien(a, x, at) {
+    var loc = a.t === "l", y = a.y, cases = window.atoutsDe ? window.atoutsDe(loc ? "location" : "vente", y) : [], aat = a.at || "";
+    var pres = [], abs = [], inc = [];
+    cases.forEach(function (z) { var c = z[1], n = at[c] || [z[2], z[3]]; if (aat.indexOf(c) >= 0) pres.push(n); else if (a.nl) inc.push(n); else abs.push(n); });
+    var j = function (l, i) { return l.map(function (n) { return n[i]; }).join(i ? "، " : ", "); };
+    var sn = a.c != null && (y === "appartement" || y === "maison");
+    var etat = aat.indexOf("n") >= 0 ? ["neuf", "جديد"] : aat.indexOf("w") >= 0 ? ["rénové", "مجدَّد"] : aat.indexOf("x") >= 0 ? ["à rénover", "يحتاج ترميمًا"] : null;
+    var lig = function (fr, ar) { return "<li>" + L(fr, ar) + "</li>"; };
+    return "<p>" + L("Notre IA juge le bien comme un agent immobilier : elle le compare aux " + x.n + " biens semblables " + (x.z === "q" ? "du quartier" : "de la délégation") +
+        " (même type, " + (loc ? "à louer" : "à vendre") + ") et regarde ce qu’il a de rare et ce qui lui manque. Le prix n’est pas pris en compte ici.",
+        "يحكم ذكاؤنا الاصطناعي على العقار كوكيل عقاري: يقارنه بـ" + iso(x.n) + " عقارات مشابهة في " + (x.z === "q" ? "الحي" : "المعتمدية") +
+        " (نفس النوع، " + (loc ? "للكراء" : "للبيع") + ") وينظر إلى ما هو نادر فيه وما ينقصه. السعر لا يُحتسب هنا.") + "</p>" +
+      "<p>" + L("Ce que dit l’annonce :", "ما يذكره الإعلان:") + '</p><ul class="ab-faits">' +
+      (a.s ? lig("Surface : " + nb(a.s) + " m²", "المساحة: " + iso(nb(a.s)) + " م²") : lig("Surface : non précisée", "المساحة: غير مذكورة")) +
+      (y === "appartement" || y === "maison" ? (sn ? lig("Pièces : S+" + a.c, "الغرف: " + iso("S+" + a.c)) : lig("Pièces : non précisé", "الغرف: غير مذكور")) : "") +
+      (y === "appartement" ? (typeof a.et === "number" ? lig("Étage : " + (a.et ? a.et + "e" : "rez-de-chaussée"), "الطابق: " + (a.et ? iso(a.et) : "الأرضي")) : lig("Étage : non précisé", "الطابق: غير مذكور")) : "") +
+      (pres.length ? lig("✓ Présents : " + j(pres, 0), "✓ موجود: " + j(pres, 1)) : "") +
+      (abs.length ? lig("✗ Absents : " + j(abs, 0), "✗ غير موجود: " + j(abs, 1)) : "") +
+      (inc.length ? lig("? Non précisés (texte de l’annonce non lu) : " + j(inc, 0), "? غير مذكور (نص الإعلان غير مقروء): " + j(inc, 1)) : "") +
+      lig("État : " + (etat ? etat[0] : "non précisé"), "الحالة: " + (etat ? etat[1] : "غير مذكورة")) + "</ul>";
   }
   // la carte de l'avis : en-tête « Avis de l'IA » + bouton + / − en haut à droite (page.js, choix gardé dans le téléphone)
   function blocAvis(a, loc, racine, court) {
@@ -556,16 +586,36 @@
     });
     // 3 onglets (22/10/2026, Ahmed) : « Annonces » (recherche, filtres, bouton « Être alerté ») ou « Estimer votre bien » (prix de
     // vente, loyer ; PAS d'alerte : « le bouton alerte ne doit apparaître que dans la section annonces »)
-    var bEst = form.querySelector(".onglet-estimer"), bAnn = form.querySelector(".onglet-annonces");
-    function mode(estimer) {
-      var pe = form.querySelector(".panneau-estimer"), al = document.getElementById("c-alerte");
-      if (bEst) bEst.setAttribute("aria-pressed", estimer ? "true" : "false");
-      if (bAnn) bAnn.setAttribute("aria-pressed", estimer ? "false" : "true");
-      form.classList.toggle("mode-estimer", estimer); if (pe) pe.hidden = !estimer;
-      if (al) (al.closest("nav") || al).hidden = estimer;
+    // 23/10/2026 (Ahmed) : 4e onglet « Agences » : recherche des agences de l'annuaire (pros.clicvia.com), comme l'onglet Estimer
+    var bEst = form.querySelector(".onglet-estimer"), bAnn = form.querySelector(".onglet-annonces"), bAg = form.querySelector(".onglet-agences");
+    function mode(m) {          // "annonces" | "estimer" | "agences" (true / false : ancien appel, estimer ou annonces)
+      m = m === true ? "estimer" : m === false ? "annonces" : m;
+      var pe = form.querySelector(".panneau-estimer"), pa = form.querySelector(".panneau-agences"), al = document.getElementById("c-alerte");
+      if (bEst) bEst.setAttribute("aria-pressed", m === "estimer" ? "true" : "false");
+      if (bAnn) bAnn.setAttribute("aria-pressed", m === "annonces" ? "true" : "false");
+      if (bAg) bAg.setAttribute("aria-pressed", m === "agences" ? "true" : "false");
+      form.classList.toggle("mode-estimer", m !== "annonces"); form.classList.toggle("mode-agences", m === "agences");
+      if (pe) pe.hidden = m !== "estimer";
+      if (pa) pa.hidden = m !== "agences";
+      if (al) (al.closest("nav") || al).hidden = m !== "annonces";
     }
-    if (bEst) bEst.addEventListener("click", function () { mode(true); });
-    if (bAnn) bAnn.addEventListener("click", function () { mode(false); });
+    if (bEst) bEst.addEventListener("click", function () { mode("estimer"); });
+    if (bAnn) bAnn.addEventListener("click", function () { mode("annonces"); });
+    if (bAg) bAg.addEventListener("click", function () { mode("agences"); });
+    var agG = form.querySelector('[data-agences="g"]'), agQ = form.querySelector('[data-agences="q"]'), agV = document.getElementById("ag-voir");
+    function lienAgences() {
+      if (!agV) return;
+      var base = agV.getAttribute("href").split("?")[0], p = new URLSearchParams();
+      if (agG && agG.value) p.set("g", agG.value);
+      if (agQ && agQ.value.trim()) p.set("q", agQ.value.trim().slice(0, 60));
+      if (document.documentElement.lang === "ar") p.set("lang", "ar");
+      p.set("depuis", "immobilier");          // la page des agences montre alors « ← Immobilier Tunisie by IA »
+      agV.setAttribute("href", base + "?" + p.toString());
+    }
+    if (agG) agG.addEventListener("change", lienAgences);
+    if (agQ) { agQ.addEventListener("input", lienAgences); agQ.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); lienAgences(); if (agV) agV.click(); } }); }
+    document.addEventListener("langue", lienAgences);
+    lienAgences();
     form.addEventListener("reset", function () { setTimeout(function () { dernierG = null; dernierD = null; suivreGouv(); memoriser(filtrer()); }, 0); });
     if (q.get("tri") && tri) tri.value = q.get("tri");
     // champs selon le type APRÈS la lecture de l'adresse (20/10/2026 : ?y=commerce&at=mp gardait les atouts visibles et cochés ;
@@ -661,6 +711,13 @@
           if (ma && (voulu === "b" || voulu === "h")) { var d = Math.abs(b.ia.p || 0) - Math.abs(a.ia.p || 0); if (d) return d; }
           return a.d < b.d ? 1 : a.d > b.d ? -1 : 0;
         };
+      }
+      // 23/10/2026 (Ahmed) : « avis de l'IA sur le bien, le meilleur d'abord » : bon bien, puis classique, puis moins complet, puis sans
+      // avis ; à verdict égal, le plus de points forts et le moins de points faibles, puis les plus récentes
+      if (!cle && v.tri === "bien") {
+        var rangB = function (a) { var x = a.ab; return !x ? 9 : { h: 0, n: 1, b: 2 }[x.v] !== undefined ? { h: 0, n: 1, b: 2 }[x.v] : 3; };
+        var soldeB = function (a) { var x = a.ab || {}; return (x.f || []).length - (x.w || []).length; };
+        cle = function (a, b) { return (rangB(a) - rangB(b)) || (soldeB(b) - soldeB(a)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); };
       }
       if (cle) liste.sort(cle);
       window.FILTRE_AT = v.at;      // 23/10/2026 : atouts cherchés, confirmés dans l'avis sur le bien (« Votre recherche : … »)

@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-22",
+ "maj": "2026-10-23",
  "agences": [
   {
    "nom": "AKNAR Immo",
@@ -8,7 +8,7 @@
    "adresse": "8050 Mnaret Hammamet (Barreket Sahel), Route Yassmine Hammamet..",
    "tel": "+216 93 155 966",
    "gouvernorat": "nabeul",
-   "annonces": 0
+   "annonces": 52
   },
   {
    "nom": "ASPIS IMMO",
@@ -17,16 +17,16 @@
    "adresse": "Avenue du militant Abdelkader Dardouri, 8090, Kélibia, Tunisie.",
    "tel": "+216 29 760 700",
    "gouvernorat": "nabeul",
-   "annonces": 0
+   "annonces": 130
   },
   {
    "nom": "Ayoub Immobilier",
    "site": "https://ayoubimmobilierhammamet.com/",
    "facebook": "https://www.facebook.com/ayoubimmobilierhammamet",
    "adresse": "Rue Dag Hammarskjold 8050, Hammamet, Tunisie.",
-   "tel": "+216 53 564 536",
+   "tel": "+216 53 564 038",
    "gouvernorat": "nabeul",
-   "annonces": 0
+   "annonces": 556
   },
   {
    "nom": "Agence Immobilière BIG IMMO",
@@ -35,7 +35,7 @@
    "adresse": "Khezama Ouest, rue Hassan Ben Said (près de librairie SIAB), 4051 Sousse",
    "tel": "+216 94 818 484",
    "gouvernorat": "sousse",
-   "annonces": 0
+   "annonces": 178
   },
   {
    "nom": "CABINET Immo",
@@ -44,16 +44,16 @@
    "adresse": "Immeuble aicha médical Bloc B bureau B2-1 Les jardins de l'Aouina",
    "tel": "+216 70 750 980",
    "gouvernorat": "tunis",
-   "annonces": 0
+   "annonces": 58
   },
   {
    "nom": "Agence Immobilière Cactus Immo",
    "site": "https://cactusimmobilier.com/",
    "facebook": "https://www.facebook.com/cactusimmobilier",
    "adresse": "Résidence Horizon+, Local n°06, Cité el Wafa, Nabeul 8000, Tunisie.",
-   "tel": "+216 56 103 783",
+   "tel": "+216 29 074 198",
    "gouvernorat": "nabeul",
-   "annonces": 0
+   "annonces": 100
   },
   {
    "nom": "CASA IMMO",
@@ -62,7 +62,7 @@
    "adresse": "Avenue de république, Résidence Zaineb BLOC A, Magasin N° 7-1, La Nouvelle Médina, 2063, Ben Arous, Tunisie.",
    "tel": "+216 20 813 000",
    "gouvernorat": "ben-arous",
-   "annonces": 0
+   "annonces": 14
   },
   {
    "nom": "Colombus Immo",
@@ -71,7 +71,7 @@
    "adresse": "Centre Aida, Menzah 9 A, avenue Taher Ben Ammar, 1013 Tunis, Tunisie.",
    "tel": "+216 98 271 714",
    "gouvernorat": "tunis",
-   "annonces": 29
+   "annonces": 31
   },
   {
    "nom": "EDF IMMOBILIÈRE",
@@ -80,7 +80,7 @@
    "adresse": "Complexe commercial Bizerte Center, bureau n° 58.",
    "tel": "+216 29 276 849",
    "gouvernorat": "bizerte",
-   "annonces": 0
+   "annonces": 21
   },
   {
    "nom": "Expats and housing Immobilier",
@@ -89,7 +89,7 @@
    "adresse": "01 rue d'Amérique , La Marsa, Tunisia",
    "tel": "+216 29 886 630",
    "gouvernorat": "tunis",
-   "annonces": 0
+   "annonces": 231
   },
   {
    "nom": "IGH International Golden House",
@@ -97,8 +97,8 @@
    "facebook": "https://www.facebook.com/profile.php?id=61559937574593",
    "adresse": "Rue Bechir Sfar, immeuble Abed 1 ère étage appt N°2",
    "tel": "+216 54 549 054",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "sousse",
+   "annonces": 372
   },
   {
    "nom": "L'immobilière Internationale Tunisie",
@@ -107,16 +107,16 @@
    "adresse": "Rue Marrakech, Khezema Est, Sousse 4051.",
    "tel": "+216 55 528 102",
    "gouvernorat": "sousse",
-   "annonces": 0
+   "annonces": 342
   },
   {
    "nom": "Immobiliere Nour Ennasr",
    "site": "https://immobiliere-nour-ennasr.com/",
    "facebook": null,
    "adresse": null,
-   "tel": "+216 20 400 655",
+   "tel": "+216 70 036 231",
    "gouvernorat": "ben-arous",
-   "annonces": 565
+   "annonces": 571
   },
   {
    "nom": "Immoland",
@@ -124,17 +124,17 @@
    "facebook": "https://www.facebook.com/AgenceImmoLand",
    "adresse": null,
    "tel": "+216 29 343 143",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "tunis",
+   "annonces": 219
   },
   {
    "nom": "Agence immobilière Kerkouane",
    "site": "https://kelibiaimmo.tn/",
    "facebook": "https://www.facebook.com/Immobili%C3%A9re-Kerkouane-456975651053691",
    "adresse": "31 rue ibn khaldoun -Residencenajjar –kelibia-8090 tunisie.",
-   "tel": "+216 55 461 455",
+   "tel": "+216 55 464 235",
    "gouvernorat": "nabeul",
-   "annonces": 0
+   "annonces": 216
   },
   {
    "nom": "Agence Immobilière Klouz immo",
@@ -142,17 +142,17 @@
    "facebook": "https://www.facebook.com/klouzimmo",
    "adresse": null,
    "tel": "+216 28 026 120",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "bizerte",
+   "annonces": 372
   },
   {
    "nom": "Le Boulevard",
    "site": "https://leboulevardimmo.com/",
    "facebook": "https://www.facebook.com/LeBoulevard.immobiliere",
    "adresse": "Rue ibnou sina, oued souhil, Nabeul - 8000",
-   "tel": "+216 22 232 885",
+   "tel": "+216 29 698 992",
    "gouvernorat": "nabeul",
-   "annonces": 0
+   "annonces": 110
   },
   {
    "nom": "Le Carré 9",
@@ -161,16 +161,16 @@
    "adresse": "Local C01, Immeuble Dar El Khir, Cité les Pins, Lac 2.",
    "tel": "+216 23 219 610",
    "gouvernorat": "tunis",
-   "annonces": 0
+   "annonces": 253
   },
   {
    "nom": "Luxury House",
    "site": "https://luxury-house.tn/",
    "facebook": "https://www.facebook.com/pg/luxuryHouse.Tunisie/posts",
    "adresse": "131 Avenue Khaled Ibn El Walid, l’Aouina 2045, Tunis.",
-   "tel": "+216 99 308 359",
+   "tel": "+216 94 990 579",
    "gouvernorat": "tunis",
-   "annonces": 0
+   "annonces": 133
   },
   {
    "nom": "Agence Immobilière Metis",
@@ -179,7 +179,7 @@
    "adresse": "Résidence Ahlem cité el wafa Mrezga , Nabeul, Tunisia",
    "tel": "+216 55 390 787",
    "gouvernorat": "nabeul",
-   "annonces": 0
+   "annonces": 67
   },
   {
    "nom": "Agence Immobilière Narjess Immo",
@@ -188,7 +188,7 @@
    "adresse": "93 Route de la plage 4011 - Hammam Sousse, Tunisie.",
    "tel": "+216 55 153 800",
    "gouvernorat": "sousse",
-   "annonces": 0
+   "annonces": 198
   },
   {
    "nom": "New Key Immobilier",
@@ -196,8 +196,8 @@
    "facebook": "https://www.facebook.com/AgenceImmobiliereNewKey",
    "adresse": null,
    "tel": "+216 29 232 927",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "tunis",
+   "annonces": 139
   },
   {
    "nom": "Perla Immo",
@@ -206,7 +206,7 @@
    "adresse": "Rue de Monastir Menzah 7 - Ariana, Tunisie.",
    "tel": "+216 98 617 607",
    "gouvernorat": "ariana",
-   "annonces": 0
+   "annonces": 355
   },
   {
    "nom": "PLAZA IMMO",
@@ -214,8 +214,8 @@
    "facebook": "https://www.facebook.com/plaza.immo",
    "adresse": null,
    "tel": "+216 23 262 470",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "tunis",
+   "annonces": 224
   },
   {
    "nom": "Agence Immobilière Riahi",
@@ -224,7 +224,7 @@
    "adresse": "N°07, Rue Ribat, bureau N°105, corniche Sousse, Sousse Médina, IMMEUBLE Raouf Mfarj.",
    "tel": "+216 50 232 727",
    "gouvernorat": "sousse",
-   "annonces": 0
+   "annonces": 28
   },
   {
    "nom": "Agence SAIEK & Belhouane",
@@ -232,8 +232,8 @@
    "facebook": "https://www.facebook.com/BelhouaneNidhal",
    "adresse": null,
    "tel": "+216 70 001 109",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "bizerte",
+   "annonces": 316
   },
   {
    "nom": "Vecteurimmo",
@@ -242,7 +242,7 @@
    "adresse": "7 Bis rue de la Moselle Bellevue",
    "tel": "+216 22 308 176",
    "gouvernorat": "tunis",
-   "annonces": 0
+   "annonces": 44
   },
   {
    "nom": "ADAM Immobilière",
@@ -251,7 +251,7 @@
    "adresse": "29 Rue Sour, Neapolis, Nabeul 8000",
    "tel": "+216 24 388 922",
    "gouvernorat": "nabeul",
-   "annonces": 156
+   "annonces": 158
   },
   {
    "nom": "Agence Immoblière Amine Djerba",
@@ -269,7 +269,7 @@
    "adresse": "Nabeul, Tunisie.",
    "tel": "+216 98 688 569",
    "gouvernorat": "nabeul",
-   "annonces": 63
+   "annonces": 66
   },
   {
    "nom": "Mouin Immobilier",
@@ -278,7 +278,7 @@
    "adresse": "Hammamet 8050",
    "tel": "+216 52 605 844",
    "gouvernorat": "nabeul",
-   "annonces": 145
+   "annonces": 162
   },
   {
    "nom": "Nova Immo Sfax",
@@ -296,7 +296,7 @@
    "adresse": "4180 Houmt Souk – Djerba, Tunisie",
    "tel": "+216 55 481 491",
    "gouvernorat": "medenine",
-   "annonces": 21
+   "annonces": 8
   },
   {
    "nom": "www.visavis-immobilier.com",
@@ -305,25 +305,25 @@
    "adresse": null,
    "tel": "+216 21 067 029",
    "gouvernorat": "medenine",
-   "annonces": 33
+   "annonces": 34
   },
   {
    "nom": "Zarzidar",
    "site": "https://zarzidar.com/",
    "facebook": "https://www.facebook.com/profile.php?id=61565868279605",
    "adresse": "1ere etage,Bureau N° 2 Immeuble Baaboura",
-   "tel": "+216 22 285 809",
+   "tel": "+216 75 693 221",
    "gouvernorat": "medenine",
-   "annonces": 18
+   "annonces": 19
   },
   {
    "nom": "Zephyr Immo La Marsa",
    "site": "https://zephyrimmo.tn/",
    "facebook": "https://www.facebook.com/ZephyrImmoLaMarsa",
-   "adresse": "5 Rue El Manfalouti, La Marsa, Tunis",
+   "adresse": "5 Rue El Manfalouti",
    "tel": "+216 29 226 466",
    "gouvernorat": "tunis",
-   "annonces": 0
+   "annonces": 226
   },
   {
    "nom": "Zitouna Immobilier",
@@ -331,8 +331,8 @@
    "facebook": "https://www.facebook.com/Zitouna.Immobiliers.tn",
    "adresse": null,
    "tel": "+216 71 982 230",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "tunis",
+   "annonces": 210
   }
  ]
 }

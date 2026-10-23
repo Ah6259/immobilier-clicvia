@@ -107,8 +107,10 @@
      délégation) ; points forts / faibles ; verdict seulement si le modèle a passé son contrôle. Même texte que avis_bien_html(). */
   var BIEN_NOM = { n: ["neuf", "جديد"], w: ["rénové", "مجدَّد"], s: ["haut standing", "راقٍ"], x: ["à rénover", "يحتاج ترميمًا"] };
   function nomsAtouts(a) {
-    var at = {};
-    (window.atoutsDe ? window.atoutsDe(a.t === "v" ? "vente" : "location", a.y) : []).forEach(function (z) { at[z[1]] = [z[2].charAt(0).toLowerCase() + z[2].slice(1), z[3]]; });
+    var at = {}, lib = (window.CRITERES && window.CRITERES.libelles) || {}, bas = function (t) { return String(t).charAt(0).toLowerCase() + String(t).slice(1); };
+    // tous les codes (caractéristique gardée par la recherche du modèle), puis les cases de ce type (même nom que la recherche)
+    Object.keys(lib).forEach(function (c) { at[c] = [bas(lib[c][0]), lib[c][1]]; });
+    (window.atoutsDe ? window.atoutsDe(a.t === "v" ? "vente" : "location", a.y) : []).forEach(function (z) { at[z[1]] = [bas(z[2]), z[3]]; });
     return at;
   }
   function pointBien(j, a, at, fort) {

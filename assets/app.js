@@ -99,8 +99,58 @@
         : L("Peu d’annonces de vente de ce type dans ce quartier : prix estimé à partir des loyers du quartier (lien entre loyers et prix de vente appris sur les quartiers qui ont les deux), fourchette plus large.", "إعلانات بيع قليلة من هذا النوع في هذا الحي: قُدّر السعر انطلاقًا من أسعار الكراء في الحي (علاقة بين الكراء وأسعار البيع مستخلصة من الأحياء التي فيها الاثنان)، مجال أوسع.")) + "</p>" : "") +
       (x.d ? "<p>" + L("⚠️ Les prix sont très différents dans ce secteur (meublé, saison, standing…) : comparez avec soin.", "⚠️ الأسعار متفاوتة جدًا هنا (مفروش، موسم، مستوى…): قارن بعناية.") + "</p>" : "") +
       prisEnCompte(x);
-    return '<div class="an-ia an-ia-' + x.v + '">' + ICO_IA + '<div><p><b>' + L("Avis de l’IA", "رأي الذكاء الاصطناعي") + "</b> : " + t + "</p>" + barre +
-      '<details class="an-ia-plus"><summary>' + L("Pourquoi ?", "لماذا؟") + "</summary>" + plus + "</details></div></div>";
+    // 23/10/2026 (Ahmed) : la carte de l'avis en 3 parties — barre des prix, avis sur le prix, avis sur le bien (blocAvis)
+    return { v: x.v, barre: barre, prix: '<div class="an-ia-prix"><p><b>' + L("Sur le prix", "عن السعر") + "</b> : " + t + "</p>" +
+      '<details class="an-ia-plus"><summary>' + L("Pourquoi ?", "لماذا؟") + "</summary>" + plus + "</details></div>" };
+  }
+  /* AVIS DE L'IA SUR LE BIEN (23/10/2026, robot/avis_bien.py, champ « ab ») : comparé aux biens semblables du quartier (ou de la
+     délégation) ; points forts / faibles ; verdict seulement si le modèle a passé son contrôle. Même texte que avis_bien_html(). */
+  var BIEN_NOM = { n: ["neuf", "جديد"], w: ["rénové", "مجدَّد"], s: ["haut standing", "راقٍ"], x: ["à rénover", "يحتاج ترميمًا"] };
+  function nomsAtouts(a) {
+    var at = {};
+    (window.atoutsDe ? window.atoutsDe(a.t === "v" ? "vente" : "location", a.y) : []).forEach(function (z) { at[z[1]] = [z[2].charAt(0).toLowerCase() + z[2].slice(1), z[3]]; });
+    return at;
+  }
+  function pointBien(j, a, at, fort) {
+    var k = j.charAt(0), sn = a.c != null && (a.y === "appartement" || a.y === "maison");
+    if (k === "a") {
+      var c = j.charAt(1), n = j.slice(2), nom = at[c] || [c, c];
+      if (fort) return L(nom[0] + " (rare ici : " + n + " biens sur 10)", nom[1] + " (نادر هنا: " + iso(n) + " من 10)");
+      var pas = c === "u" ? "non " : /^[aeiouyéèêâh]/i.test(nom[0]) ? "pas d’" : "pas de ";
+      return L(pas + nom[0] + " (" + n + " biens sur 10 en ont ici)", (c === "u" ? "غير " : "بلا ") + nom[1] + " (" + iso(n) + " من 10 هنا)");
+    }
+    if (j === "s+") return sn ? L("grande surface pour un S+" + a.c + " ici", "مساحة كبيرة لـ" + iso("S+" + a.c) + " هنا") : L("grande surface ici", "مساحة كبيرة هنا");
+    if (j === "s-") return sn ? L("petite surface pour un S+" + a.c + " ici", "مساحة صغيرة لـ" + iso("S+" + a.c) + " هنا") : L("petite surface ici", "مساحة صغيرة هنا");
+    if (j === "eh") return L(a.et + "e étage sans ascenseur", "الطابق " + iso(a.et) + " دون مصعد");
+    return BIEN_NOM[j] ? L(BIEN_NOM[j][0], BIEN_NOM[j][1]) : "";
+  }
+  function avisBien(a) {
+    var x = a.ab;
+    if (!x) return "";
+    var at = nomsAtouts(a), zone = x.z === "q" ? ["du quartier", "الحي"] : ["de la délégation", "المعتمدية"];
+    var V = { h: ["au-dessus de la moyenne " + zone[0], "أفضل من متوسط " + zone[1]], n: ["dans la moyenne " + zone[0], "في متوسط " + zone[1]],
+              b: ["en dessous de la moyenne " + zone[0], "أقل من متوسط " + zone[1]] };
+    var li = [];
+    // ce que le visiteur cherche (atouts cochés dans la recherche) : confirmé sur cette annonce
+    var voulu = String(window.FILTRE_AT || "").split("").filter(function (c) { return at[c] && (a.at || "").indexOf(c) >= 0; });
+    if (voulu.length) li.push('<li class="ab-fort">✓ ' + L("Votre recherche : " + voulu.map(function (c) { return at[c][0]; }).join(", "), "بحثك: " + voulu.map(function (c) { return at[c][1]; }).join("، ")) + "</li>");
+    (x.f || []).forEach(function (j) { var t = pointBien(j, a, at, true); if (t) li.push('<li class="ab-fort">✓ ' + t + "</li>"); });
+    (x.w || []).forEach(function (j) { var t = pointBien(j, a, at, false); if (t) li.push('<li class="ab-faible">✗ ' + t + "</li>"); });
+    var np = String(x.np || "").split("").filter(function (c) { return at[c]; });
+    if (!x.v && !li.length && !np.length) return "";
+    return '<div class="an-ia-bien"><p><b>' + L("Sur le bien", "عن العقار") + "</b> : " + (x.v ? L(V[x.v][0], V[x.v][1]) : L("à noter", "للملاحظة")) +
+      ' <small class="ab-n">' + L("(comparé à " + x.n + " biens semblables)", "(مقارنة بـ" + iso(x.n) + " عقارات مشابهة)") + "</small></p>" +
+      (li.length ? '<ul class="ab-points">' + li.join("") + "</ul>" : "") +
+      (np.length ? '<p class="ab-np">' + L("Non précisé (texte de l’annonce non lu) : " + np.map(function (c) { return at[c][0]; }).join(", "), "غير مذكور (نص الإعلان غير مقروء): " + np.map(function (c) { return at[c][1]; }).join("، ")) + "</p>" : "") + "</div>";
+  }
+  // la carte de l'avis : en-tête « Avis de l'IA » + bouton + / − en haut à droite (page.js, choix gardé dans le téléphone)
+  function blocAvis(a, loc, racine, court) {
+    var p = a.p != null && a.ia && !court ? avisIA(a, loc, racine) : null, b = avisBien(a);
+    if (!p && !b) return "";
+    return '<div class="an-ia an-ia-' + (p ? p.v : "bien") + '"><div class="an-ia-tete">' + ICO_IA + "<b>" + L("Avis de l’IA", "رأي الذكاء الاصطناعي") + "</b>" +
+      '<button type="button" class="an-ia-bascule" aria-expanded="true"><span class="ab-moins" aria-hidden="true">−</span><span class="ab-plus" aria-hidden="true">+</span>' +
+      '<span class="lu-seulement">' + L("Ouvrir ou fermer l’avis", "فتح أو غلق الرأي") + "</span></button></div>" +
+      '<div class="an-ia-corps">' + (p ? p.barre + p.prix : "") + b + "</div></div>";
   }
   function barrePrix(v, bas, haut, f, note) {
     if (!(haut > bas) || !(v > 0)) return "";
@@ -141,12 +191,7 @@
       : a.p != null
       ? '<p class="an-prix"><strong>' + nb(a.p) + '</strong> <span class="dt">DT</span><span class="an-prix-note">' + (a.pn ? L("à partir de (programme neuf)", "ابتداءً من (مشروع جديد)") : loc ? L("loyer demandé", "الكراء المطلوب") : L("prix demandé", "السعر المطلوب")) + '</span></p>'
       : '<p class="an-prix sans">' + (loc && a.lc ? L("Location courte durée : prix chez le vendeur", "كراء قصير المدة: السعر لدى البائع") : L("Prix communiqué par le vendeur", "السعر لدى البائع")) + '</p>';
-    if (a.p != null && a.ia && !court) {
-      prix += avisIA(a, loc, racine);
-      // « Mes critères » (22/10/2026) : le visiteur peut masquer l'avis sur le prix (gardé dans le téléphone) et le remettre
-      if (window.MESCRITERES) prix += '<button type="button" class="avis-bascule avis-masquer">' + L("Masquer l’avis sur le prix", "إخفاء رأي السعر") + '</button>' +
-        '<button type="button" class="avis-bascule avis-montrer">' + L("Afficher l’avis sur le prix", "إظهار رأي السعر") + '</button>';
-    }
+    prix += blocAvis(a, loc, racine, court);
     var faits = "";
     if (a.s) faits += '<li>' + ICO.surface + L(nb(a.s) + "\u00a0m²", iso(nb(a.s) + "\u00a0م²")) + '</li>';
     if (sn) faits += '<li>' + ICO.chambres + L("S+" + a.c, iso("S+" + a.c)) + '</li>';
@@ -174,8 +219,6 @@
       '<button type="button" class="an-partage" data-partage="' + E(a.i) + '" data-g="' + E(a.g) + '" aria-label="Partager l’annonce" title="Partager l’annonce">' + ICO_PART + '</button>' +
       (window.FAVORIS ? window.FAVORIS.bouton(a.i) : "") + '</div>' +
       '<div class="an-corps">' + prix + '<ul class="an-faits">' + faits + '</ul>' +
-      // ligne « Pour vous : 4 sur 5 ✓ · manque : … » (assets/mescriteres.js) ; rien si aucun critère choisi
-      (window.MESCRITERES ? window.MESCRITERES.ligne(a) : "") +
       '<h3 class="an-titre">' + titre + '</h3>' + sous + '<p class="an-lieu">' + ICO.lieu + lieu + '</p>' +
       // a.an : annonce de plus de 2 mois gardée pour un gouvernorat faible (17/10/2026), même texte que construire_site.py
       (a.an ? '<p class="an-ancienne">' + L("⏳ Annonce de plus de 2 mois : vérifiez qu’elle est toujours disponible.", "⏳ إعلان عمره أكثر من شهرين: تأكّد أنه ما زال متاحًا.") + '</p>' : "") +
@@ -617,12 +660,8 @@
           return a.d < b.d ? 1 : a.d > b.d ? -1 : 0;
         };
       }
-      // « Correspond le mieux à mes critères » (22/10/2026) : indispensables d'abord, puis le nombre de critères remplis, puis les plus récentes
-      if (!cle && v.tri === "crit" && window.MESCRITERES && window.MESCRITERES.actif()) {
-        var sc = {}; liste.forEach(function (a) { sc[a.i] = window.MESCRITERES.score(a); });
-        cle = function (a, b) { var x = sc[a.i], y = sc[b.i]; for (var k = 0; k < 4; k++) if (x[k] !== y[k]) return x[k] - y[k]; return a.d < b.d ? 1 : a.d > b.d ? -1 : 0; };
-      }
       if (cle) liste.sort(cle);
+      window.FILTRE_AT = v.at;      // 23/10/2026 : atouts cherchés, confirmés dans l'avis sur le bien (« Votre recherche : … »)
       montre = 0; zone.innerHTML = "";
       afficher(premier);
       var n = liste.length;
@@ -647,6 +686,7 @@
       zone.insertAdjacentHTML("beforeend", bout.map(function (a) { return carte(a, racine); }).join(""));
       montre += bout.length;
       if (plus) plus.hidden = montre >= liste.length;
+      if (window.AVIS_IA) window.AVIS_IA.appliquer();       // bouton + / − des nouvelles cartes : même état que les autres
     }
     function memoriser(v) {
       var p = new URLSearchParams();
@@ -661,8 +701,6 @@
     });
     form.addEventListener("change", function () { memoriser(filtrer()); });
     if (tri) tri.addEventListener("change", function () { memoriser(filtrer()); });
-    // critères changés (fenêtre « Mes critères ») : cartes refaites (ligne « Pour vous », tri)
-    document.addEventListener("criteres", function () { filtrer(); });
     if (plus) plus.addEventListener("click", function () { afficher(PAS); });
     zone.addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest(".btn-elargir");

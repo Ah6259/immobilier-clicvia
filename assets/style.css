@@ -1350,25 +1350,23 @@ main > .comment-marche:first-child{margin-top:14px}
 .an-prix .dt-per{font-weight:700;font-size:14px;color:var(--encre);margin-inline-start:-4px}   /* « / nuit », « / jour » (22/10/2026) */
 /* 22/10/2026 : menu grisé (« D’abord la délégation ») : le texte passe à la ligne au lieu d’être coupé sur le téléphone */
 .sj-bouton:disabled,.sj-bouton:disabled>span{white-space:normal}
-/* « Mes critères » (22/10/2026, assets/mescriteres.js) : bouton sous la recherche, ligne « Pour vous » sur les cartes, avis masquable */
-.btn-criteres{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;margin-top:8px;font:inherit;font-size:15px;font-weight:700;color:var(--bleu);background:#fff;border:1.5px solid var(--bleu);border-radius:var(--r-petit);cursor:pointer}
-.btn-criteres .nb-crit{background:var(--bleu);color:#fff;border-radius:999px;min-width:22px;padding:0 6px;font-size:13px;line-height:22px}
-.an-pourvous{margin:6px 0 0;font-size:13px;line-height:1.4;background:#FFF6E0;color:var(--encre);border-radius:10px;padding:5px 9px}
-.an-pourvous .pv-oui{color:#1F6E43}
-.an-pourvous .pv-non{color:#B3261E}
-.an-pourvous.pv-manque{background:#FDECEA}
-.avis-bascule{display:inline-block;margin:4px 0 0;padding:0;border:0;background:none;font:inherit;font-size:12.5px;color:var(--doux);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
-.avis-montrer{display:none}
-html.sans-avis .an-ia,html.sans-avis .avis-masquer{display:none!important}
-html.sans-avis .avis-montrer{display:inline-block}
-.crit-form .crit-ligne{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 8px;align-items:center;margin:0 0 8px}
-.crit-form .crit-ligne:has(.crit-imp){grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr) minmax(0,1.1fr)}
-.crit-form .crit-ligne>span,.crit-form .crit-ligne>label{font-size:14px;font-weight:600}
-.crit-form select,.crit-form input[type=number]{width:100%;min-height:40px;box-sizing:border-box;font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--ligne);border-radius:10px;background:#fff;color:var(--encre)}
-.crit-form .crit-atouts{border:0;padding:0;margin:10px 0 4px}
-.crit-form .crit-atouts legend{font-weight:700;margin-bottom:6px}
-.crit-case{display:flex;gap:8px;align-items:center;margin:10px 0 0;font-size:14px}
-.crit-bloque,.crit-note{font-size:13px;color:#8A5A00;background:#FFF6E0;border-radius:8px;padding:6px 9px}
-.crit-actions{display:flex;flex-direction:column-reverse;gap:8px;margin-top:10px}
-.crit-actions button{min-height:44px}
-@media (max-width:420px){ .crit-form .crit-ligne:has(.crit-imp){grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .crit-form .crit-ligne:has(.crit-imp)>label{grid-column:1/-1} }
+/* Carte de l'AVIS DE L'IA en 3 parties (23/10/2026, Ahmed) : en-tête + bouton + / − en haut à droite, barre des prix, avis sur le
+   prix, avis sur le bien ; fermée par le visiteur = html.avis-ferme (assets/page.js, choix gardé dans le téléphone) */
+.an-ia{display:block!important;position:relative}
+.an-ia-tete{display:flex;align-items:center;gap:7px;min-height:28px}
+.an-ia-tete>b{font-size:13.5px}
+.an-ia-bascule{margin-inline-start:auto;flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:0;background:var(--bleu);color:#fff;font:inherit;font-size:18px;font-weight:700;line-height:28px;padding:0;cursor:pointer}
+.an-ia-bascule .ab-plus{display:none}
+html.avis-ferme .an-ia-corps{display:none}
+html.avis-ferme .an-ia-bascule .ab-plus{display:inline}
+html.avis-ferme .an-ia-bascule .ab-moins{display:none}
+.an-ia-corps{margin-top:2px}
+.an-ia-prix p{margin:4px 0 0}
+.an-ia-bien{margin-top:8px;padding-top:7px;border-top:1px dashed rgba(44,88,114,.35)}
+.an-ia-bien p{margin:0}
+.ab-n{color:var(--doux);font-size:12px}
+.ab-points{list-style:none;margin:4px 0 0;padding:0}
+.ab-points li{margin:2px 0}
+.ab-fort{color:#1F6E43}
+.ab-faible{color:#B3261E}
+.ab-np{margin:4px 0 0!important;font-size:12.5px;color:var(--doux)}

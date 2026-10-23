@@ -549,6 +549,29 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tous); else tous();
 })();
 
+/* CARTE DE L'AVIS DE L'IA (23/10/2026, Ahmed) : bouton + / − en haut à droite (.an-ia-bascule) ; ouverte au départ ; fermée par le
+   visiteur = fermée sur toutes les cartes, choix gardé DANS LE TÉLÉPHONE (localStorage « avis-ia-ferme ») ; mémoire bloquée = pendant
+   la visite. Aussi sur les cartes écrites par le robot (pages de partage, rapports). */
+(function () {
+  var CLE = "avis-ia-ferme", MEM = null;
+  function ferme() { if (MEM !== null) return MEM; try { return localStorage.getItem(CLE) === "1"; } catch (e) { return false; } }
+  function appliquer() {
+    var f = ferme();
+    document.documentElement.classList.toggle("avis-ferme", f);
+    [].forEach.call(document.querySelectorAll(".an-ia-bascule"), function (b) { b.setAttribute("aria-expanded", f ? "false" : "true"); });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target && e.target.closest && e.target.closest(".an-ia-bascule");
+    if (!b) return;
+    e.preventDefault();
+    var f = !ferme();
+    try { localStorage.setItem(CLE, f ? "1" : "0"); MEM = null; } catch (x) { MEM = f; }
+    appliquer();
+  });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", appliquer); else appliquer();
+  window.AVIS_IA = { ferme: ferme, appliquer: appliquer, cle: CLE };
+})();
+
 /* RÈGLE COMMUNE DES CHAMPS SELON LE TYPE DE BIEN (18/10/2026, capture d'Ahmed : « Pièces S+1… S+5 » proposées pour un local
    commercial dans la recherche, alors que la page Estimer les cachait). UNE seule règle pour TOUS les formulaires du site
    (recherche, alerte, dépôt, Estimer, Louer, Investir) : un champ marqué data-champ="…" n'apparaît que pour les types de CHAMPS_TYPE ;

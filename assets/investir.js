@@ -3,6 +3,8 @@
 (function () {
   var f = document.getElementById("calc"), res = document.getElementById("calc-res");
   if (!f || !res) return;
+  // lien « crédit indicatif » d'une carte d'annonce (investir/#calculateur, 25/10/2026) : le calculateur s'ouvre
+  if (location.hash === "#calculateur" && f.closest && f.closest("details")) f.closest("details").open = true;
   function n(id) { var v = parseFloat((document.getElementById(id).value || "").replace(",", ".")); return isFinite(v) ? v : 0; }
   function dt(x) { return Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f") + (document.documentElement.lang === "ar" ? "\u00a0دينار" : "\u00a0DT"); }
   function pc(x) { return x.toFixed(1).replace(".", ",") + "\u00a0%"; }

@@ -287,8 +287,75 @@
     };
     if (window.ResizeObserver) new ResizeObserver(recadrer).observe(zone); else window.addEventListener("resize", recadrer);
     dessiner();
+    zoneDemarrer();
     var dernierNiv = niveau();
     carte.on("zoomend", function () { if (niveau() !== dernierNiv) { dernierNiv = niveau(); dessiner(); } });
+  }
+  // DESSINER MA ZONE (25/10/2026, Ahmed) : le visiteur trace un contour au doigt ou à la souris ; la liste ne garde que les annonces
+  // dedans (filtre dans passe() d'app.js : liste, nombres des menus et ligne sous la carte = même calcul). Zone gardée dans l'adresse (?z=).
+  var zoneCouche = null, trace = null;
+  function zoneMontrer(z) {
+    if (zoneCouche) { zoneCouche.remove(); zoneCouche = null; }
+    if (z) zoneCouche = L.polygon(z, { color: "#B5532F", weight: 3, fillColor: "#B5532F", fillOpacity: 0.08, interactive: false, className: "cp-zone" }).addTo(carte);
+    var ef = document.getElementById("cp-zone-effacer"); if (ef) ef.hidden = !z;
+  }
+  function zoneChoisie(z) {                  // nouvelle zone (ou null) : la liste se refait (app.js écoute « zone-carte »)
+    window.ZONE_CARTE = z;
+    zoneMontrer(z);
+    document.dispatchEvent(new Event("zone-carte"));
+  }
+  function simplifier(pts) {                 // au plus 40 points, arrondis à 3 décimales (environ 100 m), sans doublons
+    var pas = Math.max(1, Math.ceil(pts.length / 40)), out = [];
+    pts.forEach(function (p, i) {
+      if (i % pas) return;
+      var q = [Math.round(p[0] * 1000) / 1000, Math.round(p[1] * 1000) / 1000], d = out[out.length - 1];
+      if (!d || d[0] !== q[0] || d[1] !== q[1]) out.push(q);
+    });
+    return out;
+  }
+  function modeDessin(oui) {
+    var f = zone.closest && zone.closest(".carte-vivante"), bt = document.getElementById("cp-zone-dessiner");
+    if (f) f.classList.toggle("cp-dessin", oui);
+    if (bt) bt.setAttribute("aria-pressed", oui ? "true" : "false");
+    ["dragging", "touchZoom", "doubleClickZoom", "boxZoom"].forEach(function (k) { if (carte[k]) carte[k][oui ? "disable" : "enable"](); });
+    if (!oui && trace) { trace.remove(); trace = null; }
+  }
+  function zoneDemarrer() {
+    var bt = document.getElementById("cp-zone-dessiner"), ef = document.getElementById("cp-zone-effacer");
+    if (!bt || !window.ZONE_IMMO) return;
+    var z0 = window.ZONE_IMMO.lire(new URLSearchParams(location.search).get("z"));
+    window.ZONE_CARTE = z0;                  // null : pas de zone (avant : undefined = carte pas encore chargée)
+    if (z0) { zoneMontrer(z0); if (carte.fitBounds) carte.fitBounds(z0, { padding: [20, 20] }); document.dispatchEvent(new Event("zone-carte")); }
+    var pts = null;
+    function point(e) { var ll = carte.mouseEventToLatLng(e); return [ll.lat, ll.lng]; }
+    bt.addEventListener("click", function () { modeDessin(bt.getAttribute("aria-pressed") !== "true"); });
+    if (ef) ef.addEventListener("click", function () { modeDessin(false); zoneChoisie(null); });
+    zone.addEventListener("pointerdown", function (e) {
+      if (bt.getAttribute("aria-pressed") !== "true") return;
+      e.preventDefault(); e.stopPropagation();
+      try { zone.setPointerCapture(e.pointerId); } catch (x) { /* ancien navigateur */ }
+      pts = [point(e)];
+      if (trace) trace.remove();
+      trace = L.polyline(pts, { color: "#B5532F", weight: 3, interactive: false }).addTo(carte);
+    }, true);
+    zone.addEventListener("pointermove", function (e) {
+      if (!pts) return;
+      e.preventDefault(); e.stopPropagation();
+      var p = point(e), d = pts[pts.length - 1], a = carte.latLngToContainerPoint(d), b = carte.latLngToContainerPoint(p);
+      if (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) < 6) return;     // un point tous les 6 pixels environ
+      pts.push(p); trace.addLatLng(p);
+    }, true);
+    var finie = 0;
+    zone.addEventListener("click", function (e) { if (Date.now() - finie < 500) { e.preventDefault(); e.stopPropagation(); } }, true);   // pas de bulle ouverte par le tracé
+    function fin(e) {
+      if (!pts) return;
+      e.stopPropagation(); finie = Date.now();
+      var z = simplifier(pts); pts = null;
+      modeDessin(false);
+      if (z.length >= 3) zoneChoisie(z);
+    }
+    zone.addEventListener("pointerup", fin, true);
+    zone.addEventListener("pointercancel", fin, true);
   }
   // audit de sécurité (16/10/2026) : une bibliothèque venue d'un autre site est vérifiée par son empreinte officielle (SRI) :
   // si le fichier de cdnjs était modifié, le navigateur refuserait de l'exécuter

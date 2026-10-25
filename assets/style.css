@@ -405,6 +405,19 @@ html[dir="rtl"] .btn-telegram svg{transform:scaleX(-1)}
 .alerte-ok{margin:12px 0 4px;padding:12px 14px;background:#E8F5EC;border:1.5px solid #2E8B57;border-radius:var(--r-petit);color:#1E5E3A;font-size:14.5px}
 .alerte-ok p{margin:0 0 6px}.alerte-ok p:last-child{margin:0}
 .alerte-ok-titre{font-weight:700;font-size:15.5px}
+/* alertes par e-mail (25/10/2026, Brevo) */
+.alerte-email{margin:14px 0 4px;padding:12px 14px;border:1.5px dashed var(--bleu);border-radius:var(--r-petit)}
+.alerte-email h3{margin:0 0 8px;font-size:16px}
+.alerte-email fieldset{border:0;margin:0;padding:0;display:grid;gap:10px}
+.alerte-email fieldset[disabled]{opacity:.55}
+.alerte-bientot{display:inline-block;margin-inline-start:6px;padding:2px 8px;border-radius:999px;background:var(--or);color:var(--encre);font-size:12px;font-weight:700;vertical-align:middle}
+.alerte-accord{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer}
+.alerte-accord input{width:20px;height:20px;flex:0 0 auto;margin:1px 0 0}
+.btn-email{display:flex;align-items:center;justify-content:center;min-height:48px;padding:10px 16px;border:0;border-radius:var(--r-petit);background:var(--bleu);color:#fff;font:700 16px var(--texte);cursor:pointer}
+.btn-email:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.alerte-email-note{margin:8px 0 0;font-size:12.5px;color:var(--doux)}
+.alerte-email-statut{margin:6px 0 0;font-size:14px;font-weight:600}
+.alerte-email-statut:empty{display:none}
 .alerte-etapes{margin:12px 0 6px;padding-inline-start:20px;font-size:14px}
 .alerte-etapes li{margin:3px 0}
 .alerte-note{margin:6px 0 0;font-size:12.5px;color:var(--doux)}
@@ -714,6 +727,9 @@ html[dir="rtl"] .paie-etapes>li::before{left:auto;right:12px}
 .v-texte textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;line-height:1.5;padding:10px;border:1px solid var(--ligne);border-radius:10px;background:var(--sable);resize:vertical}
 .btn-copier{font:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid var(--bleu);background:#fff;color:var(--bleu);cursor:pointer}
 .depot-avant{background:#FFF3D6;border:1px solid #E7C27A;color:#7A4E00;border-radius:12px;padding:10px 12px;font-weight:700;margin:0 0 12px}
+.an-badge.nouveau{background:#E3F4EA;color:#1E6B3A;border:1px solid #9FD3B0;margin-inline-start:4px}   /* vue il y a 3 jours au plus (25/10/2026) */
+.an-badge.baisse{background:#FDE8E4;color:#A1301C;border:1px solid #F0B2A6;margin-inline-start:4px}    /* prix baissé de X % (25/10/2026) */
+.an-prix-avant{margin:2px 0 6px;font-size:13px;color:var(--doux)}   /* prix d'avant une baisse (25/10/2026) */
 .an-badge.avant{background:#FFF3D6;color:#7A4E00;border:1px solid #E7C27A;margin-inline-start:4px}
 .annonce.en-avant{border-color:#E7C27A;box-shadow:0 0 0 2px #F5E2B8}
 .trois-prix{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:1fr}
@@ -1425,3 +1441,18 @@ html.pub-ouverte,html.pub-ouverte body{overflow:hidden}
 @keyframes pub-entree{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pub-affiche,.pub-carte{animation:none}}
 .pub-go:focus{outline:none}.pub-go:focus-visible{outline:3px solid var(--or);outline-offset:3px}
+/* mensualité indicative sous un prix de vente (25/10/2026) : petit texte, jamais au-dessus du prix */
+.an-credit{margin:2px 0 0;font-size:12.5px;line-height:1.4;color:var(--doux)}
+.an-credit b{font-weight:700;color:var(--encre)}
+.an-credit-lien{color:var(--doux);font-size:11.5px;text-decoration:underline dotted;text-underline-offset:2px}
+/* « Dessiner ma zone » sous la carte (25/10/2026) */
+.cp-zone-outils{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 6px}
+.carte-vivante:not(.charge) .cp-zone-outils,.carte-vivante:not(.charge) .cp-zone-info{display:none}
+.cp-zone-btn{font:inherit;font-size:13.5px;font-weight:600;color:var(--terre-f);background:#fff;border:1.5px solid var(--terre);border-radius:999px;padding:6px 12px;cursor:pointer}
+.cp-zone-btn[aria-pressed="true"]{background:var(--terre);color:#fff}
+.cp-zone-effacer{color:var(--doux);border-color:var(--ligne)}
+.cp-zone-aide{display:none;font-size:12.5px;color:var(--terre-f);font-weight:600}
+.cp-dessin .cp-zone-aide{display:inline}
+.carte-vivante.cp-dessin .leaflet-container{touch-action:none;cursor:crosshair}
+.cp-zone-info{margin:0 0 6px;font-size:12.5px;color:var(--encre);background:var(--terre-voile);border-radius:8px;padding:6px 10px}
+.an-etiquettes .an-badge.nouveau,.an-etiquettes .an-badge.baisse,.an-etiquettes .an-badge.avant{margin:0}   /* 25/10/2026 : l'écart entre étiquettes vient du « gap » (visiteur simulé : espaces inégaux) */

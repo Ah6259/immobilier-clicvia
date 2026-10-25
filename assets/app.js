@@ -202,6 +202,46 @@
     return '<div class="bp-bornes"><span class="bp-b bp-l-' + pm + cote(pm) + '">' + tb + " – " + th + "</span></div>";
   }
   // pied de chaque carte (22/10/2026, Ahmed) : « Estimer le prix d'un bien avec notre IA » (remplace « Vendeur ? Ajoutez votre numéro »)
+  // MENSUALITÉ INDICATIVE sous un prix de vente (25/10/2026, Ahmed) : mêmes hypothèses que la page « Où investir ? » et robot/investir.py
+  // (credit() : APPORT, TAUX_CREDIT, DUREE_CREDIT, FRAIS_ACHAT) ; test croisé dans tools/test_site.mjs (mêmes valeurs, même calcul)
+  var CREDIT = { apport: 0.20, taux: 0.10, ans: 20, frais: 1.07, min: 40000, max: 3000000 };
+  function mensualite(p) {
+    var pret = p * CREDIT.frais - p * CREDIT.apport, r = CREDIT.taux / 12, n = CREDIT.ans * 12;
+    return r ? pret * r / (1 - Math.pow(1 + r, -n)) : pret / n;
+  }
+  // seulement une VENTE d'appartement ou de maison au prix sûr (prix douteux = a.p vide), jamais une location
+  function avecCredit(a) { return a.t === "v" && (a.y === "appartement" || a.y === "maison") && a.p != null && !a.lc && a.p >= CREDIT.min && a.p <= CREDIT.max; }
+  function ligneCredit(a, racine) {
+    if (!avecCredit(a)) return "";
+    var m = nb(Math.round(mensualite(a.p))), ap = Math.round(CREDIT.apport * 100), tx = String(Math.round(CREDIT.taux * 1000) / 10).replace(".", ",");
+    return '<p class="an-credit">' + L("≈ <b>" + m + "\u00a0DT</b>/mois sur " + CREDIT.ans + "\u00a0ans", "≈ <b>" + iso(m) + "\u00a0دينار</b>/شهر على " + iso(CREDIT.ans) + " سنة") +
+      ' <a class="an-credit-lien" href="' + (racine || "") + 'investir/#calculateur">' +
+      L("crédit indicatif (apport " + ap + "\u00a0%, taux " + tx + "\u00a0%)", "قرض تقديري (مساهمة " + iso(ap) + "\u00a0%، نسبة " + iso(tx) + "\u00a0%)") + "</a></p>";
+  }
+  // ZONE DESSINÉE sur la carte (25/10/2026, Ahmed) : polygone [[lat, lon], …] (assets/carte-prix.js), gardé dans l'adresse
+  // (?z=lat,lon;lat,lon… arrondis à 3 décimales) ; une annonce est placée à la position de son quartier (prix/carte.js, CARTE_PRIX.q)
+  function lireZone(t) {
+    var pts = String(t || "").split(";").map(function (x) { var c = x.split(",").map(Number); return c.length === 2 && isFinite(c[0]) && isFinite(c[1]) && Math.abs(c[0]) <= 90 && Math.abs(c[1]) <= 180 ? c : null; });
+    return pts.length >= 3 && pts.length <= 60 && pts.every(Boolean) ? pts : null;
+  }
+  function ecrireZone(z) { return z.map(function (p) { return (Math.round(p[0] * 1000) / 1000) + "," + (Math.round(p[1] * 1000) / 1000); }).join(";"); }
+  function dansPolygone(p, z) {            // rayon horizontal : nombre de côtés traversés impair = dedans
+    var x = p[1], y = p[0], dedans = false;
+    for (var i = 0, j = z.length - 1; i < z.length; j = i++) {
+      var yi = z[i][0], xi = z[i][1], yj = z[j][0], xj = z[j][1];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) dedans = !dedans;
+    }
+    return dedans;
+  }
+  var POS = null, POS_DE = null;
+  function posDe(a) {                      // position du quartier de l'annonce, ou null (quartier inconnu ou pas encore placé)
+    var C = window.CARTE_PRIX;
+    if (!C || !C.q) return null;
+    if (POS_DE !== C) { POS = {}; POS_DE = C; C.q.forEach(function (x) { if (x.p) POS[x.g + "/" + x.q] = x.p; }); }
+    return (a.l && POS[a.g + "/" + a.l]) || null;
+  }
+  window.ZONE_IMMO = { lire: lireZone, ecrire: ecrireZone, dans: dansPolygone, pos: posDe };
+  window.CREDIT_IMMO = { hyp: CREDIT, mensualite: mensualite, avec: avecCredit };   // utilisé par les tests
   function lienEstimer(a, racine) {
     var loc = a.t === "l";
     return '<a class="an-estimer" href="' + (racine || "") + (loc ? "louer/" : "vendre/") + '">' + L(loc ? "Estimer le loyer d’un bien avec notre IA" : "Estimer le prix d’un bien avec notre IA", loc ? "قدّر كراء عقار بذكائنا الاصطناعي" : "قدّر سعر عقار بذكائنا الاصطناعي") + "</a>";
@@ -223,7 +263,9 @@
       : a.p != null
       ? '<p class="an-prix"><strong>' + nb(a.p) + '</strong> <span class="dt">DT</span><span class="an-prix-note">' + (a.pn ? L("à partir de (programme neuf)", "ابتداءً من (مشروع جديد)") : loc ? L("loyer demandé", "الكراء المطلوب") : L("prix demandé", "السعر المطلوب")) + '</span></p>'
       : '<p class="an-prix sans">' + (loc && a.lc ? L("Location courte durée : prix chez le vendeur", "كراء قصير المدة: السعر لدى البائع") : L("Prix communiqué par le vendeur", "السعر لدى البائع")) + '</p>';
-    prix += blocAvis(a, loc, racine, court);
+    // prix d'avant (25/10/2026, collecter.baisse_prix : pb = %, pv = prix d'avant), même ligne que carte_annonce() du robot
+    if (a.pb && a.pv && a.p != null && !court) prix += '<p class="an-prix-avant">' + L("Avant : " + nb(+a.pv) + "\u00a0DT", "قبل: " + iso(nb(+a.pv)) + "\u00a0دينار") + "</p>";
+    prix += ligneCredit(a, racine) + blocAvis(a, loc, racine, court);
     var faits = "";
     if (a.s) faits += '<li>' + ICO.surface + L(nb(a.s) + "\u00a0m²", iso(nb(a.s) + "\u00a0م²")) + '</li>';
     if (sn) faits += '<li>' + ICO.chambres + L("S+" + a.c, iso("S+" + a.c)) + '</li>';
@@ -245,7 +287,7 @@
       '<div class="an-etiquettes"><span class="an-badge ' + (loc ? "louer" : "vendre") + '">' + (loc ? L("À louer", "للكراء") : L("À vendre", "للبيع")) + '</span>' +
       (a.av ? '<span class="an-badge avant">' + L("⭐ En avant", "⭐ مميّز") + '</span>' : "") +
       (a.fo === "f" ? '<span class="an-badge fonds">' + L("Fonds de commerce", "أصل تجاري") + '</span>' :     // 20/10/2026 (Ahmed)
-       a.fo === "mf" ? '<span class="an-badge fonds">' + L("Murs + fonds", "المحل مع الأصل التجاري") + '</span>' : "") + '</div>' +
+       a.fo === "mf" ? '<span class="an-badge fonds">' + L("Murs + fonds", "المحل مع الأصل التجاري") + '</span>' : "") + badgesPrix(a, court) + '</div>' +
       // cœur « Ajouter aux favoris » (18/10/2026, IM.15) : assets/page.js (window.FAVORIS), même bouton que bouton_favori() du robot
       // 19/10/2026 (Ahmed : un visiteur voulait envoyer l'annonce à sa femme) : bouton Partager, géré par assets/page.js
       '<button type="button" class="an-partage" data-partage="' + E(a.i) + '" data-g="' + E(a.g) + '" aria-label="Partager l’annonce" title="Partager l’annonce">' + ICO_PART + '</button>' +
@@ -255,6 +297,11 @@
       // a.an : annonce de plus de 2 mois gardée pour un gouvernorat faible (17/10/2026), même texte que construire_site.py
       (a.an ? '<p class="an-ancienne">' + L("⏳ Annonce de plus de 2 mois : vérifiez qu’elle est toujours disponible.", "⏳ إعلان عمره أكثر من شهرين: تأكّد أنه ما زال متاحًا.") + '</p>' : "") +
       texte + actions(a, racine) + lienEstimer(a, racine) + '</div></article>';
+  }
+  // « Nouveau » (nw : vue il y a 3 jours au plus) et « Prix baissé de X % » (pb) : calculés par le robot (collecter.py), même texte
+  function badgesPrix(a, court) {
+    return (a.nw ? '<span class="an-badge nouveau">' + L("Nouveau", "جديد") + "</span>" : "") +
+      (a.pb && a.p != null && !court ? '<span class="an-badge baisse">' + L("Prix baissé de " + (+a.pb) + "\u00a0%", "انخفض السعر " + iso((+a.pb) + "\u00a0%")) + "</span>" : "");
   }
   function PHOTO_OK(u) { return /^https:\/\/[^\s"'<>]+$/.test(u || ""); }
 
@@ -287,7 +334,7 @@
     var gFixe = form.getAttribute("data-gouv") || "", lFixe = form.getAttribute("data-lieu") || "";
     var tout = window.ANNONCES.a.filter(function (a) { return (!gFixe || a.g === gFixe) && (!lFixe || a.l === lFixe); });
     var plus = document.getElementById("plus"), res = document.getElementById("resultat"), tri = document.getElementById("f-tri");
-    var montre = 0, liste = [], sansPrix = 0;
+    var montre = 0, liste = [], sansPrix = 0, sansPos = 0;
     var premier = document.body.getAttribute("data-page") === "accueil" ? 12 : PAS;
 
     // choix venus de l'adresse (?t=l&y=appartement&g=sousse&p=1500) : liens partageables
@@ -550,6 +597,7 @@
     form.addEventListener("change", function (e) { if (e.target === selY || e.target.name === "t") refaireAtouts(); }, true);
     form.addEventListener("reset", function () { setTimeout(refaireAtouts, 0); });
     var casePh = form.querySelector('[name="ph"]'); if (casePh && q.get("ph")) casePh.checked = true;   // ?ph=1 : seulement avec photo
+    var casePb = form.querySelector('[name="pb"]'); if (casePb && q.get("pb")) casePb.checked = true;   // ?pb=1 : prix en baisse
     // ATOUTS (20/10/2026, Ahmed : « une maison pied dans l'eau ») : ?at=em -> cases cochées (codes de a.at, robot/collecter.py)
     // 22/10/2026 : « Pied dans l'eau » (e) fusionné dans « Vue ou bord de mer » (m) : un ancien lien ?at=e coche « bord de mer »
     (q.get("at") || "").replace(/e/g, "m").split("").forEach(function (c) { var x = form.querySelector('input[name="at"][value="' + c + '"]'); if (x) x.checked = true; });
@@ -567,7 +615,7 @@
     // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
     // « Estimer » montre les deux estimations (prix de vente, loyer)
     var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
-    var CLES_F = ["y", "d", "l", "c", "fo", "du", "pmin", "p", "smin", "smax", "v", "ph", "at", "et", "nv", "st", "eb"].concat(gFixe ? [] : ["g"]);
+    var CLES_F = ["y", "d", "l", "c", "fo", "du", "pmin", "p", "smin", "smax", "v", "ph", "pb", "at", "et", "nv", "st", "eb"].concat(gFixe ? [] : ["g"]);
     function compterFiltres() {
       var n = CLES_F.filter(function (k) { return [].some.call(form.querySelectorAll('[name="' + k + '"]'), function (c) { return c.type === "checkbox" ? c.checked : c.value; }); }).length;
       if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
@@ -630,10 +678,12 @@
       var utileY = function (champ) { return !window.champUtile || window.champUtile(champ, val("y")); };
       return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
                fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"), du: utileY("duree") ? val("du") : "",
-               p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, tri: tri ? tri.value : "photo",
+               p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, pb: casePb && casePb.checked ? 1 : 0, tri: tri ? tri.value : "photo",
                at: [].map.call(form.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).join(""),
                // mêmes champs que l'estimation (21/10/2026) : un champ caché pour ce type ne filtre jamais
-               et: utileY("etage") ? val("et") : "", nv: utileY("niveaux") ? val("nv") : "", st: utileY("standing") ? val("st") : "", eb: utileY("etat") ? val("eb") : "" };
+               et: utileY("etage") ? val("et") : "", nv: utileY("niveaux") ? val("nv") : "", st: utileY("standing") ? val("st") : "", eb: utileY("etat") ? val("eb") : "",
+               // zone dessinée : seulement quand la carte (et les positions des quartiers) est chargée
+               z: window.CARTE_PRIX && window.ZONE_CARTE && window.ZONE_CARTE.length >= 3 ? window.ZONE_CARTE : null };
     }
     // 22/10/2026 (Ahmed : « Béni Khalled (13) mais Voir les 0 annonces ») : UN seul test d'annonce pour la liste ET pour les nombres
     // des menus ; sauf = filtres à ignorer (le nombre d'une délégation compte les annonces qui passent TOUS les autres filtres)
@@ -660,8 +710,11 @@
         // un prix à la nuit n'est jamais comparé à un loyer au mois (22/10/2026)
         if (v.p || v.pmin) { if (a.p == null || (a.lc && v.du !== "c")) { if (sauf.compte !== false) sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
         if (v.ph && !PHOTO_OK(a.ph)) return false;
+        if (v.pb && !(a.pb > 0)) return false;          // « Baisses de prix seulement » (25/10/2026)
         if (v.smin || v.smax) { if (a.s == null) return false; if ((v.smin && a.s < v.smin) || (v.smax && a.s > v.smax)) return false; }
         if (v.at && !v.at.split("").every(function (c) { return (a.at || "").indexOf(c) >= 0; })) return false;   // tous les atouts cochés
+        // zone dessinée (en DERNIER : « sans position » compte seulement les annonces qui passent tous les autres filtres)
+        if (v.z) { var ps = posDe(a); if (!ps) { if (sauf.compte !== false) sansPos++; return false; } if (!dansPolygone(ps, v.z)) return false; }
         return true;
     }
     // nombres entre parenthèses des menus (gouvernorat, type, délégation, localité) : ceux de la recherche en cours
@@ -692,7 +745,7 @@
     function filtrer() {
       suivreGouv();
       var v = valeurs();
-      sansPrix = 0;
+      sansPrix = 0; sansPos = 0;
       liste = tout.filter(function (a) { return passe(a, v, {}); });
       majComptes(v);      var cle = { "prix-asc": function (a, b) { return (a.p == null) - (b.p == null) || a.p - b.p; },
                   "prix-desc": function (a, b) { return (a.p == null) - (b.p == null) || b.p - a.p; },
@@ -729,7 +782,16 @@
       if (nbB) nbB.innerHTML = L("les " + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f") + " ", iso(n) + " ");   // espace fine insécable : le nombre ne se coupe pas
       res.innerHTML = L(n + " annonce" + (n > 1 ? "s" : "") + (sansPrix ? " (" + sansPrix + " sans prix affiché, masquées par le prix maximum)" : ""),
                         iso(n) + " إعلان" + (sansPrix ? " (" + iso(sansPrix) + " دون سعر، أُخفيت بسبب السعر الأقصى)" : ""));
-      if (res.parentNode && res.parentNode.classList) res.parentNode.classList.toggle("long", !!sansPrix);   // précision ajoutée : la ligne peut passer à la ligne
+      if (v.z) res.innerHTML += L(" dans la zone dessinée" + (sansPos ? " (" + sansPos + " sans position connue, exclues)" : ""),
+                                  " في المنطقة المرسومة" + (sansPos ? " (" + iso(sansPos) + " دون موقع معروف، مستبعدة)" : ""));
+      // même nombre sur la carte et dans la liste : la ligne sous la carte est écrite ici, avec le résultat de passe()
+      var zi = document.getElementById("cp-zone-info");
+      if (zi) {
+        zi.hidden = !v.z;
+        zi.innerHTML = !v.z ? "" : L("Zone dessinée : <b>" + n + "</b> annonce" + (n > 1 ? "s" : "") + (sansPos ? " · " + sansPos + " sans position connue, exclues" : "") +
+          ". Les alertes ne tiennent pas compte de la zone.", "المنطقة المرسومة: <b>" + iso(n) + "</b> إعلان" + (sansPos ? " · " + iso(sansPos) + " دون موقع معروف، مستبعدة" : "") + ". التنبيهات لا تأخذ المنطقة بعين الاعتبار.");
+      }
+      if (res.parentNode && res.parentNode.classList) res.parentNode.classList.toggle("long", !!(sansPrix || v.z));   // précision ajoutée : la ligne peut passer à la ligne
       if (!n) {
         // localité ou délégation vide : on propose tout de suite le niveau au-dessus (délégation, puis gouvernorat)
         var plusLarge = "";
@@ -749,8 +811,11 @@
     }
     function memoriser(v) {
       var p = new URLSearchParams();
-      ["t", "y", "g", "d", "l", "c", "fo", "du", "v", "p", "pmin", "smin", "smax", "ph", "at", "et", "nv", "st", "eb"].forEach(function (k) { if (v[k] || (k === "et" && v[k] === "0")) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
-      var l = new URLSearchParams(location.search).get("lang"); if (l) p.set("lang", l);
+      ["t", "y", "g", "d", "l", "c", "fo", "du", "v", "p", "pmin", "smin", "smax", "ph", "pb", "at", "et", "nv", "st", "eb"].forEach(function (k) { if (v[k] || (k === "et" && v[k] === "0")) p.set(k, v[k]); }); if (v.tri && v.tri !== "photo") p.set("tri", v.tri);
+      // zone : écrite telle quelle ; carte pas encore chargée (ZONE_CARTE pas encore lue) : celle de l'adresse est gardée
+      var avant = new URLSearchParams(location.search);
+      if (v.z) p.set("z", ecrireZone(v.z)); else if (window.ZONE_CARTE === undefined && lireZone(avant.get("z"))) p.set("z", avant.get("z"));
+      var l = avant.get("lang"); if (l) p.set("lang", l);
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
     }
     form.addEventListener("submit", function (e) {
@@ -759,6 +824,7 @@
       var l = document.getElementById("liste"); if (l && l.scrollIntoView) l.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     form.addEventListener("change", function () { memoriser(filtrer()); });
+    document.addEventListener("zone-carte", function () { memoriser(filtrer()); });   // zone dessinée ou effacée (carte-prix.js)
     if (tri) tri.addEventListener("change", function () { memoriser(filtrer()); });
     if (plus) plus.addEventListener("click", function () { afficher(PAS); });
     zone.addEventListener("click", function (e) {

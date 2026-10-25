@@ -20,9 +20,18 @@
      robot/criteres.py), e étage, h niveaux, t standing (h|n), b état (n|r|b|a), v vendeur (a|p), f avec photo, o local (m|b|f).
      Utilisé seulement si une option en plus de la v1 est choisie ; trop long : les options les moins importantes d'abord retirées.
      Lu par tools/alertes.py (lire_code2) du dépôt privé.
-   Telegram : 64 caractères au plus, lettres, chiffres, « _ » et « - » seulement. Aucun script en ligne (CSP). */
+   Telegram : 64 caractères au plus, lettres, chiffres, « _ » et « - » seulement. Aucun script en ligne (CSP).
+
+   ALERTES PAR E-MAIL (25/10/2026, demande d'Ahmed, service Brevo) : l'e-mail part DIRECTEMENT au formulaire Brevo d'Ahmed
+   (BREVO_FORM_URL, https://<id>.sibforms.com/serve/<jeton>) avec le code de l'alerte (attribut ALERTE, sans « _ar ») et la
+   langue (attribut LANGUE) ; Brevo envoie l'e-mail de confirmation (double accord) et garde l'adresse. Le site ne garde rien.
+   Envoi seulement avec une adresse valable ET la case d'accord cochée (loi 2004-63). Robot : tools/alertes_email.py du dépôt
+   privé immobilier-abonnes. BREVO_FORM_URL vide (ou mal formée) : partie e-mail grisée « bientôt ». */
 (function () {
   var ROBOT = "AlerteImmobilierTunisieBot";
+  var BREVO_FORM_URL = "";     // à remplir avec l'adresse du formulaire Brevo d'Ahmed (procédure : projets-ahmed/immobilier/email-brevo)
+  var MOTIF_BREVO = /^https:\/\/[a-z0-9-]+\.sibforms\.com\/serve\/[A-Za-z0-9+\/=_-]{10,}$/;
+  function urlBrevo() { var u = window.BREVO_FORM_URL_ESSAI || BREVO_FORM_URL; return MOTIF_BREVO.test(u) ? u : ""; }   // _ESSAI : tests seulement
   // types (11/10/2026 : aussi bureaux, commerces, usines, terrains industriels et agricoles) ; « pro » = tous les biens professionnels
   var TYPES = [["pro", "Professionnels & industriels (tous)", "المهنيون والصناعيون (الكل)"],
                ["appartement", "Appartement", "شقة"], ["maison", "Maison / villa", "منزل / فيلا"],
@@ -141,9 +150,9 @@
     fen.innerHTML =
       '<div class="alerte-boite" role="dialog" aria-modal="true" aria-labelledby="alerte-titre">' +
         '<button type="button" class="alerte-fermer" aria-label="' + T("Fermer", "إغلاق") + '">×</button>' +
-        '<h2 id="alerte-titre">' + T("Recevoir les nouvelles annonces sur Telegram", "استلم الإعلانات الجديدة على تيليغرام") + '</h2>' +
-        '<p class="alerte-intro">' + T("Choisissez vos critères : dès qu’une nouvelle annonce correspond, le robot Telegram vous l’envoie. Gratuit, sans inscription ; le site ne garde aucune donnée personnelle.",
-                                       "اختر معاييرك: عند ظهور إعلان جديد مطابق، يرسله لك روبوت تيليغرام. مجانًا ودون تسجيل؛ لا يحتفظ الموقع بأي معطيات شخصية.") + '</p>' +
+        '<h2 id="alerte-titre">' + T("Recevoir les nouvelles annonces sur Telegram ou par e-mail", "استلم الإعلانات الجديدة على تيليغرام أو بالبريد") + '</h2>' +
+        '<p class="alerte-intro">' + T("Choisissez vos critères, puis comment recevoir les annonces (Telegram ou e-mail, obligatoire). Gratuit ; le site ne garde aucune donnée personnelle.",
+                                       "اختر معاييرك، ثم طريقة الاستلام (تيليغرام أو البريد، إجباري). مجانًا؛ لا يحتفظ الموقع بأي معطيات شخصية.") + '</p>' +
         '<form class="alerte-form" id="alerte-form">' +
           '<div class="bascule" role="radiogroup" aria-label="' + T("Acheter ou louer", "شراء أو كراء") + '">' +
             radio("", "Tout", "الكل") + radio("v", "Acheter", "شراء") + radio("l", "Louer", "كراء") + '</div>' +
@@ -170,6 +179,7 @@
           '<p>' + T("Le robot vous écrit la confirmation dans les 2 heures (de 8 h à 22 h), puis vous envoie chaque nouvelle annonce qui correspond.",
                     "يرسل لك الروبوت التأكيد خلال ساعتين (من 8 صباحًا إلى 10 ليلًا)، ثم كل إعلان جديد مطابق.") + '</p>' +
         '</div>' +
+        blocEmail() +
         '<ol class="alerte-etapes">' +
           '<li>' + T("Le bouton ouvre Telegram (installez l’application si besoin).", "يفتح الزر تطبيق تيليغرام (ثبّته إن لزم).") + '</li>' +
           '<li>' + T("Appuyez sur « Démarrer » : le robot confirme votre alerte dans les 2 heures (de 8 h à 22 h).", "اضغط على « ابدأ »: يؤكد الروبوت تنبيهك خلال ساعتين (من 8 صباحًا إلى 10 ليلًا).") + '</li>' +
@@ -181,6 +191,42 @@
     remplirDelegs(c.d, c.l);
     if (window.appliquerChamps) window.appliquerChamps(document.getElementById("alerte-form"));   // règle commune des champs (page.js)
     maj();
+  }
+
+  // partie « Recevoir par e-mail » (25/10/2026)
+  function blocEmail() {
+    var pret = !!urlBrevo();
+    return '<form class="alerte-email" id="alerte-email-form" novalidate>' +
+      '<h3>' + T("Ou recevoir par e-mail", "أو استلم بالبريد الإلكتروني") + (pret ? "" : ' <span class="alerte-bientot">' + T("bientôt", "قريبًا") + '</span>') + '</h3>' +
+      '<fieldset id="alerte-email-champs"' + (pret ? "" : " disabled") + '>' +
+        '<label class="champ"><span>' + T("Votre e-mail", "بريدك الإلكتروني") + '</span><input name="email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="exemple@mail.com"></label>' +
+        '<label class="alerte-accord"><input name="accord" type="checkbox" value="1"><span>' + T("J’accepte de recevoir ces alertes par e-mail ; désinscription en un clic", "أوافق على استلام هذه التنبيهات بالبريد؛ إلغاء الاشتراك بنقرة واحدة") + '</span></label>' +
+        '<button type="submit" class="btn-email">' + T("Recevoir par e-mail", "استلم بالبريد") + '</button>' +
+      '</fieldset>' +
+      '<p class="alerte-email-note">' + (pret
+        ? T("Votre e-mail sert uniquement à vous envoyer les annonces de cette alerte (au plus un e-mail par passage). Il part directement chez Brevo, notre service d’envoi d’e-mails : le site ne le garde pas. Une seule alerte par adresse (la dernière remplace la précédente).",
+            "يُستعمل بريدك فقط لإرسال إعلانات هذا التنبيه (رسالة واحدة على الأكثر في كل مرور). يذهب مباشرة إلى Brevo، خدمة إرسال البريد لدينا: لا يحتفظ به الموقع. تنبيه واحد لكل عنوان (الأخير يعوّض السابق).")
+        : T("Bientôt disponible. En attendant, recevez vos alertes sur Telegram.", "قريبًا. في الأثناء، استلم تنبيهاتك على تيليغرام.")) + '</p>' +
+      '<p class="alerte-email-statut" id="alerte-email-statut" role="status" aria-live="polite"></p>' +
+    '</form>';
+  }
+  function emailValide(e) { return e.length <= 120 && /^[^\s@<>"'(),;:]{1,64}@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(e); }
+  function envoyerEmail(form) {
+    var st = document.getElementById("alerte-email-statut"), url = urlBrevo();
+    var em = String(form.querySelector('[name="email"]').value || "").trim(), accord = form.querySelector('[name="accord"]').checked;
+    if (!url) { st.textContent = T("Bientôt disponible : utilisez Telegram en attendant.", "قريبًا: استعمل تيليغرام في الأثناء."); return; }
+    if (!emailValide(em)) { st.textContent = T("Écrivez une adresse e-mail valable (exemple : nom@mail.com).", "اكتب عنوان بريد صحيحًا (مثال: nom@mail.com)."); return; }
+    if (!accord) { st.textContent = T("Cochez la case d’accord pour recevoir les alertes par e-mail.", "ضع علامة في خانة الموافقة لاستلام التنبيهات بالبريد."); return; }
+    var d = new FormData();
+    d.append("EMAIL", em); d.append("ALERTE", code(criteres(), 0)); d.append("LANGUE", document.documentElement.lang === "ar" ? "ar" : "fr");
+    d.append("OPT_IN", "1"); d.append("email_address_check", ""); d.append("locale", "fr"); d.append("html_type", "simple");
+    st.textContent = T("Envoi…", "جارٍ الإرسال…");
+    fetch(url, { method: "POST", mode: "no-cors", body: d }).then(function () {
+      form.querySelector('[name="email"]').value = ""; form.querySelector('[name="accord"]').checked = false;
+      st.textContent = T("✅ Presque fini : ouvrez l’e-mail de confirmation envoyé par Brevo et cliquez sur son lien (regardez aussi dans « Indésirables »). Votre alerte démarre ensuite.",
+                         "✅ تقريبًا انتهيت: افتح رسالة التأكيد التي أرسلتها Brevo واضغط على رابطها (انظر أيضًا في « غير المرغوب فيه »). ثم يبدأ تنبيهك.");
+    }, function () { st.textContent = T("Échec de l’envoi : vérifiez votre connexion.", "تعذّر الإرسال: تحقق من الاتصال."); });
+    try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "alerte-email" + location.pathname, title: "Alerte e-mail", event: true }); } catch (x) {}
   }
 
   function remplirDelegs(gardeD, gardeL) {
@@ -263,9 +309,9 @@
         if (a) { var ok = document.getElementById("alerte-ok"); if (ok) ok.hidden = false;
                  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "alerte" + location.pathname, title: "Alerte Telegram", event: true }); } catch (x) {} }
       });
-      fen.addEventListener("change", function (e) { if (e.target.name === "ag") remplirDelegs("", ""); else if (e.target.name === "ad") remplirLocalites(""); maj(); });
-      fen.addEventListener("input", maj);
-      fen.addEventListener("submit", function (e) { e.preventDefault(); });
+      fen.addEventListener("change", function (e) { if (e.target.name === "email" || e.target.name === "accord") return; if (e.target.name === "ag") remplirDelegs("", ""); else if (e.target.name === "ad") remplirLocalites(""); maj(); });
+      fen.addEventListener("input", function (e) { if (e.target.name !== "email") maj(); });
+      fen.addEventListener("submit", function (e) { e.preventDefault(); if (e.target.id === "alerte-email-form") envoyerEmail(e.target); });
     }
     construire(c);
     fen.hidden = false;

@@ -753,7 +753,10 @@
                   // prix au m² le moins cher (20/10/2026) : seulement prix SÛR et surface connue ; les autres à la fin
                   "m2-asc": function (a, b) { var x = a.p && a.s ? a.p / a.s : null, y = b.p && b.s ? b.p / b.s : null; return (x == null) - (y == null) || x - y; },
                   "photo": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (PHOTO_OK(b.ph) - PHOTO_OK(a.ph)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
-                  "date": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); } }[v.tri] || null;
+                  "date": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
+                  // 25/10/2026 (Ahmed) : badge « Nouveau » d'abord (nw), ou plus forte baisse de prix d'abord (pb), puis les plus récentes
+                  "nouveau": function (a, b) { return ((b.nw || 0) - (a.nw || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
+                  "baisse": function (a, b) { return ((b.pb || 0) - (a.pb || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); } }[v.tri] || null;
       // 21/10/2026 (Ahmed) : trier par AVIS DE L'IA (le même que sous chaque annonce, avisIA) : les annonces qui ont cet avis d'abord
       // (plus forte baisse ou hausse d'abord), puis les autres, les plus récentes d'abord
       if (!cle && /^avis-[bnhxi]$/.test(v.tri || "")) {

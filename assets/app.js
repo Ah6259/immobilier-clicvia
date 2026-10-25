@@ -853,3 +853,14 @@
   window.carteAnnonce = carte;   // utilisé par les tests
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", demarrer); else demarrer();
 })();
+/* 25/10/2026 (Ahmed : « si on clique sur l'image, ça ouvre l'annonce ») : toucher la photo (ou le dessin) d'une carte ouvre l'annonce
+   d'origine, comme « Voir l'annonce » (même lien, nouvel onglet) ; les boutons posés sur la photo (partager, cœur) gardent leur rôle. */
+(function () {
+  document.addEventListener("click", function (e) {
+    var m = e.target && e.target.closest ? e.target.closest(".annonce .an-media") : null;
+    if (!m || (e.target.closest && e.target.closest("button, a"))) return;
+    var carte = m.closest(".annonce");
+    var lien = carte && carte.querySelector('a.an-voir[target="_blank"], a.an-contact[target="_blank"]');
+    if (lien && lien.href) window.open(lien.href, "_blank", "noopener");
+  });
+})();

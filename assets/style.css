@@ -1456,3 +1456,5 @@ html.pub-ouverte,html.pub-ouverte body{overflow:hidden}
 .carte-vivante.cp-dessin .leaflet-container{touch-action:none;cursor:crosshair}
 .cp-zone-info{margin:0 0 6px;font-size:12.5px;color:var(--encre);background:var(--terre-voile);border-radius:8px;padding:6px 10px}
 .an-etiquettes .an-badge.nouveau,.an-etiquettes .an-badge.baisse,.an-etiquettes .an-badge.avant{margin:0}   /* 25/10/2026 : l'écart entre étiquettes vient du « gap » (visiteur simulé : espaces inégaux) */
+.annonce .an-media{cursor:pointer}   /* 25/10/2026 : la photo ouvre l'annonce (assets/app.js) */
+.cache-ecran{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}   /* 25/10/2026 */

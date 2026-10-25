@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="assets/style.css?v=5b1190ae24">
-<script src="assets/page.js?v=5b1190ae24"></script>
+<link rel="stylesheet" href="assets/style.css?v=1ef247c3d5">
+<script src="assets/page.js?v=1ef247c3d5"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Immobilier Tunisie", "alternateName": "عقارات تونس", "url": "https://immobilier.clicvia.com/", "inLanguage": ["fr", "ar"]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Le site est-il gratuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui. Chercher une annonce et déposer la sienne sont gratuits, sans inscription."}}, {"@type": "Question", "name": "Comment contacter le vendeur ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque annonce a un bouton « Contacter le vendeur » qui ouvre l’annonce d’origine, où se trouvent les coordonnées."}}, {"@type": "Question", "name": "Les annonces sont-elles à jour ?", "acceptedAnswer": {"@type": "Answer", "text": "Elles sont relues tous les jours ou tous les 2 jours ; une annonce de plus de 60 jours est retirée. Dernière mise à jour : 25 octobre 2026."}}]}</script>
@@ -43,7 +43,11 @@
 <section class="hero">
   <div class="wrap hero-grille">
     <div class="hero-texte">
-      <h1><span data-l="fr">Acheter, louer, vendre,<br><span class="h1-accent">notre modèle <span class="mot-ia">IA</span> vous aide</span></span><span data-l="ar">شراء، كراء، بيع،<br><span class="h1-accent">نموذج <span class="mot-ia">الذكاء الاصطناعي</span> يساعدك</span></span></h1>
+      <!-- 25/10/2026 (Ahmed) : « une jolie affiche avec un slogan » + « agent immobilier IA » (plus clair que « modèle IA ») ;
+           nombre arrondi au millier inférieur (« Plus de 28 000 annonces »), refait chaque nuit -->
+      <h1 class="affiche"><span class="aff-nombre"><span data-l="fr">Plus de 28 000 annonces</span><span data-l="ar">أكثر من ⁦28 000⁩ إعلان</span></span>
+        <span class="aff-slogan"><span data-l="fr">et un agent immobilier <span class="mot-ia">IA</span> pour vous aider</span><span data-l="ar">ووكيل عقاري <span class="mot-ia">بالذكاء الاصطناعي</span> يساعدك</span></span>
+        <span class="aff-actions"><span data-l="fr">Acheter · Louer · Vendre</span><span data-l="ar">شراء · كراء · بيع</span></span></h1>
       <!-- 16/10/2026 (Ahmed) : plus de phrase « N annonces… » : le nombre est dans la tuile « Voir N annonces » de la carte IA -->
       <!-- 18/10/2026 (Ahmed, « comme SeLoger ») : la recherche simple tout en haut, juste sous le titre -->
       <div class="zone-recherche" id="zone-recherche"><form class="recherche recherche-simple" id="recherche" role="search" action="#liste" data-gouv="" data-lieu="">
@@ -184,10 +188,10 @@
 <script src="donnees/decoupage.js?v=d4e3f18d33" defer></script>
 <script src="donnees/criteres.js?v=690eb400d6" defer></script>
 <script src="donnees/annonces.js?v=30cad2da24" defer></script>
-<script src="assets/app.js?v=5b1190ae24" defer></script>
-<script src="assets/avis.js?v=5b1190ae24" defer></script>
-<script src="assets/accueil.js?v=5b1190ae24" defer></script>
-<script src="assets/carte-prix.js?v=5b1190ae24" defer></script>
-<script src="assets/alerte.js?v=5b1190ae24" defer></script>
+<script src="assets/app.js?v=1ef247c3d5" defer></script>
+<script src="assets/avis.js?v=1ef247c3d5" defer></script>
+<script src="assets/accueil.js?v=1ef247c3d5" defer></script>
+<script src="assets/carte-prix.js?v=1ef247c3d5" defer></script>
+<script src="assets/alerte.js?v=1ef247c3d5" defer></script>
 </body>
 </html>

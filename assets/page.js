@@ -123,7 +123,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     // téléphone : l'en-tête est plein -> carte « Notre IA calcule pour vous » juste dessous (15/10/2026, demandes d'Ahmed :
     // montrer l'AVANTAGE de l'IA ; modèle B choisi, couleurs du modèle A) : titre -> ia/, 3 tuiles -> vendre/, louer/, investir/
     // 18/10/2026 (Ahmed, capture barrée : « dans la page d'accueil enlever la barre de progression ») : plus de carte IA sur l'accueil
-    // (la recherche et le titre « notre modèle IA vous aide » suffisent) ; elle reste sur les autres pages
+    // (la recherche et l’affiche « agent immobilier IA » suffisent) ; elle reste sur les autres pages
     var accueil = document.body && document.body.getAttribute("data-page") === "accueil";
     if (accueil && document.getElementById("barre-ia")) document.getElementById("barre-ia").remove();
     if (e && !accueil && !document.getElementById("barre-ia")) {      // 16/10/2026 : sur TOUTES les pages, ia/ comprise (demande d'Ahmed)

@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="assets/style.css?v=1ef247c3d5">
-<script src="assets/page.js?v=1ef247c3d5"></script>
+<link rel="stylesheet" href="assets/style.css?v=9c98cfee29">
+<script src="assets/page.js?v=9c98cfee29"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Immobilier Tunisie", "alternateName": "عقارات تونس", "url": "https://immobilier.clicvia.com/", "inLanguage": ["fr", "ar"]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Le site est-il gratuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui. Chercher une annonce et déposer la sienne sont gratuits, sans inscription."}}, {"@type": "Question", "name": "Comment contacter le vendeur ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque annonce a un bouton « Contacter le vendeur » qui ouvre l’annonce d’origine, où se trouvent les coordonnées."}}, {"@type": "Question", "name": "Les annonces sont-elles à jour ?", "acceptedAnswer": {"@type": "Answer", "text": "Elles sont relues tous les jours ou tous les 2 jours ; une annonce de plus de 60 jours est retirée. Dernière mise à jour : 25 octobre 2026."}}]}</script>
@@ -183,15 +183,45 @@
   </div>
 </section>
 </main>
+<div class="pub-affiche" id="pub-affiche" role="dialog" aria-modal="true" aria-labelledby="pub-titre" hidden>
+  <div class="pub-carte">
+    <button type="button" class="pub-x" data-fermer aria-label="Fermer">×</button>
+    <div class="pub-haut">
+      <svg class="pub-ville" viewBox="0 0 400 120" aria-hidden="true" focusable="false">
+        <circle cx="318" cy="38" r="20" fill="#F2B33D"/>
+        <path fill="#3d6f8c" d="M0 120V78h22V60h18v18h14V46h26v32h12V66h20v54z"/>
+        <path fill="#4f84a3" d="M112 120V70h16V40l14-14 14 14v30h12V58h24v62z"/>
+        <path fill="#3d6f8c" d="M192 120V64h20V50h22v14h10V36h28v84z"/>
+        <path fill="#4f84a3" d="M272 120V74h18V58h24v16h14V62l18-12 18 12v58z"/>
+        <path fill="#2a5873" d="M364 120V84h36v36z"/>
+        <path fill="#ffffff" fill-opacity=".85" d="M30 86h6v6h-6zm14 0h6v6h-6zm86-6h6v6h-6zm0 14h6v6h-6zm74-16h6v6h-6zm14 0h6v6h-6zm52-2h6v6h-6zm0 14h6v6h-6zm38-4h6v6h-6zm14 0h6v6h-6z"/>
+      </svg>
+      <p class="pub-nombre"><span data-l="fr">28 000+</span><span data-l="ar">⁦28 000⁩+</span></p>
+      <p class="pub-sous"><span data-l="fr">annonces immobilières en Tunisie</span><span data-l="ar">إعلان عقاري في تونس</span></p>
+    </div>
+    <div class="pub-bas">
+      <h2 id="pub-titre" class="pub-titre"><span data-l="fr">Un agent immobilier <span class="mot-ia">IA</span> pour vous aider</span><span data-l="ar">وكيل عقاري <span class="mot-ia">بالذكاء الاصطناعي</span> يساعدك</span></h2>
+      <ul class="pub-points">
+        <li><span data-l="fr">Acheter, louer, vendre : toutes les annonces au même endroit</span><span data-l="ar">شراء، كراء، بيع: كل الإعلانات في مكان واحد</span></li>
+        <li><span data-l="fr">Le juste prix d’un bien, estimé gratuitement</span><span data-l="ar">السعر المناسب لعقارك، تقدير مجاني</span></li>
+        <li><span data-l="fr">Un avis sur chaque annonce : bonne affaire ou trop cher ?</span><span data-l="ar">رأي في كل إعلان: صفقة جيدة أم غالٍ؟</span></li>
+        <li><span data-l="fr">Les 24 gouvernorats, mis à jour chaque jour</span><span data-l="ar">الولايات الـ24، تُحدَّث كل يوم</span></li>
+      </ul>
+      <button type="button" class="pub-go" data-fermer><span data-l="fr">Voir les annonces</span><span data-l="ar">شاهد الإعلانات</span></button>
+      <p class="pub-gratuit"><span data-l="fr">Gratuit, sans inscription</span><span data-l="ar">مجاني، دون تسجيل</span></p>
+    </div>
+  </div>
+</div>
 <footer id="pied" class="pied"></footer>
 <script src="donnees/lieux.js?v=2026-10-25" defer></script>
 <script src="donnees/decoupage.js?v=d4e3f18d33" defer></script>
 <script src="donnees/criteres.js?v=690eb400d6" defer></script>
 <script src="donnees/annonces.js?v=30cad2da24" defer></script>
-<script src="assets/app.js?v=1ef247c3d5" defer></script>
-<script src="assets/avis.js?v=1ef247c3d5" defer></script>
-<script src="assets/accueil.js?v=1ef247c3d5" defer></script>
-<script src="assets/carte-prix.js?v=1ef247c3d5" defer></script>
-<script src="assets/alerte.js?v=1ef247c3d5" defer></script>
+<script src="assets/app.js?v=9c98cfee29" defer></script>
+<script src="assets/avis.js?v=9c98cfee29" defer></script>
+<script src="assets/accueil.js?v=9c98cfee29" defer></script>
+<script src="assets/carte-prix.js?v=9c98cfee29" defer></script>
+<script src="assets/affiche.js?v=9c98cfee29" defer></script>
+<script src="assets/alerte.js?v=9c98cfee29" defer></script>
 </body>
 </html>

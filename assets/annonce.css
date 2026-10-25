@@ -1,0 +1,13 @@
+/* Page d'une annonce DÉPOSÉE (25/10/2026) : page simple et lisible, indexée par Google (robot/construire_site.py, page_annonce_deposee) */
+body{margin:0;background:#F7F2EA;color:#1E2A30;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.ad{max-width:640px;margin:0 auto;padding:18px 16px 40px}
+.ad-site{font-size:14px;color:#5F6B70;margin:0 0 12px}.ad-site a{color:#B4532F;font-weight:700;text-decoration:none}
+.ad h1{font-size:clamp(24px,6vw,32px);line-height:1.2;margin:0 0 4px}
+.ad-ar{margin:0 0 14px;color:#5F6B70}
+.ad-photo{display:block;width:100%;max-height:420px;object-fit:cover;border-radius:14px;margin:0 0 14px;background:#EFE6D8}
+.ad-faits{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 16px;padding:14px 16px;background:#fff;border:1px solid #E5DACB;border-radius:14px}
+.ad-faits dt{color:#5F6B70}.ad-faits dd{margin:0;font-weight:700}
+.ad-texte{white-space:pre-line;background:#fff;border:1px solid #E5DACB;border-radius:14px;padding:14px 16px;margin:0 0 16px}
+.ad-tel a{font-weight:800;color:#2C5872}
+.ad-bouton{display:block;text-align:center;padding:14px 16px;border-radius:12px;background:#B4532F;color:#fff;font-weight:800;text-decoration:none}
+.ad-pied{font-size:14px;margin-top:22px}.ad-pied a{color:#2C5872}

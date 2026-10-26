@@ -241,10 +241,13 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     // bloc « Partager ce rapport » (18/10/2026, Ahmed) : clic compté par réseau ; « Copier le lien »
     // UN bouton « Partager ce rapport » : menu de partage du téléphone (Facebook, WhatsApp, LinkedIn…), sinon lien copié.
     // AUCUNE adresse dans le texte (18/10/2026, vu par Ahmed) : Facebook prenait « immobilier.clicvia.com » du texte et montrait l'accueil
-    var r = document.querySelectorAll("button[data-partage-rapport]");
-    for (var j = 0; j < r.length; j++) r[j].addEventListener("click", function () {
-      var bouton = this, lien = bouton.getAttribute("data-partage-rapport"), titre = bouton.getAttribute("data-titre");
-      var texte = titre + "\n" + T("Rapport du mois d’Immobilier Tunisie : ", "تقرير الشهر من عقارات تونس: ");
+    // 26/10/2026 : le clic est écouté sur la page entière (le bouton « Partager ces prix » est aussi dans la bulle de la carte, créée plus tard) ;
+    // data-texte = phrase propre à la page partagée (prix d'un gouvernorat), sinon celle des rapports du mois
+    document.addEventListener("click", function (e) {
+      var bouton = e.target.closest && e.target.closest("button[data-partage-rapport]");
+      if (!bouton) return;
+      var lien = bouton.getAttribute("data-partage-rapport"), titre = bouton.getAttribute("data-titre");
+      var texte = titre + "\n" + (bouton.getAttribute("data-texte") || T("Rapport du mois d’Immobilier Tunisie : ", "تقرير الشهر من عقارات تونس: "));
       try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname, title: "Partage", event: true }); } catch (e) {}
       var fini = function () { bouton.classList.add("copie-ok"); setTimeout(function () { bouton.classList.remove("copie-ok"); }, 4000); };
       if (navigator.share) { navigator.share({ title: titre, text: texte, url: lien }).catch(function () {}); return; }

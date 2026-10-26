@@ -25,6 +25,10 @@
     return (x < 9950 ? (Math.round(x / 100) / 10).toFixed(1).replace(".", ",") : String(Math.round(x / 1000))) + " k";
   }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  // fiche des prix (26/10/2026) : définis ici, avant dessiner() qui les utilise
+  var NOMS_P = { s1: ["Appart. S+1", "شقة S+1"], s2: ["Appart. S+2", "شقة S+2"], s3: ["Appart. S+3", "شقة S+3"], maison: ["Maison / villa", "منزل / فيلا"], terrain: ["Terrain (au m²)", "أرض (للمتر²)"] };
+  var NIVEAUX_P = { g: ["Gouvernorat de ", "ولاية "], d: ["Délégation de ", "معتمدية "], q: ["Quartier : ", "الحي: "] };
+  var SURVOL = !!(window.matchMedia && window.matchMedia("(hover: hover)").matches);
   function bornes(v) {                       // 5 classes de même effectif (quantiles)
     v = v.slice().sort(function (a, b) { return a - b; });
     return [0.2, 0.4, 0.6, 0.8].map(function (f) { return v[Math.min(v.length - 1, Math.floor(v.length * f))]; });
@@ -78,10 +82,9 @@
                      T("➕ Soyez le premier à publier ici (gratuit)", "➕ كن أول من ينشر هنا (مجانًا)") + "</a>").addTo(couche);
         return;
       }
-      L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv cp-deleg", html: "<span>" + court(x.n) + "</span>", iconSize: [34, 34] }), zIndexOffset: -500,
-                      title: nom + " · " + nb(x.n) + T(" annonces", " إعلانًا") })
-        .bindPopup("<b>" + T("Délégation ", "معتمدية ") + nom + "</b><br>" + nb(x.n) + T(" annonces", " إعلانًا") + "<br><small>" + T("Zoomez pour voir les quartiers.", "قرّب لرؤية الأحياء.") + "</small>" +
-                   '<br><a href="' + lien + '">' + T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>").addTo(couche);
+      lier(L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv cp-deleg", html: "<span>" + court(x.n) + "</span>", iconSize: [34, 34] }), zIndexOffset: -500 }),
+           "<b>" + T("Délégation ", "معتمدية ") + nom + "</b><br>" + nb(x.n) + T(" annonces", " إعلانًا") + "<br><small>" + T("Zoomez pour voir les quartiers.", "قرّب لرؤية الأحياء.") + "</small>" +
+                   '<br><a href="' + lien + '">' + T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>", fichePrix(x, "d", nom, nom + " · " + nb(x.n) + T(" annonces", " إعلانًا"))).addTo(couche);
     });
     // 18/10/2026 (Ahmed : « je zoome sur Ajim, ses 5 annonces disparaissent ») : au zoom des QUARTIERS, une délégation dont des annonces
     // ne sont dans aucune bulle de quartier (quartier sans position) garde une bulle avec ce reste (x.r) : aucune annonce ne disparaît
@@ -103,17 +106,50 @@
         .bindPopup("<b>" + nom + "</b><br>" + nb(r) + T(" annonces sans délégation précise", " إعلانًا دون معتمدية محددة") +
                    '<br><a href="' + racine + x.g + '/#liste">' + T("Voir les " + nb(x.n) + " annonces du gouvernorat", "شاهد " + nb(x.n) + " إعلانًا في الولاية") + "</a>").addTo(couche);
     });
-    // gouvernorats sans quartier avec un prix : un cercle avec leur nombre d'annonces
+    // fiche des prix dans la bulle d'un GOUVERNORAT, d'une DÉLÉGATION ou d'un QUARTIER (26/10/2026, idée d'Ahmed : « 3 niveaux, et dire de quel
+    // niveau est le prix ; le tableau n'apparaît que si le visiteur passe la souris dessus ») : mêmes chiffres que la page du gouvernorat (#prix).
+    // Sur ordinateur (souris) le tableau est dans l'infobulle de survol ; sur téléphone (pas de survol) il est dans la bulle touchée.
+    function lignesPrix(x) {
+      return x.tp.map(function (l) {
+        var u = l[0] === "terrain" ? T("\u00a0DT/m²", "\u00a0د.ت/م²") : T("\u00a0DT", "\u00a0د.ت");
+        return [NOMS_P[l[0]][ar() ? 1 : 0], nb(l[2]) + " – " + nb(l[4]) + u];
+      });
+    }
+    function tableauPrix(x, niveau, nom) {
+      var lignes = lignesPrix(x).map(function (r) { return "<tr><th>" + r[0] + "</th><td>" + r[1] + "</td></tr>"; }).join("");
+      return '<table class="cp-prix"><caption><b>' + T(NIVEAUX_P[niveau][0], NIVEAUX_P[niveau][1]) + nom + "</b><br>" +
+        T("À vendre : la moitié des annonces est dans cette fourchette", "للبيع: نصف الإعلانات ضمن هذا المجال") + "</caption>" + lignes + "</table>";
+    }
+    // pied de la bulle : lien vers la page du niveau + « Partager ces prix » (le texte partagé reprend les chiffres)
+    function piedPrix(x, niveau, nom) {
+      var lien = niveau === "g" ? x.g + "/#prix" : niveau === "d" ? x.g + "/?d=" + encodeURIComponent(x.s) + "#liste" : x.g + "/" + (x.page ? x.q + "/" : "") + "#liste";
+      var titre = T("Prix de l’immobilier : ", "أسعار العقارات: ") + T(NIVEAUX_P[niveau][0], NIVEAUX_P[niveau][1]) + nom;
+      var texte = lignesPrix(x).map(function (r) { return r[0] + " : " + r[1]; }).join("\n") + "\n" + T("(Immobilier Tunisie) : ", "(عقارات تونس): ");
+      return '<br><a href="' + racine + lien + '">' + (niveau === "g" ? T("Tous les prix (vente et location)", "كل الأسعار (بيع وكراء)") : T("Voir les annonces", "شاهد الإعلانات")) + "</a>" +
+        ' · <button type="button" class="cp-partager" data-partage-rapport="' + esc("https://immobilier.clicvia.com/" + lien) + '" data-titre="' + esc(titre) + '" data-texte="' + esc(texte) + '">' + T("Partager ces prix", "شارك هذه الأسعار") + "</button>";
+    }
+    // à ajouter à une bulle : [html de la bulle, html de l'infobulle de survol (ou null)]
+    function fichePrix(x, niveau, nom, infobulle) {
+      if (!x.tp || x.tp.length < 2) return ["", infobulle || null];
+      var t = tableauPrix(x, niveau, nom);
+      return SURVOL ? [piedPrix(x, niveau, nom), (infobulle ? "<b>" + infobulle + "</b><br>" : "") + t] : [t + piedPrix(x, niveau, nom), infobulle || null];
+    }
+    function lier(m, h, fp) {
+      m.bindPopup(h + fp[0]);
+      if (SURVOL && fp[1] && fp[0]) m.bindTooltip(fp[1], { className: "cp-info", direction: "top" });   // le tableau n'apparaît qu'au survol (ordinateur)
+      else if (fp[1] && !fp[0] && m.options) m.options.title = fp[1].replace(/<[^>]+>/g, "");                       // sans tableau : seulement le nom et le nombre
+      return m;
+    }
+  // gouvernorats sans quartier avec un prix : un cercle avec leur nombre d'annonces
     D.g.forEach(function (x) {
       if (niv === 3 || (niv === 2 && avecDeleg[x.g])) return;     // remplacées par les délégations, puis par les quartiers
       var nom = esc(ar() ? x.ar : x.fr);
       // 17/10/2026 (Ahmed) : CHAQUE gouvernorat garde sa bulle bleu foncé avec son nombre TOTAL d'annonces, même quand ses
       // quartiers ont des prix (les ronds de prix restent dessus)
       if (avecPrix[x.g] && x.n) {
-        L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv", html: "<span>" + court(x.n) + "</span>", iconSize: [38, 38] }), zIndexOffset: -500,
-                        title: nom + " · " + nb(x.n) + T(" annonces", " إعلانًا") })
-          .bindPopup("<b>" + nom + "</b><br>" + nb(x.n) + T(" annonces au total", " إعلانًا في المجموع") + "<br><small>" + T("Zoomez pour voir les délégations.", "قرّب لرؤية المعتمديات.") + "</small>" + '<br><a href="' + racine + x.g + '/#liste">' +
-                     T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>").addTo(couche);
+        lier(L.marker(x.p, { icon: L.divIcon({ className: "cp-gouv", html: "<span>" + court(x.n) + "</span>", iconSize: [38, 38] }), zIndexOffset: -500 }),
+             "<b>" + nom + "</b><br>" + nb(x.n) + T(" annonces au total", " إعلانًا في المجموع") + "<br><small>" + T("Zoomez pour voir les délégations.", "قرّب لرؤية المعتمديات.") + "</small>" + '<br><a href="' + racine + x.g + '/#liste">' +
+                     T("Voir les " + nb(x.n) + " annonces", "شاهد " + nb(x.n) + " إعلانًا") + "</a>", fichePrix(x, "g", nom, nom + " · " + nb(x.n) + T(" annonces", " إعلانًا"))).addTo(couche);
         return;
       }
       if (!x.n) {                                // 17/10/2026 (Ahmed) : un gouvernorat VIDE invite à publier, au lieu de rester vide
@@ -167,10 +203,11 @@
         bulle = nom + (x.t ? " · " + nb(x.t) + T(" annonces", " إعلانًا") : "");
       }
       h += '<br><a href="' + racine + x.g + "/" + (x.page ? x.q + "/" : "") + '#liste">' + (x.t && x.page ? T("Voir les " + nb(x.t) + " annonces", "شاهد " + nb(x.t) + " إعلانًا") : T("Voir les annonces", "شاهد الإعلانات")) + "</a>";
+      var fq = fichePrix(x, "q", nom, bulle);
       // niveau 3 : bulle du QUARTIER avec son nombre d'annonces, couleur = son prix (classes : la CSP refuse les styles dans la page)
       (niv === 3 ? L.marker(x.p, { icon: L.divIcon({ className: "cp-q cp-qc" + COULEURS.indexOf(c), html: "<span>" + court(x.t || n) + "</span>", iconSize: [30, 30] }) })
         : L.circleMarker(x.p, { radius: Math.max(7, Math.min(18, 5 + Math.sqrt(n) * 1.6)), color: "#fff", weight: 2, fillColor: c, fillOpacity: 0.85 }))
-        .bindPopup(h).bindTooltip(bulle).addTo(couche);
+        .bindPopup(h + fq[0]).bindTooltip(fq[1] && fq[0] && SURVOL ? fq[1] : bulle, fq[0] && SURVOL ? { className: "cp-info", direction: "top" } : undefined).addTo(couche);
     });
     var lg = document.getElementById("cp-legende");
     if (lg && niv === 2) { lg.innerHTML = '<span class="cp-leg"><i class="cp-g"></i>' + legBleu() + '</span><span class="cp-unite">' +

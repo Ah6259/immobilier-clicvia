@@ -321,11 +321,26 @@
       (manque.length ? T2("Plus précis avec : ", "أدق مع: ") + manque.join(", ") + (r.vide || (form.querySelector(".v-atouts") || {}).hidden ? "" : T2(" (et les atouts de votre bien).", " (ومزايا عقارك).")) : ((form.querySelector(".v-atouts") || {}).hidden ? T2("✅ Tout est rempli.", "✅ كل شيء معبّأ.") : T2("✅ Tout est rempli : cochez aussi les atouts.", "✅ كل شيء معبّأ: اختر أيضًا المزايا."))) + "</p>";
   }
 
+  // Fiabilité de l'estimation en MOTS (26/10/2026, Ahmed) : [classe, texte] ; aucune donnée = rien. Fourchette de l'IA étroite et au
+  // moins 5 annonces vraiment proches = bonne ; fourchette large ou niveau déduit de l'autre marché = faible ; sinon moyenne.
+  // Prix de référence sans l'IA : moyenne au m², sinon faible. Jamais de pourcentage d'erreur (information interne).
+  function fiabilite(r) {
+    if (r.ia) {
+      var lo = r.ia[1], hi = r.ia[2], rap = lo > 0 ? hi / lo : 9, n = (r.proches || []).length;
+      if ((r.ia[3] && r.ia[3].deduit) || rap > 1.8) return ["faible", T2("faible", "ضعيفة")];
+      if (rap <= 1.4 && n >= 5) return ["bonne", T2("bonne", "جيدة")];
+      return ["moyenne", T2("moyenne", "متوسطة")];
+    }
+    if (r.refPrix) return r.refM2 ? ["moyenne", T2("moyenne", "متوسطة")] : ["faible", T2("faible", "ضعيفة")];
+    return null;
+  }
+  window.FIABILITE_IMMO = fiabilite;       // utilisé par les tests
   function afficherGratuit(r) {
     if (r.vide) {
       res.innerHTML = '<p class="ia-ligne ia-vide"><span>' + T2("Prix estimé par notre IA", "السعر الذي يقدّره ذكاؤنا الاصطناعي") + "</span><b>" + dt(0) + "</b><small>" +
         T2("Commencez par choisir le type de bien et le gouvernorat ", "ابدأ باختيار نوع العقار والولاية ") + '<a href="#estimer">' + T2("dans « 1. À remplir »", "في « 1. للتعبئة »") + "</a>" +
         T2(" : le résultat apparaît ici et change à chaque information ajoutée.", ": تظهر النتيجة هنا وتتغيّر مع كل معلومة تضيفها.") + "</small></p>" + precision(r);
+      res.removeAttribute("data-html");
       return;
     }
     var lc = lieuChoisi(), lieu = (lc ? lc + ", " : (r.q ? nomQ(r.g, r.q) + ", " : "")) + nomG(r.g), h = "";
@@ -364,8 +379,26 @@
            (r.ia ? T2(" ; et notre modèle d’IA", "؛ ونموذج الذكاء الاصطناعي") : "") + ".</p>";
       if (!acces().ok) h += '<p class="petit"><a href="#pass-vendeur">' + T2("→ Voir l’analyse complète (3 prix, annonces de référence avec leur lien, prix au m², concurrence)", "← شاهد التحليل الكامل (3 أسعار، إعلانات المرجع مع روابطها، السعر بالمتر، المنافسة)") + "</a></p>";
     }
+    // 26/10/2026 (« fais a et b » d'Ahmed, idées vues sur l'estimateur de Mubawab) :
+    // b. FIABILITÉ en mots (jamais de %, règle du 15/10) : largeur de la fourchette + nombre d'annonces vraiment proches
+    var fi = fiabilite(r);
+    if (fi) h = h.replace('</small></p>', '</small><span class="v-fiab v-fiab-' + fi[0] + '">' + T2("Fiabilité : ", "الموثوقية: ") + '<span class="v-fiab-mot">' + fi[1] + "</span></span></p>");
+    // a. « Publier gratuitement mon annonce (déjà remplie) » : type, lieu, surface, pièces et prix estimé déjà dans le formulaire
+    if ((r.ia || r.refPrix) && !acces().ok) {          // avec le Pass : bouton « Publier » de l'analyse complète (annonce rédigée)
+      var lv = el("v-l").value, dv = el("v-d").value, pq = new URLSearchParams({ t: TL, y: r.t, g: r.g });
+      var lieuQ = slugV(lv.indexOf("q:") === 0 ? lv.slice(2) : (lv || dv));
+      if (lieuQ) pq.set("l", lieuQ);
+      pq.set("px", String(rond(r.ia ? r.ia[0] : r.refPrix)));
+      if (r.s) pq.set("s", String(Math.round(r.s)));
+      if (r.ch !== null && r.ch !== undefined) pq.set("c", String(r.ch));
+      h += '<a class="btn-publier-gratuit" id="v-publier-gratuit" href="' + racine + "deposer/?" + pq.toString() + '">' +
+           T2("Publier gratuitement mon annonce (déjà remplie)", "انشر إعلاني مجانًا (معبّأ مسبقًا)") + "</a>";
+    }
     var k = h.indexOf("</p>", h.indexOf('class="ia-ligne"'));          // la précision juste sous le prix
-    res.innerHTML = k > 0 ? h.slice(0, k + 4) + precision(r) + h.slice(k + 4) : h + precision(r);
+    // pas redessiné si rien ne change (26/10/2026) : la case « surface » qui perd le focus relance le calcul au moment du toucher, et un
+    // lien remplacé entre l'appui et le relâché (« Publier gratuitement ») ne recevait jamais le clic
+    var html = k > 0 ? h.slice(0, k + 4) + precision(r) + h.slice(k + 4) : h + precision(r);
+    if (res.getAttribute("data-html") !== html) { res.innerHTML = html; res.setAttribute("data-html", html); }
   }
 
   // sans Pass (15/10/2026, Ahmed) : la carte « 3. Le résultat complet » existe quand même, VERROUILLÉE, avec le tampon EXEMPLE

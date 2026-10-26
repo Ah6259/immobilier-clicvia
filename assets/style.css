@@ -1425,6 +1425,11 @@ html.avis-ferme .an-ia-bascule .ab-moins{display:none}
 html[lang="ar"] .affiche .aff-actions{letter-spacing:0}
 /* 25/10/2026 (Ahmed) : affiche publicitaire en fenêtre au-dessus du site (assets/affiche.js) */
 html.pub-ouverte,html.pub-ouverte body{overflow:hidden}
+/* Estimation : fiabilité en mots + « Publier gratuitement » (26/10/2026) */
+.v-fiab{display:inline-block;margin:6px 0 0;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600;line-height:1.5}
+.v-fiab-mot{font-weight:800}
+.v-fiab-bonne{background:#E3F2E6;color:#1E6B34}.v-fiab-moyenne{background:#FFF3D6;color:#7A5A00}.v-fiab-faible{background:#F8E1DC;color:#8E2F1A}
+.btn-publier-gratuit{display:block;margin:12px 0 4px;text-align:center;font-weight:700;font-size:15px;color:#fff;background:var(--terre);border-radius:var(--r-petit);padding:11px 14px;text-decoration:none}
 /* Fiche de l'annonce (26/10/2026) : description, photos, contact, sans quitter le site */
 .an-fiche{display:block;width:100%;margin:8px 0 0;font:inherit;font-weight:700;font-size:14px;color:var(--encre);background:var(--terre-clair);border:1px solid var(--terre);border-radius:var(--r-petit);padding:9px 12px;cursor:pointer}
 .fiche-fond{position:fixed;inset:0;z-index:3500;display:flex;align-items:flex-end;justify-content:center;background:rgba(20,28,32,.55)}

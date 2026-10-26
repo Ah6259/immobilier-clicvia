@@ -382,6 +382,65 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "appel" + location.pathname, title: "Numéro affiché", event: true }); } catch (x) {}
   });
 
+  // FICHE DE L'ANNONCE (26/10/2026, décision d'Ahmed, accord des sites) : « Description, photos et contact » ouvre une fenêtre sans
+  // quitter le site : description complète, toutes les photos (lien chez la source), numéro de l'annonceur (affiché au toucher).
+  // Données : annonce/<id>/fiche.json (robot/construire_site.py, pages_partage). Texte et liens TOUJOURS insérés comme texte (jamais HTML).
+  function ficheFenetre() {
+    var f = document.getElementById("fiche-annonce");
+    if (f) return f;
+    f = document.createElement("div");
+    f.id = "fiche-annonce"; f.className = "fiche-fond"; f.hidden = true;
+    f.setAttribute("role", "dialog"); f.setAttribute("aria-modal", "true"); f.setAttribute("aria-labelledby", "fiche-titre");
+    f.innerHTML = '<div class="fiche-boite"><button type="button" class="fiche-fermer" aria-label="' + T("Fermer", "إغلاق") + '">×</button>' +
+      '<h2 id="fiche-titre"></h2><div class="fiche-photos"></div><div class="fiche-contact"></div><div class="fiche-desc"></div>' +
+      '<p class="fiche-source"></p></div>';
+    document.body.appendChild(f);
+    f.addEventListener("click", function (e) { if (e.target === f || (e.target.closest && e.target.closest(".fiche-fermer"))) fermerFiche(); });
+    return f;
+  }
+  function fermerFiche() { var f = document.getElementById("fiche-annonce"); if (f) { f.hidden = true; document.documentElement.classList.remove("fiche-ouverte"); } }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") fermerFiche(); });
+  function el(tag, cls, txt) { var x = document.createElement(tag); if (cls) x.className = cls; if (txt != null) x.textContent = txt; return x; }
+  window.ouvrirFiche = function (id, carte) {
+    var f = ficheFenetre(), boite = f.querySelector(".fiche-boite");
+    var titre = carte && carte.querySelector(".an-titre, h3");
+    var tl = titre && titre.querySelector('[data-l="' + (document.documentElement.lang === "ar" ? "ar" : "fr") + '"]');
+    f.querySelector("#fiche-titre").textContent = tl ? tl.textContent : titre ? titre.textContent : T("Annonce", "إعلان");
+    var zp = f.querySelector(".fiche-photos"), zc = f.querySelector(".fiche-contact"), zd = f.querySelector(".fiche-desc"), zs = f.querySelector(".fiche-source");
+    zp.innerHTML = ""; zc.innerHTML = ""; zd.textContent = T("Chargement…", "جارٍ التحميل…"); zs.innerHTML = "";
+    f.hidden = false; document.documentElement.classList.add("fiche-ouverte");
+    var lien = carte && carte.querySelector("a.an-contact, a.an-voir");
+    if (lien && /^https?:\/\//.test(lien.href)) { var a = el("a", "fiche-lien", T("Voir l’annonce sur le site d’origine", "عرض الإعلان في الموقع الأصلي")); a.href = lien.href; a.target = "_blank"; a.rel = "noopener nofollow"; zs.appendChild(a); }
+    try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "fiche" + location.pathname, title: "Fiche ouverte", event: true }); } catch (x) {}
+    fetch(racine + "annonce/" + encodeURIComponent(id) + "/fiche.json").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+      (Array.isArray(d.ph) ? d.ph : []).slice(0, 20).forEach(function (u, i) {
+        if (!/^https:\/\//.test(u)) return;
+        var im = el("img"); im.src = u; im.alt = T("Photo ", "صورة ") + (i + 1); im.loading = i ? "lazy" : "eager";
+        im.referrerPolicy = "no-referrer"; im.decoding = "async"; zp.appendChild(im);
+      });
+      zp.hidden = !zp.children.length;
+      if (d.tl && /^\+?[\d ]{8,16}$/.test(d.tl)) {
+        var num = String(d.tl), net = num.replace(/[^\d+]/g, ""), b = el("button", "an-numero fiche-num", T("Afficher le numéro", "إظهار الرقم"));
+        b.type = "button";
+        b.addEventListener("click", function () {
+          zc.innerHTML = "";
+          var ap = el("a", "an-appel revele", num); ap.href = "tel:" + net; zc.appendChild(ap);
+          var wa = el("a", "an-wa", "WhatsApp"); wa.href = "https://wa.me/" + net.replace(/^\+/, ""); wa.target = "_blank"; wa.rel = "noopener"; zc.appendChild(wa);
+          try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "appel" + location.pathname, title: "Numéro affiché", event: true }); } catch (x) {}
+        });
+        zc.appendChild(b);
+      }
+      zd.textContent = d.d ? String(d.d) : T("L’annonceur n’a pas écrit de description.", "لم يكتب المعلن وصفًا.");
+      if (boite.scrollTo) boite.scrollTo(0, 0);
+    }).catch(function () { zd.textContent = T("Fiche indisponible pour le moment : voyez l’annonce sur le site d’origine.", "البطاقة غير متوفرة الآن: شاهد الإعلان في الموقع الأصلي."); });
+  };
+  document.addEventListener("click", function (e) {
+    var b = e.target && e.target.closest && e.target.closest(".an-fiche");
+    if (!b) return;
+    e.preventDefault();
+    window.ouvrirFiche(b.getAttribute("data-fiche"), b.closest("article, .annonce"));
+  });
+
   // ---- Protection légère contre la copie (sans gêner les visiteurs) ----
   try {
     if (window.top !== window.self && window.top.location.hostname !== location.hostname) window.top.location = location.href;

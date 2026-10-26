@@ -69,6 +69,9 @@
     // estimation DÉDUITE de l'autre marché (22/10/2026, lien vente / location) : estimation prudente avec fourchette, jamais de verdict
     if (x.dx) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + " (" + L("de ", "من ") + dt(x.lo) + L(" à ", " إلى ") + dt(x.hi) + ")" +
       L(" ; trop peu d’annonces semblables ici pour dire si c’est cher ou une bonne affaire", "؛ إعلانات مشابهة قليلة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة");
+    // maison à louer de plus de 500 m² (26/10/2026) : surface = surtout celle du TERRAIN, comparaison par nombre de pièces, jamais de verdict
+    else if (x.tr) t = L("Référence : ", "المرجع: ") + sembl + L(" (même nombre de pièces) ; la surface annoncée est surtout celle du terrain : impossible de dire si c’est cher ou une bonne affaire, comparez avec soin",
+      " (نفس عدد الغرف)؛ المساحة المعلنة هي غالبًا مساحة الأرض: لا يمكن الحكم إن كان غاليًا أو صفقة جيدة، قارن بعناية");
     else if (x.i) t = L("Notre IA l’estime à ≈ ", "يقدّره ذكاؤنا الاصطناعي بـ ≈ ") + dt(x.r) + L(" ; les prix sont trop différents dans ce secteur pour dire si c’est cher ou une bonne affaire : comparez avec soin", "؛ الأسعار متفاوتة جدًا هنا للحكم إن كان غاليًا أو صفقة جيدة: قارن بعناية");
     else if (x.tv) t = L("Prix très variés ici", "أسعار متفاوتة جدًا هنا") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl +
       L(" : impossible de dire si c’est cher ou une bonne affaire, comparez avec soin", ": لا يمكن الحكم إن كان غاليًا أو صفقة جيدة، قارن بعناية");   // 22/10/2026
@@ -80,7 +83,7 @@
     // BARRE DE PRIX (22/10/2026, Ahmed) : zone foncée = la moitié des annonces semblables, point = cette annonce ; au moins 5
     // annonces semblables (pas de chiffre sans un minimum de données), jamais sur l'estimation du modèle seul
     var barre = "";
-    if (!x.i && x.z !== "m" && x.n >= 5) barre = m2 ? barrePrix(m2[0], m2[2], m2[3], dm2) : (x.lo && x.hi ? barrePrix(a.p, x.lo, x.hi, dt) : "");
+    if (!x.i && !x.tr && x.z !== "m" && x.n >= 5) barre = m2 ? barrePrix(m2[0], m2[2], m2[3], dm2) : (x.lo && x.hi ? barrePrix(a.p, x.lo, x.hi, dt) : "");
     // 22/10/2026 (Ahmed : « pourquoi cette annonce n'a pas la barre ? ») : sans annonces semblables, barre sur la FOURCHETTE ESTIMÉE
     // par notre IA, et elle le dit (jamais confondue avec de vraies annonces)
     else if (x.z === "m" && x.lo && x.hi) barre = barrePrix(a.p, x.lo, x.hi, dt, L("Zone foncée : fourchette estimée par notre IA", "المنطقة الداكنة: تقدير ذكائنا الاصطناعي"));
@@ -306,7 +309,15 @@
   function PHOTO_OK(u) { return /^https:\/\/[^\s"'<>]+$/.test(u || ""); }
 
   // Contact (décision d'Ahmed du 11/10/2026) — même logique que robot/construire_site.py, fonction actions()
-  function actions(a, racine) {
+  // « Description, photos et contact » (26/10/2026, décision d'Ahmed) : fiche ouverte sans quitter le site (assets/page.js)
+  function boutonFiche(a) {
+    // même calcul que id_partage() du robot et window.idPartage (page.js peut être chargé après ce fichier)
+    var id = String(a.i).replace(/[^a-z0-9-]/g, function (c) { return "-x" + c.charCodeAt(0).toString(16) + "-"; });
+    return a.fd ? '<button class="an-fiche" type="button" data-fiche="' + E(id) + '">' +
+      L("Description, photos et contact", "الوصف والصور والاتصال") + '</button>' : "";
+  }
+  function actions(a, racine) { return boutonFiche(a) + actionsContact(a, racine); }
+  function actionsContact(a, racine) {
     var url = U(a.u);
     var origine = '<a class="an-contact" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce", "عرض الإعلان") + ICO.lien + '</a>';
     // annonce vue sur Facebook, ajoutée par Ahmed (18/10/2026) : un seul bouton, vers Facebook (nom et numéro y sont, pas chez nous)
@@ -367,6 +378,17 @@
     // « ennasr » et « cite-ennasr-2 » : même nom, seuls « cité / résidence » et le numéro changent (jamais « ariana » / « ariana-essoughra »)
     function memeNom(l, v) { if (!l) return false; var w = "-" + v + "-", k = "-" + l + "-"; return w.indexOf(k) >= 0 && /^-(cite-|residence-|hay-)?(\d+-)?$/.test(w.replace(k, "-")); }
     function gCourant() { return gFixe || (selG ? selG.value : ""); }
+    // QUARTIERS PROCHES (26/10/2026, idée d'Ahmed vue sur bigdatis.tn) : après le choix d'un quartier, on propose les quartiers à moins
+    // de 5 km (position connue : LIEUX.pq, donnees/coords-quartiers.json), avec la distance et le nombre d'annonces ; un toucher les
+    // AJOUTE à la recherche (?lx=g/q,g/q). Jamais une distance devinée : quartier sans position = pas de proposition.
+    var PQ = LX.pq || {}, PROCHES_KM = 5, proches = {};
+    (q.get("lx") || "").split(",").forEach(function (k) { if (PQ[k]) proches[k] = 1; });
+    function km(p1, p2) {
+      var R = 6371, r = Math.PI / 180, dLat = (p2[0] - p1[0]) * r, dLon = (p2[1] - p1[1]) * r;
+      var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(p1[0] * r) * Math.cos(p2[0] * r) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return 2 * R * Math.asin(Math.sqrt(h));
+    }
+    window.kmEntre = km;
     function delegs(g) {            // [[nom, nom arabe, [[localité, arabe], …]], …] : officielles + quartiers sans rattachement sûr
       var liste = (DEC[g] || []).slice(), vus = {};
       liste.forEach(function (d) { vus[d[0]] = 1; });
@@ -426,12 +448,13 @@
     // 18/10/2026 (Ahmed : « Jerba et Djerba c'est pareil mais la recherche ne donne pas le même résultat ; vérifie les autres noms qui
     // s'écrivent différemment ») : les noms tunisiens s'écrivent de plusieurs façons en lettres latines -> on compare « au son », le
     // même calcul pour ce qu'on tape et pour la liste : Dj = J (Djerba, Jerba), Ou = W = U (Oued, Wed), Q = K (Kairouan, Qairouan),
-    // Sh = Ch, Y = I, Ph = F, lettres doublées (Hammamet, Hamamet), article collé « Es/Et/En… » (Essouk, Souk), « el / al / l' »,
-    // « e » ou « a » entre deux consonnes (Houmet / Houmt, Ghazela / Ghazala, Mahrès / Mahras)
+    // Sh = Ch, Y = I, Ph = F, lettres doublées (Hammamet, Hamamet), article collé « Es/Et/En… » (Essouk, Souk ; 26/10/2026 : aussi avec une seule lettre, Enasr = Ennasr, Esada = Essaada, Enkhilet = Ennkhilet, Elouata = Ellouata), « el / al / l' »,
+    // « e » ou « a » entre deux consonnes (Houmet / Houmt, Ghazela / Ghazala, Mahrès / Mahras) ; « o » = « ou » (26/10/2026 : Essoghra =
+    // Essoughra, Sokra = Soukra)
     function son(t) {
       return (" " + t + " ")
-        .replace(/ e([bcdfgjklmnpqrstvxz])\1/g, " $1").replace(/dj/g, "j").replace(/sh/g, "ch").replace(/ph/g, "f").replace(/q/g, "k")
-        .replace(/ou/g, "u").replace(/w/g, "u").replace(/y/g, "i").replace(/([a-z])\1+/g, "$1").replace(/ (el|al|l|le|la|les) /g, " ").replace(/ (el|al|l|le|la|les) /g, " ")
+        .replace(/ e([bcdfgjklmnpqrstvxz])\1/g, " $1").replace(/dj/g, "j").replace(/sh/g, "ch").replace(/ e([djlnrstz])/g, " $1").replace(/ph/g, "f").replace(/q/g, "k")
+        .replace(/ou/g, "u").replace(/o/g, "u").replace(/w/g, "u").replace(/y/g, "i").replace(/([a-z])\1+/g, "$1").replace(/ (el|al|l|le|la|les) /g, " ").replace(/ (el|al|l|le|la|les) /g, " ")
         .replace(/([bcdfghjklmnpqrstvxz])[ea](?=[bcdfghjklmnpqrstvxz])/g, "$1").replace(/ +/g, " ");
     }
     function brut(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").replace(/ +/g, " "); }
@@ -501,8 +524,11 @@
         var nbMots = function (t) { return brut(t).trim().split(" ").length; }, motsTapes = nbMots(champ.value);
         // nom exact = même prononciation ET même nombre de mots ou mots collés (« hamma » n'est pas « El Hamma » ; Sidi Bousaid = Sidi Bou Said) ; un groupe (« Djerba – toute l'île »)
         // compte par son nom ; jamais une autre écriture (alias), et un lieu exact sans annonce passe après un lieu exact qui en a
+        // 26/10/2026 : « Ennasser » = « Cité Ennasser » (on tape rarement « Cité / Résidence / Hay » ; nom entre parenthèses ignoré)
+        var sansPrefixe = function (t) { return String(t).replace(/^\s*(cit[eé]|r[eé]sidence|hay)\s+/i, "").replace(/\s*\(.*\)\s*$/, ""); };
         var exact = function (x) { var nom = x.fr.split(" – ")[0];
-          return !x.al && tapeSon.length >= 3 && ((sansEsp(nom) === tapeSon && (nbMots(nom) === motsTapes || brut(nom).replace(/ /g, "") === lit.replace(/ /g, ""))) || brut(x.ar).trim() === lit); };
+          var pareil = function (n) { return sansEsp(n) === tapeSon && (nbMots(n) === motsTapes || brut(n).replace(/ /g, "") === lit.replace(/ /g, "")); };
+          return !x.al && tapeSon.length >= 3 && (pareil(nom) || pareil(sansPrefixe(nom)) || brut(x.ar).trim() === lit); };
         var avecVille = function (x) { if (mots.length < 2 || x.k.indexOf(" " + mots[0]) < 0) return false;
           if (x.kz === undefined) x.kz = cle(x.fr + " " + x.sous[0]);
           return mots.every(function (m) { return x.kz.indexOf(" " + m) >= 0; }); };
@@ -531,6 +557,7 @@
         boite.hidden = false; champ.setAttribute("aria-expanded", "true");
       }
       function choisirLieu(c) {
+        proches = {}; prochesTous = 7;
         if (selG && !gFixe) { selG.value = c.x.g; }
         suivreGouv();
         if (selD) { selD.value = c.x.d; suivreGouv(); }
@@ -540,6 +567,9 @@
         // 18/10/2026 (Ahmed : « quand on fait une recherche, la carte doit afficher directement cet endroit ») : la carte suit « Où ? »
         // et on la montre (la liste des annonces est juste dessous) ; sans carte sur la page : on va à la liste comme avant
         form.dispatchEvent(new CustomEvent("lieu-choisi", { bubbles: true }));
+        // 26/10/2026 : si des quartiers proches sont proposés, on reste sur eux (la carte suit quand même le lieu choisi)
+        var bp = document.getElementById("ou-proches");
+        if (bp && !bp.hidden) { if (bp.scrollIntoView) bp.scrollIntoView({ behavior: "smooth", block: "nearest" }); return; }
         var cz = document.getElementById("cp-carte"), l = cz || document.getElementById("liste");
         if (l && l.scrollIntoView) l.scrollIntoView({ behavior: "smooth", block: cz ? "center" : "start" });
       }
@@ -676,7 +706,7 @@
       var n = function (k) { var x = parseInt((form.querySelector('[name="' + k + '"]') || {}).value, 10); return x > 0 ? x : 0; };
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
       var utileY = function (champ) { return !window.champUtile || window.champUtile(champ, val("y")); };
-      return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
+      return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), lx: val("l") ? Object.keys(proches) : [], c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
                fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"), du: utileY("duree") ? val("du") : "",
                p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, pb: casePb && casePb.checked ? 1 : 0, tri: tri ? tri.value : "photo",
                at: [].map.call(form.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).join(""),
@@ -690,9 +720,12 @@
     function passe(a, v, sauf) {
         if (v.t && a.t !== v.t) return false;
         if (!sauf.y && v.y && !typeVoulu(a, v.y)) return false;
-        if (!sauf.g && v.g && a.g !== v.g) return false;
-        if (!sauf.d && v.d && !dansDeleg(a, v.d)) return false;
-        if (!sauf.l && v.l && !dansLoc(a, v.l)) return false;
+        var proche = !sauf.l && v.l && v.lx && v.lx.length && a.l && v.lx.indexOf(a.g + "/" + a.l) >= 0;   // quartier proche ajouté
+        if (!proche) {
+          if (!sauf.g && v.g && a.g !== v.g) return false;
+          if (!sauf.d && v.d && !dansDeleg(a, v.d)) return false;
+          if (!sauf.l && v.l && !dansLoc(a, v.l)) return false;
+        }
         if (v.c && (a.c == null || (v.c >= 5 ? a.c < 5 : a.c !== v.c))) return false;
         if (v.fo && a.fo !== v.fo) return false;
         // durée de la location (22/10/2026, Ahmed : « la location par jour, par journée ou par nuit ») : c = à la nuit / au jour /
@@ -794,6 +827,7 @@
         zi.innerHTML = !v.z ? "" : L("Zone dessinée : <b>" + n + "</b> annonce" + (n > 1 ? "s" : "") + (sansPos ? " · " + sansPos + " sans position connue, exclues" : "") +
           ". Les alertes ne tiennent pas compte de la zone.", "المنطقة المرسومة: <b>" + iso(n) + "</b> إعلان" + (sansPos ? " · " + iso(sansPos) + " دون موقع معروف، مستبعدة" : "") + ". التنبيهات لا تأخذ المنطقة بعين الاعتبار.");
       }
+      montrerProches(v);
       if (res.parentNode && res.parentNode.classList) res.parentNode.classList.toggle("long", !!(sansPrix || v.z));   // précision ajoutée : la ligne peut passer à la ligne
       if (!n) {
         // localité ou délégation vide : on propose tout de suite le niveau au-dessus (délégation, puis gouvernorat)
@@ -805,6 +839,51 @@
       }
       return v;
     }
+    // liste « Ajouter des quartiers proches ? » sous la case « Où ? » (nombres = ceux de la recherche en cours, sans le lieu)
+    var boiteP = document.getElementById("ou-proches"), prochesTous = 7;
+    function montrerProches(v) {
+      if (!boiteP) return;
+      var g = gCourant(), ici = g && v.l ? PQ[g + "/" + v.l] : null;
+      var vider = function () { boiteP.hidden = true; boiteP.innerHTML = ""; boiteP.removeAttribute("data-html"); };
+      if (!ici || lFixe) { vider(); return; }
+      var n = {};
+      tout.forEach(function (a) { if (a.l && passe(a, v, { g: 1, d: 1, l: 1, compte: false })) n[a.g + "/" + a.l] = (n[a.g + "/" + a.l] || 0) + 1; });
+      // jamais une délégation entière (sa « position » est un centre : la distance ne voudrait rien dire)
+      var cands = Object.keys(PQ).filter(function (k) { return k !== g + "/" + v.l && LX.l[k] && n[k] && !(OF[k] && slug(OF[k][0]) === slug(LX.l[k][0])); })
+        .map(function (k) { return { k: k, km: km(ici, PQ[k]) }; })
+        .filter(function (x) { return x.km <= PROCHES_KM && !(x.k.split("/")[0] === g && memeNom(x.k.split("/")[1], v.l)); })
+        .sort(function (x, y) { return x.km - y.km; });
+      if (!cands.length) { vider(); return; }
+      var ar = document.documentElement.lang === "ar", vus = cands.slice(0, prochesTous);
+      cands.forEach(function (x) { if (proches[x.k] && vus.indexOf(x) < 0) vus.push(x); });     // un quartier déjà ajouté reste visible
+      var kmT = function (d) { var s = d < 10 ? (Math.round(d * 10) / 10).toFixed(1) : String(Math.round(d)); return s.replace(".", ar ? "٫" : ","); };
+      var html = '<p class="pr-titre">' + L("Ajouter des quartiers proches ?", "إضافة أحياء قريبة؟") + '</p><ul class="pr-liste">' +
+        vus.map(function (x) {
+          var on = !!proches[x.k], nom = LX.l[x.k];
+          return '<li><button type="button" class="pr-item" data-k="' + E(x.k) + '" aria-pressed="' + on + '">' +
+            '<span class="pr-plus" aria-hidden="true">' + (on ? "✓" : "+") + '</span>' +
+            '<span class="pr-km">' + L(kmT(x.km) + "\u00a0km", kmT(x.km) + "\u00a0كم") + '</span>' +
+            '<span class="pr-nom">' + E(ar ? nom[1] || nom[0] : nom[0]) + '</span>' +
+            '<span class="pr-n">' + (ar ? iso(n[x.k]) : n[x.k]) + '</span></button></li>';
+        }).join("") + '</ul>' +
+        (cands.length > vus.length ? '<button type="button" class="pr-voir-plus">' + L("Voir plus", "عرض المزيد") + '</button>' : "");
+      // pas redessinée si rien ne change : la case « Où ? » qui perd le focus déclenche un filtrage au moment du toucher, et un
+      // bouton remplacé entre l'appui et le relâché ne reçoit jamais le clic
+      if (boiteP.getAttribute("data-html") !== html) { boiteP.innerHTML = html; boiteP.setAttribute("data-html", html); }
+      boiteP.hidden = false;
+    }
+    if (boiteP) boiteP.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest(".pr-item, .pr-voir-plus");
+      if (!b) return;
+      if (b.classList.contains("pr-voir-plus")) prochesTous += 7;
+      else { var k = b.getAttribute("data-k"); if (proches[k]) delete proches[k]; else proches[k] = 1; }
+      memoriser(filtrer());
+    });
+    function oublierProches() { proches = {}; prochesTous = 7; }
+    if (selL) selL.addEventListener("change", oublierProches, true);
+    if (selD) selD.addEventListener("change", oublierProches, true);
+    if (selG) selG.addEventListener("change", oublierProches, true);
+    form.addEventListener("reset", oublierProches);
     function afficher(k) {
       var bout = liste.slice(montre, montre + k);
       zone.insertAdjacentHTML("beforeend", bout.map(function (a) { return carte(a, racine); }).join(""));
@@ -818,6 +897,7 @@
       // zone : écrite telle quelle ; carte pas encore chargée (ZONE_CARTE pas encore lue) : celle de l'adresse est gardée
       var avant = new URLSearchParams(location.search);
       if (v.z) p.set("z", ecrireZone(v.z)); else if (window.ZONE_CARTE === undefined && lireZone(avant.get("z"))) p.set("z", avant.get("z"));
+      if (v.lx && v.lx.length) p.set("lx", v.lx.join(","));
       var l = avant.get("lang"); if (l) p.set("lang", l);
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
     }

@@ -205,7 +205,7 @@
     return '<div class="bp-bornes"><span class="bp-b bp-l-' + pm + cote(pm) + '">' + tb + " – " + th + "</span></div>";
   }
   // pied de chaque carte (22/10/2026, Ahmed) : « Estimer le prix d'un bien avec notre IA » (remplace « Vendeur ? Ajoutez votre numéro »)
-  // MENSUALITÉ INDICATIVE sous un prix de vente (25/10/2026, Ahmed) : mêmes hypothèses que la page « Où investir ? » et robot/investir.py
+  // MENSUALITÉ (25/10/2026 ; plus affichée sous les annonces depuis le 27/10/2026, Ahmed) : mêmes hypothèses que la page « Où investir ? » et robot/investir.py
   // (credit() : APPORT, TAUX_CREDIT, DUREE_CREDIT, FRAIS_ACHAT) ; test croisé dans tools/test_site.mjs (mêmes valeurs, même calcul)
   var CREDIT = { apport: 0.20, taux: 0.10, ans: 20, frais: 1.07, min: 40000, max: 3000000 };
   function mensualite(p) {
@@ -214,13 +214,6 @@
   }
   // seulement une VENTE d'appartement ou de maison au prix sûr (prix douteux = a.p vide), jamais une location
   function avecCredit(a) { return a.t === "v" && (a.y === "appartement" || a.y === "maison") && a.p != null && !a.lc && a.p >= CREDIT.min && a.p <= CREDIT.max; }
-  function ligneCredit(a, racine) {
-    if (!avecCredit(a)) return "";
-    var m = nb(Math.round(mensualite(a.p))), ap = Math.round(CREDIT.apport * 100), tx = String(Math.round(CREDIT.taux * 1000) / 10).replace(".", ",");
-    return '<p class="an-credit">' + L("≈ <b>" + m + "\u00a0DT</b>/mois sur " + CREDIT.ans + "\u00a0ans", "≈ <b>" + iso(m) + "\u00a0دينار</b>/شهر على " + iso(CREDIT.ans) + " سنة") +
-      ' <a class="an-credit-lien" href="' + (racine || "") + 'investir/#calculateur">' +
-      L("crédit indicatif (apport " + ap + "\u00a0%, taux " + tx + "\u00a0%)", "قرض تقديري (مساهمة " + iso(ap) + "\u00a0%، نسبة " + iso(tx) + "\u00a0%)") + "</a></p>";
-  }
   // ZONE DESSINÉE sur la carte (25/10/2026, Ahmed) : polygone [[lat, lon], …] (assets/carte-prix.js), gardé dans l'adresse
   // (?z=lat,lon;lat,lon… arrondis à 3 décimales) ; une annonce est placée à la position de son quartier (prix/carte.js, CARTE_PRIX.q)
   function lireZone(t) {
@@ -268,7 +261,7 @@
       : '<p class="an-prix sans">' + (loc && a.lc ? L("Location courte durée : prix chez le vendeur", "كراء قصير المدة: السعر لدى البائع") : L("Prix communiqué par le vendeur", "السعر لدى البائع")) + '</p>';
     // prix d'avant (25/10/2026, collecter.baisse_prix : pb = %, pv = prix d'avant), même ligne que carte_annonce() du robot
     if (a.pb && a.pv && a.p != null && !court) prix += '<p class="an-prix-avant">' + L("Avant : " + nb(+a.pv) + "\u00a0DT", "قبل: " + iso(nb(+a.pv)) + "\u00a0دينار") + "</p>";
-    prix += ligneCredit(a, racine) + blocAvis(a, loc, racine, court);
+    prix += blocAvis(a, loc, racine, court);
     var faits = "";
     if (a.s) faits += '<li>' + ICO.surface + L(nb(a.s) + "\u00a0m²", iso(nb(a.s) + "\u00a0م²")) + '</li>';
     if (sn) faits += '<li>' + ICO.chambres + L("S+" + a.c, iso("S+" + a.c)) + '</li>';

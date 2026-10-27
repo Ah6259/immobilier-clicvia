@@ -425,8 +425,10 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     var zp = f.querySelector(".fiche-photos"), zc = f.querySelector(".fiche-contact"), zd = f.querySelector(".fiche-desc"), zs = f.querySelector(".fiche-source");
     zp.innerHTML = ""; zc.innerHTML = ""; zd.textContent = T("Chargement…", "جارٍ التحميل…"); zs.innerHTML = "";
     f.hidden = false; document.documentElement.classList.add("fiche-ouverte");
-    var lien = carte && carte.querySelector("a.an-contact, a.an-voir");
-    if (lien && /^https?:\/\//.test(lien.href)) { var a = el("a", "fiche-lien", T("Voir l’annonce sur le site d’origine", "عرض الإعلان في الموقع الأصلي")); a.href = lien.href; a.target = "_blank"; a.rel = "noopener nofollow"; zs.appendChild(a); }
+    // lien d'origine : sur le bouton « Description et contact » (data-url, 27/10/2026 : plus de « Voir l'annonce » sur la carte)
+    var lien = carte && carte.querySelector(".an-fiche[data-url], a.an-contact, a.an-voir");
+    var href = lien ? (lien.getAttribute("data-url") || lien.href || "") : "";
+    if (/^https?:\/\//.test(href)) { var a = el("a", "fiche-lien", T("Voir l’annonce sur le site d’origine", "عرض الإعلان في الموقع الأصلي")); a.href = href; a.target = "_blank"; a.rel = "noopener nofollow"; zs.appendChild(a); }
     try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "fiche" + location.pathname, title: "Fiche ouverte", event: true }); } catch (x) {}
     fetch(racine + "annonce/" + encodeURIComponent(id) + "/fiche.json").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
       (Array.isArray(d.ph) ? d.ph : []).slice(0, 20).forEach(function (u, i) {
@@ -511,7 +513,23 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
       .observe(document.documentElement, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", chercherGaleries); else chercherGaleries();
-  // toucher la photo sans glisser ouvre toujours l'annonce (assets/app.js) ; un glissement ne compte pas comme un toucher
+  // « Appeler » sur la carte (27/10/2026, Ahmed : « le bouton Appeler sur toutes les cartes, sans ouvrir l'annonce d'origine ») : numéro
+  // de l'annonceur lu dans annonce/<id>/fiche.json au toucher, puis Appeler + WhatsApp (même affichage que la fiche)
+  document.addEventListener("click", function (e) {
+    var b = e.target && e.target.closest && e.target.closest(".an-appel-fiche");
+    if (!b) return;
+    e.preventDefault();
+    if (b.dataset.lu) return;
+    b.dataset.lu = "1";
+    fetch(racine + "annonce/" + encodeURIComponent(b.getAttribute("data-fiche")) + "/fiche.json").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+      if (!(d.tl && /^\+?[\d ]{8,16}$/.test(d.tl))) throw new Error("sans numéro");
+      var num = String(d.tl), net = num.replace(/[^\d+]/g, ""), bloc = el("div", "an-actions");
+      var ap = el("a", "an-appel revele", num); ap.href = "tel:" + net; bloc.appendChild(ap);
+      var wa = el("a", "an-wa", "WhatsApp"); wa.href = "https://wa.me/" + net.replace(/^\+/, ""); wa.target = "_blank"; wa.rel = "noopener"; bloc.appendChild(wa);
+      b.parentNode.replaceChild(bloc, b);
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "appel" + location.pathname, title: "Numéro affiché", event: true }); } catch (x) {}
+    }).catch(function () { b.dataset.lu = ""; b.textContent = T("Numéro indisponible : touchez « Description et contact »", "الرقم غير متوفر: المس « الوصف والاتصال »"); });
+  });
   document.addEventListener("click", function (e) {
     var b = e.target && e.target.closest && e.target.closest(".an-fiche");
     if (!b) return;

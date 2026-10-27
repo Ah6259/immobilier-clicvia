@@ -1618,3 +1618,15 @@ html[dir="rtl"] .etapes-ico li:not(:last-child)::after{right:auto;left:0;transfo
 html[dir="rtl"] .an-gal-prec{left:auto;right:8px} html[dir="rtl"] .an-gal-suiv{right:auto;left:8px}
 html[dir="rtl"] .an-gal{transform:translateY(-50%) scaleX(-1)}
 .an-gal[hidden]{display:none}
+/* 27/10/2026 (Ahmed) : la photo ne mène plus à l'annonce d'origine (elle glisse) ; « Appeler » sur la carte, pleine largeur quand il est seul */
+.annonce .an-media{cursor:default}
+.annonce .an-media.a-galerie{cursor:grab}
+button.an-appel{font:inherit;cursor:pointer;width:100%}
+.an-corps>.an-appel-fiche{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+.an-actions:has(> .an-appel:only-child){grid-template-columns:1fr}
+.an-actions>.an-appel:only-child{width:100%}
+/* 27/10/2026 (Ahmed) : « Grande carte » entre « Dessiner ma zone » et le « ? » */
+.cp-grande{color:var(--terre-f);font-size:14px;font-weight:600;white-space:nowrap}
+.cp-zone-outils .cp-grande{margin-inline-start:auto}
+.cp-zone-outils .cp-grande~.aide-q{flex:0 0 auto;margin:0}
+.cp-zone-outils .cp-grande~.aide-q[open]{flex-basis:100%}

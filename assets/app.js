@@ -312,19 +312,22 @@
   // même calcul que id_partage() du robot et window.idPartage (page.js peut être chargé après ce fichier)
   function idFiche(a) { return String(a.i).replace(/[^a-z0-9-]/g, function (c) { return "-x" + c.charCodeAt(0).toString(16) + "-"; }); }
   function boutonFiche(a) {
-    return a.fd ? '<button class="an-fiche" type="button" data-fiche="' + E(idFiche(a)) + '">' +
+    return a.fd ? '<button class="an-fiche" type="button" data-fiche="' + E(idFiche(a)) + '" data-url="' + U(a.u) + '">' +
       L("Description et contact", "الوصف والاتصال") + '</button>' : "";   // 27/10/2026 (Ahmed) : les photos glissent sur la carte
   }
   function actions(a, racine) { return boutonFiche(a) + actionsContact(a, racine); }
   function actionsContact(a, racine) {
     var url = U(a.u);
-    var origine = '<a class="an-contact" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce", "عرض الإعلان") + ICO.lien + '</a>';
+    // 27/10/2026 (Ahmed) : plus de « Voir l'annonce » quand la carte a « Description et contact » (le lien d'origine y est) ; « Appeler »
+    // dès qu'un numéro est connu (a.ft : numéro de l'annonceur dans la fiche, lu au toucher). Même logique que actions_contact() du robot
+    var origine = a.fd ? "" : '<a class="an-contact" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce", "عرض الإعلان") + ICO.lien + '</a>';
+    if (a.ft && a.fd && a.v !== "a" && a.v !== "d") origine = '<button class="an-appel an-appel-fiche" type="button" data-fiche="' + E(idFiche(a)) + '">' + ICO.tel + L("Appeler", "اتصل") + '</button>';
     // annonce vue sur Facebook, ajoutée par Ahmed (18/10/2026) : un seul bouton, vers Facebook (nom et numéro y sont, pas chez nous)
     if (/^https:\/\/(www\.|m\.|web\.)?facebook\.com\//.test(a.u || "")) return '<a class="an-contact an-fb" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce sur Facebook", "عرض الإعلان على فيسبوك") + ICO.lien + '</a>';
     if (a.v === "a") {
       if (!a.tel) return origine;
       return '<div class="an-actions"><a class="an-appel" href="tel:' + E(a.tel.replace(/ /g, "")) + '" data-num="' + E(a.tel) + '">' + ICO.tel + L("Appeler l’agence", "اتصل بالوكالة") + '</a>' +
-        '<a class="an-voir" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce", "عرض الإعلان") + ICO.lien + '</a></div>';
+        (a.fd ? "" : '<a class="an-voir" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce", "عرض الإعلان") + ICO.lien + '</a>') + '</div>';
     }
     if (a.v === "d") {
       if (!a.tel) return "";
@@ -995,14 +998,5 @@
   window.carteAnnonce = carte;   // utilisé par les tests
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", demarrer); else demarrer();
 })();
-/* 25/10/2026 (Ahmed : « si on clique sur l'image, ça ouvre l'annonce ») : toucher la photo (ou le dessin) d'une carte ouvre l'annonce
-   d'origine, comme « Voir l'annonce » (même lien, nouvel onglet) ; les boutons posés sur la photo (partager, cœur) gardent leur rôle. */
-(function () {
-  document.addEventListener("click", function (e) {
-    var m = e.target && e.target.closest ? e.target.closest(".annonce .an-media") : null;
-    if (!m || (e.target.closest && e.target.closest("button, a"))) return;
-    var carte = m.closest(".annonce");
-    var lien = carte && carte.querySelector('a.an-voir[target="_blank"], a.an-contact[target="_blank"]');
-    if (lien && lien.href) window.open(lien.href, "_blank", "noopener");
-  });
-})();
+/* 25/10/2026 : toucher la photo ouvrait l'annonce d'origine ; RETIRÉ le 27/10/2026 (Ahmed : « maintenant les photos glissent sur notre carte,
+   ça ne sert à rien d'ouvrir l'annonce d'origine ») : la photo glisse (assets/page.js), le lien d'origine est dans « Description et contact ». */

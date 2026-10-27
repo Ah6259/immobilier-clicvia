@@ -45,6 +45,12 @@
   function rond(x) { return x >= 20000 ? Math.round(x / 1000) * 1000 : Math.round(x / 10) * 10; }
   function nb(x) { return '<bdi dir="ltr">' + Math.round(x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f") + "</bdi>"; }
   function dt(x) { return nb(rond(x)) + (ar() ? "\u00a0دينار" : "\u00a0DT"); }
+  // prix AU M² (27/10/2026, vu par Ahmed : un loyer de 14,6 DT/m² s'affichait « 10 DT », le quartier « 20 DT ») : jamais arrondi à 10 DT ;
+  // une décimale sous 100 DT/m² (loyers), à l'unité au-dessus, à la dizaine au-delà de 1 000 DT/m²
+  function dtm2(x) {
+    var t = x < 100 ? (Math.round(x * 10) / 10).toFixed(1).replace(".", ",").replace(/,0$/, "") : Math.round(x >= 1000 ? Math.round(x / 10) * 10 : x).toLocaleString("fr-FR").replace(/[\u00a0\u202f ]/g, "\u202f");
+    return '<bdi dir="ltr">' + t + "</bdi>" + (ar() ? "\u00a0دينار" : "\u00a0DT");
+  }
   function pc(x) { return '<bdi dir="ltr">' + (x >= 0 ? "+" : "−") + Math.abs(Math.round(x)) + "\u00a0%</bdi>"; }
   function med(v) { v = v.slice().sort(function (a, b) { return a - b; }); var n = v.length; return n ? (n % 2 ? v[(n - 1) / 2] : (v[n / 2 - 1] + v[n / 2]) / 2) : null; }
   function quart(v, f) { v = v.slice().sort(function (a, b) { return a - b; }); return v.length ? v[Math.min(v.length - 1, Math.floor(v.length * f))] : null; }
@@ -251,7 +257,12 @@
     function dansZone(a) { return !(qslug || dz) || (qslug && a.l === qslug) || (dz && delegA(a) === dz); }
     function tailleProche(a) { return !(s && a.s) || (a.s / s >= 2 / 3 && a.s / s <= 1.5); }
     // 27/10/2026 (Ahmed) : un fonds de commerce (ou murs + fonds) n'est jamais montré comme référence pour un local (fo : f / mf)
-    var zone = ventes.filter(function (a) { return dansZone(a) && memeSorte(a) && !(t === "commerce" && (a.fo === "f" || a.fo === "mf")); });
+    // 27/10/2026 (contrôleur des analyses payées : à La Marsa, un S+3 de 160 m² comparé à 1 400 DT ET à 6 500 DT) : une location n'est
+    // comparée qu'aux locations du même état — case « Meublé » cochée : seulement les meublées ; sinon jamais une meublée connue
+    // (code « u » des atouts lus ; texte pas lu : gardée, on ne sait pas)
+    var meubleCoche = LOC && !!form.querySelector('input[name="atout"][value="meuble"]:checked');
+    function memeMeuble(a) { if (!LOC) return true; var m = (a.at || "").indexOf("u") >= 0; return meubleCoche ? m : !m; }
+    var zone = ventes.filter(function (a) { return dansZone(a) && memeSorte(a) && memeMeuble(a) && !(t === "commerce" && (a.fo === "f" || a.fo === "mf")); });
     function distance(a) {           // même quartier d'abord, puis même délégation, puis pièces et surface
       var d = (qslug && a.l === qslug) ? 0 : 1;
       d += (ch !== null && a.c != null) ? Math.abs(a.c - ch) : (ch !== null ? 0.7 : 0);
@@ -264,7 +275,11 @@
     // même nombre de pièces seulement (18/10/2026, visites simulées : un S+4 comparé à des S+2 donnait un prix plus bas que le S+3)
     if (ch !== null) base = base.filter(function (a) { return a.c === ch; });
     var proches = base.filter(tailleProche).map(function (a) { return { a: a, d: distance(a) }; }).sort(function (x, y) { return x.d - y.d || y.a.d.localeCompare(x.a.d); }).slice(0, 10).map(function (x) { return x.a; });
-    if (s && proches.length < MIN_REF) proches = base.map(function (a) { return { a: a, d: distance(a) }; }).sort(function (x, y) { return x.d - y.d; }).slice(0, 10).map(function (x) { return x.a; });
+    // pas assez de biens de taille proche : on élargit, mais jamais au-delà de la moitié ou du double de la surface (27/10/2026, contrôleur
+    // des analyses payées : une maison de 450 m² comparée à des maisons de 150 m²) ; toujours pas assez : pas d'annonces de référence
+    if (s && proches.length < MIN_REF) proches = base.filter(function (a) { return !a.s || (a.s / s >= 0.5 && a.s / s <= 2); })
+      .map(function (a) { return { a: a, d: distance(a) }; }).sort(function (x, y) { return x.d - y.d; }).slice(0, 10).map(function (x) { return x.a; });
+    proches = sansAberrants(proches, s);
     var trouvees = proches.slice(0, 5);            // annonces semblables trouvées (montrées telles quelles, avec leur lien)
     if (proches.length < MIN_REF) proches = [];   // moins de 5 biens vraiment comparables dans la zone : pas de chiffre de référence
     var refPrix = s && proches.length ? med(proches.map(function (a) { return a.p / a.s; })) * s : med(proches.map(function (a) { return a.p; }));
@@ -297,7 +312,7 @@
     var sansSurface = !s && window.IA_IMMO && IA_IMMO.pret() && (((IA_IMMO.modele() || {}).surface_obligatoire || []).indexOf(t) >= 0 || (t === "maison" && ch === null));
     var m2 = function (l) { return med(l.filter(function (a) { return a.s; }).map(function (a) { return a.p / a.s; })); };
     var duQuartier = qslug ? ventes.filter(function (a) { return a.l === qslug; }) : [];
-    var semblables = zone.filter(function (a) { return ch === null || a.c == null || Math.abs(a.c - ch) <= 1; });
+    var semblables = sansAberrants(zone.filter(function (a) { return ch === null || a.c == null || Math.abs(a.c - ch) <= 1; }), s);
     return { t: t, g: g, q: q, s: s, ch: ch, ia: ia, at: at, et: et, plus: plus, sansSurface: sansSurface, proches: proches, trouvees: ia ? [] : trouvees, refPrix: refPrix, refM2: refM2, tropVaries: tropVaries, nVentes: ventes.length,
              m2Q: duQuartier.length >= 3 ? m2(duQuartier) : null, m2G: (qslug || dz) ? null : m2(ventes),
              m2D: dz && zone.length >= 3 ? m2(zone) : null, dz: dz, semblables: semblables };
@@ -404,19 +419,24 @@
 
   // sans Pass (15/10/2026, Ahmed) : la carte « 3. Le résultat complet » existe quand même, VERROUILLÉE, avec le tampon EXEMPLE
   // (chiffres fictifs de l'exemple du Pass) et « disponible seulement si vous avez le Pass »
+  function nomBien(r) {
+    var o = noms(el("v-t").options[el("v-t").selectedIndex]), li = lieuxDeux();
+    return (ar() ? (o[1] || o[0]) : o[0]) + (r.ch !== null && r.ch !== undefined ? " S+" + r.ch : "") + (r.s ? ", " + nb(r.s) + (ar() ? " م²" : " m²") : "") + ", " + esc(li[ar() ? 1 : 0]);
+  }
+  // sans Pass (27/10/2026, Ahmed : « si le client n'a pas de Pass, on affiche un EXEMPLE avec un GRAND tampon qui dit que c'est un
+  // exemple ») : l'exemple complet est montré tout de suite, avec deux grands tampons « EXEMPLE » et un bandeau « ce n'est pas votre bien » ;
+  // au-dessus, une ligne dit que le Pass donne la même analyse pour LE bien du formulaire
   function afficherVerrou(r, a) {
     var v = el("v-verrou");
     if (!v) return;
     v.hidden = a.ok || !(r.ia || r.refPrix);
     if (v.hidden) { v.innerHTML = ""; return; }
-    var ouvert = el("v-verrou-d") ? el("v-verrou-d").open : false, ex = document.querySelector(".exemple-proprio-corps");
-    v.innerHTML = '<details class="pliable" id="v-verrou-d"' + (ouvert ? " open" : "") + "><summary><h2>" + T2("🔒 Voir un exemple de l’analyse complète", "🔒 شاهد مثالًا للتحليل الكامل") + "</h2>" +
-      '<span class="pli-sous pli-sous-garde"><b>' + T2("Disponible seulement si vous avez le Pass Propriétaire.", "متاح فقط إن كان لديك باس المالك.") + "</b> " +
-      T2("Touchez + pour voir un exemple.", "المس + لترى مثالًا.") + "</span></summary>" +
-      '<p class="v-pour v-verrou-msg">🔒 <b>' + T2("Disponible seulement si vous avez le Pass Propriétaire", "متاح فقط إن كان لديك باس المالك") + "</b>. " +
-      T2("Ci-dessous, un EXEMPLE aux chiffres fictifs : avec le Pass, ce sont les chiffres de VOTRE bien.", "أسفله مثال بأرقام وهمية: مع الباس تظهر أرقام عقارك أنت.") + "</p>" +
-      '<div class="verrou-ex">' + (ex ? ex.innerHTML : '<span class="tg-tampon" aria-hidden="true">' + T2("EXEMPLE", "مثال") + "</span>") + "</div>" +
-      '<a class="btn-paie" href="#pass-vendeur">' + T2("Prendre le Pass Propriétaire", "خذ باس المالك") + "</a></details>";
+    var ex = document.querySelector(".exemple-proprio-corps"), tampon = '<span class="tg-tampon tampon-grand" aria-hidden="true">' + T2("EXEMPLE", "مثال") + "</span>";
+    var corps = ex ? ex.innerHTML.replace(/<span class="tg-tampon"[^>]*>[^<]*<\/span>/g, "") : "";
+    v.innerHTML = '<p class="v-pour v-verrou-msg">🔒 <b>' + T2("Avec le Pass Propriétaire", "مع باس المالك") + "</b>, " + T2("la même analyse, avec les chiffres de VOTRE bien : ", "نفس التحليل بأرقام عقارك أنت: ") + "<b>" + nomBien(r) + "</b>.</p>" +
+      '<p class="bandeau-exemple">' + T2("EXEMPLE ci-dessous : un autre bien, chiffres fictifs. Ce n’est pas votre bien.", "مثال أسفله: عقار آخر بأرقام وهمية. ليس عقارك.") + "</p>" +
+      '<div class="verrou-ex">' + tampon + tampon.replace("tampon-grand", "tampon-grand tampon-bas") + corps + "</div>" +
+      '<p><a class="btn-paie" href="#pass-vendeur">' + T2("Prendre le Pass Propriétaire", "خذ باس المالك") + "</a></p>";
   }
 
   function afficherAnalyse(r) {
@@ -427,8 +447,7 @@
     // carte repliable (15/10/2026, Ahmed : « est-ce un exemple ? il faut l'indiquer ; carte compacte, + pour l'agrandir ») :
     // le résumé dit QUEL bien est analysé (celui du formulaire, pas un exemple) et donne le juste prix
     var ouvert = el("v-analyse-d") ? el("v-analyse-d").open : false;
-    var o = noms(el("v-t").options[el("v-t").selectedIndex]), li = lieuxDeux();
-    var bien = (ar() ? (o[1] || o[0]) : o[0]) + (r.ch !== null && r.ch !== undefined ? " S+" + r.ch : "") + (r.s ? ", " + nb(r.s) + (ar() ? "\u00a0م²" : "\u00a0m²") : "") + ", " + esc(li[ar() ? 1 : 0]);
+    var bien = nomBien(r);
     var h = '<details class="pliable" id="v-analyse-d"' + (ouvert ? " open" : "") + "><summary><h2>" + T2("📂 Ouvrir votre analyse complète", "📂 افتح تحليلك الكامل") + "</h2>" +
       '<span class="pli-sous pli-sous-garde"><b>' + bien + "</b> · " + (LOC ? T2("juste loyer : ", "الكراء العادل: ") : T2("juste prix : ", "السعر العادل: ")) + "<b>" + dt(juste) + "</b><br>" +
       T2("Touchez + pour voir toute l’analyse.", "المس + لترى كامل التحليل.") + "</span></summary>";
@@ -439,24 +458,34 @@
       '<li class="juste"><span>' + T2("Le juste prix du marché", "السعر العادل في السوق") + "</span><b>" + dt(juste) + "</b><small>" + T2("là où se situe le marché pour un bien comme le vôtre", "حيث يقف السوق لعقار مثل عقارك") + "</small></li>" +
       "<li><span>" + T2("Prix haut", "سعر مرتفع") + "</span><b>" + dt(haut) + "</b><small>" + T2("seulement si votre bien a de vrais atouts (vue, étage, rénové, jardin…) : la vente sera plus longue", "فقط إن كانت لعقارك مزايا حقيقية (إطلالة، طابق، تجديد، حديقة…): سيطول البيع") + "</small></li></ul>";
     if (r.s) {
-      h += "<h3>" + T2("Votre prix au m²", "سعرك بالمتر المربع") + "</h3><p>" + T2("Au juste prix : ", "بالسعر العادل: ") + dt(juste / r.s) + T2(" par m²", " للمتر المربع") +
-        (r.m2Q ? T2(" · quartier : ", " · الحي: ") + dt(r.m2Q) + " (" + pc((juste / r.s / r.m2Q - 1) * 100) + ")" : "") +
-        (r.m2D && r.m2D !== r.m2Q ? T2(" · délégation : ", " · المعتمدية: ") + dt(r.m2D) + " (" + pc((juste / r.s / r.m2D - 1) * 100) + ")" : "") +
-        (r.m2G ? T2(" · gouvernorat : ", " · الولاية: ") + dt(r.m2G) + " (" + pc((juste / r.s / r.m2G - 1) * 100) + ")" : "") + "</p>";
+      h += "<h3>" + T2("Votre prix au m²", "سعرك بالمتر المربع") + "</h3><p>" + T2("Au juste prix : ", "بالسعر العادل: ") + dtm2(juste / r.s) + T2(" par m²", " للمتر المربع") +
+        (r.m2Q ? T2(" · quartier : ", " · الحي: ") + dtm2(r.m2Q) + " (" + pc((juste / r.s / r.m2Q - 1) * 100) + ")" : "") +
+        (r.m2D && r.m2D !== r.m2Q ? T2(" · délégation : ", " · المعتمدية: ") + dtm2(r.m2D) + " (" + pc((juste / r.s / r.m2D - 1) * 100) + ")" : "") +
+        (r.m2G ? T2(" · gouvernorat : ", " · الولاية: ") + dtm2(r.m2G) + " (" + pc((juste / r.s / r.m2G - 1) * 100) + ")" : "") + "</p>";
     }
     h += valeurAtouts(r);
     var px = r.semblables.map(function (x) { return x.p; });
     h += "<h3>" + T2("La concurrence en ce moment", "المنافسة الآن") + "</h3><p>" + nb(r.semblables.length) +
       T2(" biens semblables sont en vente", " عقارًا مشابهًا معروضًا للبيع") + (px.length >= 4 ? T2(" ; la moitié entre ", "؛ نصفها بين ") + dt(quart(px, 0.25)) + T2(" et ", " و") + dt(quart(px, 0.75)) : "") +
+      // 27/10/2026 : dire la taille de ces biens (sinon « la moitié entre 850 et 1 150 DT » semble contredire le juste loyer d'un petit bien)
+      (function () { var ss = r.semblables.map(function (x) { return x.s; }).filter(Boolean); return ss.length >= 3 ? T2(" (surfaces connues de ", " (مساحات معروفة من ") + nb(Math.min.apply(null, ss)) + T2(" à ", " إلى ") + nb(Math.max.apply(null, ss)) + "\u00a0m²)" : ""; })() +
       ". " + T2("Plus il y en a, plus un prix juste compte pour vendre.", "كلما زاد عددها، زادت أهمية السعر العادل للبيع.") + "</p>";
     var logt = r.t === "appartement" || r.t === "maison";   // pièces (S+N) : seulement pour un logement
     if (r.proches.length) {
       h += "<h3>" + T2("Les annonces de référence (les plus proches de votre bien)", "إعلانات المرجع (الأقرب إلى عقارك)") + '</h3><div class="inv-tableau"><table><thead><tr><th>' +
         T2("Prix", "السعر") + "</th><th>" + T2("Surface", "المساحة") + "</th>" + (logt ? "<th>" + T2("Pièces", "الغرف") + "</th>" : "") + "<th>" + T2("Lieu", "المكان") + "</th><th></th></tr></thead><tbody>" +
         r.proches.map(function (x) {
-          return "<tr><td><b>" + dt(x.p) + "</b>" + (x.s ? "<small>" + dt(x.p / x.s) + "/m²</small>" : "") + "</td><td>" + (x.s ? nb(x.s) + "\u00a0m²" : "—") + "</td>" + (logt ? "<td>" + (x.c != null ? '<bdi dir="ltr">S+' + x.c + "</bdi>" : "—") + "</td>" : "") +
+          return "<tr><td><b>" + dt(x.p) + "</b>" + (x.s ? "<small>" + dtm2(x.p / x.s) + "/m²</small>" : "") + "</td><td>" + (x.s ? nb(x.s) + "\u00a0m²" : "—") + "</td>" + (logt ? "<td>" + (x.c != null ? '<bdi dir="ltr">S+' + x.c + "</bdi>" : "—") + "</td>" : "") +
             "<td>" + esc(x.l ? nomQ(r.g, x.l) : (x.n || nomG(r.g))) + '</td><td><a href="' + esc(x.u) + '" target="_blank" rel="noopener nofollow">' + T2("voir", "شاهد") + "</a></td></tr>";
         }).join("") + "</tbody></table></div>";
+      // 27/10/2026 (contrôleur des analyses payées : S+3 de 160 m² à La Marsa, de 1 400 à 6 500 DT) : des références très variées
+      // (le plus cher plus de 2,5 fois le moins cher au m²) sont dites clairement, avec ce qui peut faire la différence
+      var vm2 = r.proches.filter(function (x) { return x.s; }).map(function (x) { return x.p / x.s; });
+      if (vm2.length >= 4 && Math.max.apply(null, vm2) > 2.5 * Math.min.apply(null, vm2))
+        h += '<p class="v-tres-varies">⚠️ ' + T2("Prix très variés ici : de ", "أسعار متفاوتة جدًا هنا: من ") + dtm2(Math.min.apply(null, vm2)) + T2(" à ", " إلى ") + dtm2(Math.max.apply(null, vm2)) +
+          T2("/m² pour des biens de même taille. La différence vient souvent de ce que l’annonce ne dit pas toujours : ", "/م² لعقارات من نفس الحجم. الفرق يأتي غالبًا مما لا يذكره الإعلان دائمًا: ") +
+          (LOC ? T2("meublé ou non, vue, standing, étage. ", "مفروش أم لا، الإطلالة، المستوى، الطابق. ") : T2("vue, standing, étage, état. ", "الإطلالة، المستوى، الطابق، الحالة. ") ) +
+          T2("Ouvrez les annonces avant de fixer votre prix.", "افتح الإعلانات قبل تحديد سعرك.") + "</p>";
     }
     h += blocAnnonce(r, juste);
     h += "<h3>" + T2("Comment ce prix est calculé", "كيف حُسب هذا السعر") + "</h3><p>" +
@@ -475,6 +504,17 @@
   // (3) ce que chaque atout AJOUTE au prix : le même modèle d'IA, avec et sans l'atout (rien d'inventé : si l'IA ne voit pas de
   //     différence nette, on ne l'affiche pas)
   function nomAtout(b, langue) { var x = b.parentNode.querySelector('[data-l="' + langue + '"]'); return x ? x.textContent : b.value; }
+  // 27/10/2026 (vu en vérifiant l'analyse payée : un S+2 de 100 m² à 1 800 000 DT, soit 18 000 DT/m², parmi des biens à 2 000 -
+  // 3 000 DT/m²) : une annonce au prix (ou au prix au m²) plus de 2,5 fois loin de la médiane du groupe n'est jamais montrée comme
+  // référence ni comptée dans la concurrence (erreur de saisie, autre sorte de bien) ; groupe de moins de 4 : rien n'est retiré
+  function sansAberrants(l, s) {
+    var v = l.map(function (a) { return s && a.s ? a.p / a.s : (s ? null : a.p); }).filter(function (x) { return x; });
+    if (v.length < 4) return l;
+    var m = med(v);
+    return l.filter(function (a) { var x = s && a.s ? a.p / a.s : (s ? null : a.p); return x === null || (x <= m * 2.5 && x >= m / 2.5); });
+  }
+  window.VENDRE_OUTILS = { dtm2: function (x) { return dtm2(x); }, sansAberrants: sansAberrants, ATOUT_MAX: 0.20 };   // pour les tests
+  var ATOUT_MAX = 0.20;
   function valeurAtouts(r) {
     if (!r.ia || !window.IA_IMMO || !IA_IMMO.pret()) return "";
     var lignes = [];
@@ -484,14 +524,16 @@
       var e1 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, avec, r.et, r.plus), e0 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, sans, r.et, r.plus);
       if (!e1 || !e0) return;
       var d = e1[0] - e0[0];
-      if (d / e0[0] >= 0.02) lignes.push([d, b.checked, nomAtout(b, ar() ? "ar" : "fr")]);
+      // 27/10/2026 (vérification de l'analyse payée : « garage +68 000 DT » sur un appartement de 208 000 DT) : au-delà de 20 % du prix,
+      // l'écart vient de trop peu d'annonces avec cet atout ici : pas montré (un chiffre douteux ne se vend pas)
+      if (d / e0[0] >= 0.02 && d / e0[0] <= ATOUT_MAX) lignes.push([d, b.checked, nomAtout(b, ar() ? "ar" : "fr")]);
     });
     // standing et état : le même bien en standing normal / bon état, puis haut standing, neuf, rénové
     var base = r.at.filter(function (x) { var n = x.replace(/^\?/, ""); return n !== "haut_standing" && ETATS.indexOf(n) < 0; });
     [["haut_standing", T2("Haut standing", "راقٍ"), el("v-std") && el("v-std").value === "haut"], ["neuf", T2("Neuf", "جديد"), el("v-etb") && el("v-etb").value === "neuf"],
      ["renove", T2("Rénové", "مجدَّد"), el("v-etb") && el("v-etb").value === "renove"]].forEach(function (v) {
       var e1 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base.concat([v[0]]), r.et, r.plus), e0 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base, r.et, r.plus);
-      if (e1 && e0 && (e1[0] - e0[0]) / e0[0] >= 0.02) lignes.push([e1[0] - e0[0], !!v[2], v[1]]);
+      if (e1 && e0 && (e1[0] - e0[0]) / e0[0] >= 0.02 && (e1[0] - e0[0]) / e0[0] <= ATOUT_MAX) lignes.push([e1[0] - e0[0], !!v[2], v[1]]);
     });
     lignes.sort(function (x, y) { return y[0] - x[0]; });
     var h = "<h3>" + T2("Ce que chaque atout ajoute à votre prix", "ما تضيفه كل ميزة إلى سعرك") + '</h3><ul class="v-atouts-valeur">';

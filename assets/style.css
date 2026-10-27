@@ -1630,3 +1630,19 @@ button.an-appel{font:inherit;cursor:pointer;width:100%}
 .cp-zone-outils .cp-grande{margin-inline-start:auto}
 .cp-zone-outils .cp-grande~.aide-q{flex:0 0 auto;margin:0}
 .cp-zone-outils .cp-grande~.aide-q[open]{flex-basis:100%}
+/* 27/10/2026 (Ahmed) : « Où investir ? » — étape 3 = le résultat complet pour le bien, le lieu et le budget choisis (même page),
+   étape 4 = l'analyse complète et détaillée (page du Pass) */
+[data-page="investir"] .inv-e4{border-top:4px solid var(--or)}
+.inv-pour{margin:0 0 8px;padding:8px 12px;border-radius:12px;background:var(--sable);font-size:14.5px}
+.inv-complet-liste{margin:6px 0 12px;padding-inline-start:22px;display:grid;gap:8px;font-size:14.5px;line-height:1.45}
+.inv-complet-liste small{color:var(--doux)}
+/* 27/10/2026 (Ahmed) : sans Pass, l'étape 3 décrit l'analyse de VOTRE bien (chiffres cachés), l'exemple derrière un petit lien */
+.v-cache{display:inline-block;margin-inline-end:6px;padding:0 8px;border-radius:8px;background:var(--sable);color:var(--doux);font-weight:700;letter-spacing:.08em}
+.v-verrou-ex{margin-top:10px}
+.v-verrou-ex>summary{cursor:pointer;color:var(--terre-f);font-weight:600;font-size:14.5px}
+/* 27/10/2026 (Ahmed : « un GRAND tampon qui indique que c'est un exemple ») : sans Pass, l'exemple de l'analyse complète est montré avec
+   deux grands tampons rouges « EXEMPLE » bien visibles et un bandeau au-dessus */
+.verrou-ex .tampon-grand{z-index:2;top:22%;font-size:clamp(46px,13vw,92px);letter-spacing:.14em;color:rgba(178,34,34,.42);border:7px solid rgba(178,34,34,.42);padding:4px 22px}
+.verrou-ex .tampon-bas{top:68%}
+.bandeau-exemple{margin:10px 0 6px;padding:8px 12px;border-radius:10px;background:#B22222;color:#fff;font-weight:800;text-align:center;font-size:15px}
+.v-tres-varies{margin:8px 0 12px;padding:10px 12px;border-radius:12px;background:#FFF3D6;border:1px solid var(--or);font-size:14px;line-height:1.45}

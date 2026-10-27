@@ -128,28 +128,79 @@
     complet(a, g);
   }
   function aPass() { try { var v = JSON.parse(localStorage.getItem("pass-immobilier") || "null"); return v && v.code ? v.code : ""; } catch (e) { return ""; } }
+  // 27/10/2026 (Ahmed : « le résultat complet doit être pour MON budget et MON bien, sur la même page ; l'analyse complète et détaillée
+  // reste une page importante = étape 4 ») : avec un Pass payé gardé dans le téléphone, l'étape 3 ouvre le tableau chiffré du Pass
+  // (assets/pass.js, PASS_IMMO.charger) et le filtre ICI : même type, même gouvernorat / quartier, même budget.
+  var PASS_R = null, PASS_CODE = null, PASS_ATTENTE = null;
+  function passCharge(code) {
+    if (PASS_CODE === code && (PASS_R || PASS_ATTENTE)) return PASS_ATTENTE || Promise.resolve(PASS_R);
+    PASS_CODE = code; PASS_R = null;
+    PASS_ATTENTE = (window.PASS_IMMO && window.PASS_IMMO.charger ? window.PASS_IMMO.charger(code, "pass/") : Promise.resolve(null))
+      .then(function (x) { PASS_R = x || false; PASS_ATTENTE = null; return PASS_R; });
+    window.INVESTIR_PASS = PASS_ATTENTE;            // attendu par les tests
+    return PASS_ATTENTE;
+  }
+  function credit(x) { return x.reste_mois == null ? "" : " · " + T("avec crédit ", "بالقرض ") + (x.reste_mois >= 0 ? "+" : "−") + dt(Math.abs(x.reste_mois)) + T("/mois", "/شهر"); }
+  function iaM(x, k) { return x.ia && x.ia.indexOf(k) >= 0 ? ' <small class="p-ia">(' + T("estimé par l’IA", "تقدير الذكاء الاصطناعي") + ")</small>" : ""; }
+  function completPayant(R, t, a, g, q, b) {
+    var nomT = nom(NOMS[t] || [t, t]), h = "", ou = g ? esc(nomG(g) || g) : T("toute la Tunisie", "كامل تونس");
+    h += '<p class="inv-pour">' + T("Pour : ", "لـ: ") + "<b>" + escT(nomT) + "</b> · " + ou + (b ? " · " + T("budget ", "ميزانية ") + dt(b) : "") + "</p>";
+    if (a) {
+      var l = (R.classement || []).filter(function (x) { return x.taille === a && (!g || x.g === g) && (!q || x.q === q) && (!b || x.achat <= b); });
+      h += "<h4>" + T("Les quartiers classés par note", "الأحياء مرتّبة حسب العدد") + (b ? T(" (prix médian dans votre budget)", " (السعر الوسط ضمن ميزانيتك)") : "") + "</h4>";
+      h += l.length ? '<ol class="inv-complet-liste">' + l.slice(0, 10).map(function (x) {
+        return "<li><b>" + esc(ar() ? x.q_ar : x.q_fr) + "</b> <small>" + esc(ar() ? x.g_ar : x.g_fr) + (x.saison ? " · " + T("zone de vacances", "منطقة عطل") : "") + "</small> · <b>" +
+          '<bdi dir="ltr">' + String(x.note).replace(".", ",") + "/10</bdi></b><br>" + T("achat ", "شراء ") + dt(x.achat) + iaM(x, "achat") + " · " + T("loyer ", "كراء ") + dt(x.loyer) + iaM(x, "loyer") +
+          " · " + pc(x.brut) + " " + T("brut", "خام") + " · <b>" + pc(x.net) + " " + T("net", "صافٍ") + "</b>" + credit(x) + "</li>";
+      }).join("") + "</ol>" + (l.length > 10 ? '<p class="petit">' + T("+ " + (l.length - 10) + " autres quartiers dans l’analyse complète (étape 4).", "+ " + (l.length - 10) + " أحياء أخرى في التحليل الكامل (الخطوة 4).") + "</p>" : "")
+        : "<p>" + T("Aucun quartier classé pour ce choix" + (b ? " dans ce budget" : "") + " : élargissez le lieu" + (b ? " ou le budget" : "") + ".", "لا يوجد حي مرتّب لهذا الاختيار" + (b ? " ضمن هذه الميزانية" : "") + ": وسّع المكان" + (b ? " أو الميزانية" : "") + ".") + "</p>";
+      var ba = (R.affaires || []).filter(function (x) { return x.taille === a && (!g || x.g === g) && (!q || x.q === q) && (!b || x.prix <= b); });
+      h += "<h4>" + T("Bonnes affaires de la semaine", "صفقات الأسبوع الجيدة") + (b ? T(" dans votre budget", " ضمن ميزانيتك") : "") + "</h4>";
+      h += ba.length ? '<ul class="inv-complet-liste">' + ba.slice(0, 5).map(function (x) {
+        return "<li><b>" + esc(ar() ? x.q_ar : x.q_fr) + "</b> : <b>" + dt(x.prix) + "</b> — " + '<bdi dir="ltr">' + Math.round(x.ecart) + " %</bdi>" + T(" sous le prix du quartier (", " أقل من سعر الحي (") + dt(x.mediane) + ") · " + pc(x.brut) + " " + T("brut", "خام") +
+          ' · <a href="' + esc(x.url) + '" target="_blank" rel="noopener nofollow">' + T("voir l’annonce", "شاهد الإعلان") + "</a></li>";
+      }).join("") + "</ul>" : "<p>" + T("Aucune cette semaine pour ce choix.", "لا شيء هذا الأسبوع لهذا الاختيار.") + "</p>";
+    } else {
+      var m = (R.m2 || []).filter(function (x) { return x.type === t && (!g || x.g === g); });
+      var te = (R.terrains || []).filter(function (x) { return x.type === t && (!g || x.g === g); });
+      h += m.length ? '<ul class="inv-complet-liste">' + m.map(function (x) {
+        return "<li><b>" + esc(ar() ? x.g_ar : x.g_fr) + "</b> : " + dt(x.prix_m2) + T("/m² · loyer ", "/م² · كراء ") + '<bdi dir="ltr">' + String(x.loyer_m2).replace(".", ",") + "</bdi>" + T(" DT/m² · ", " دينار/م² · ") +
+          pc(x.brut) + " " + T("brut", "خام") + (x.net != null ? " · <b>" + pc(x.net) + " " + T("net", "صافٍ") + "</b>" : "") +
+          (b ? " · " + T("avec votre budget ≈ ", "بميزانيتك ≈ ") + '<bdi dir="ltr">' + nb(b / x.prix_m2) + "</bdi>" + T(" m²", " م²") : "") + "</li>";
+      }).join("") + "</ul>"
+        : te.length ? '<ul class="inv-complet-liste">' + te.map(function (x) {
+          return "<li><b>" + esc(ar() ? x.g_ar : x.g_fr) + "</b> : " + dt(x.prix_m2) + T("/m² (", "/م² (") + nb(x.nb) + T(" annonces)", " إعلان)") +
+            (b ? " · " + T("avec votre budget ≈ ", "بميزانيتك ≈ ") + '<bdi dir="ltr">' + nb(b / x.prix_m2) + "</bdi>" + T(" m²", " م²") : "") + "</li>";
+        }).join("") + "</ul>"
+        : "<p>" + T("Pas encore assez d’annonces fiables pour ce type de bien ici.", "لا توجد بعد إعلانات موثوقة كافية لهذا النوع هنا.") + "</p>";
+    }
+    return h;
+  }
   function complet(a, g) {
     if (!comp) return;
+    var t = el("inv-t").value, q = el("inv-q").value, b = +el("inv-b").value || 0;
     var zg = g ? lignes().filter(function (x) { return x[0] === g; })[0] : null, ou = zg ? (ar() ? zg[2] : zg[1]) : T("toute la Tunisie", "كامل تونس");
     var l = a ? [T("La <b>note sur 10</b> de chaque quartier de " + esc(ou) + " (rendement net, prix d’entrée, fiabilité, demande)", "<b>العدد من 10</b> لكل حي في " + esc(ou) + " (المردود الصافي، سعر الدخول، الموثوقية، الطلب)"),
                  T("Le <b>rendement net</b> et ce qui reste chaque mois <b>avec un crédit</b>", "<b>المردود الصافي</b> وما يبقى كل شهر <b>بالقرض</b>"),
-                 T("La <b>fiche</b> de chaque quartier : prix bas et haut, loyers, apport", "<b>بطاقة</b> كل حي: السعر الأدنى والأعلى، الكراء، المساهمة"),
-                 T("Les <b>bonnes affaires</b> de la semaine (ventes sous le prix du quartier)", "<b>الصفقات الجيدة</b> لهذا الأسبوع (بيوع تحت سعر الحي)"),
-                 T("Le <b>comparateur</b> de 2 ou 3 quartiers", "<b>المقارنة</b> بين حيين أو ثلاثة")]
-            : [T("Le tableau complet au m² de <b>tous les gouvernorats</b>, trié comme vous voulez", "الجدول الكامل بالمتر المربع لـ<b>كل الولايات</b>، مرتّب كما تريد"),
-               T("Le <b>rendement net</b> et le calcul <b>avec un crédit</b>", "<b>المردود الصافي</b> والحساب <b>بالقرض</b>"),
-               T("Les <b>bonnes affaires</b> de la semaine", "<b>الصفقات الجيدة</b> لهذا الأسبوع")];
-    var code = aPass(), lien = "pass/" + (g ? "?g=" + encodeURIComponent(g) : "") + (code ? "#" + code : "");
-    // 27/10/2026 (Ahmed : « je ne vois pas le résultat complet alors que j'ai le Pass ») : Pass gardé dans le téléphone -> « ✅ Pass
-    // actif » et un gros bouton ; sans Pass : ce que contient le résultat (🔒), l'exemple, le prix, et « J'ai déjà un code Pass »
-    comp.innerHTML = code
-      ? '<p class="inv-pass-actif">✅ ' + T("Votre Pass est actif (" + esc(code) + ")", "الباس مفعّل (" + esc(code) + ")") + "</p>" +
-        '<ul class="res-inclus">' + l.map(function (x) { return "<li>✓ " + x + "</li>"; }).join("") + "</ul>" +
-        '<p><a class="btn-paie btn-paie-grand" href="' + lien + '">' + T("Voir mon résultat complet", "شاهد نتيجتي الكاملة") + "</a></p>"
-      : '<ul class="res-verrou">' + l.map(function (x) { return "<li>🔒 " + x + "</li>"; }).join("") + "</ul>" +
+                 T("Les <b>bonnes affaires</b> de la semaine dans votre budget", "<b>الصفقات الجيدة</b> لهذا الأسبوع ضمن ميزانيتك")]
+            : [T("Le prix et le loyer <b>au m²</b>, le <b>rendement net</b>", "السعر والكراء <b>بالمتر المربع</b>، <b>المردود الصافي</b>"),
+               T("La <b>surface</b> que permet votre budget", "<b>المساحة</b> التي تسمح بها ميزانيتك")];
+    var code = aPass(), al = el("inv-analyse-lien");
+    if (al) al.setAttribute("href", "pass/" + (g ? "?g=" + encodeURIComponent(g) : "") + (code ? "#" + code : ""));
+    if (!code) {
+      comp.innerHTML = '<ul class="res-verrou">' + l.map(function (x) { return "<li>🔒 " + x + "</li>"; }).join("") + "</ul>" +
         '<p class="v-pour">🔒 <b>' + T("Disponible avec le Pass Investisseur", "متاح مع باس المستثمر") + "</b>.</p>" +
         '<p class="res-boutons"><a class="btn-exemple" href="exemple/">' + T("👀 Voir l’exemple complet", "👀 شاهد المثال الكامل") + '</a> <a class="btn-paie" href="#pass">' + T("Voir le prix du Pass", "شاهد سعر الباس") + "</a></p>" +
         '<p class="inv-deja"><a href="pass/">' + T("🔑 J’ai déjà un code Pass", "🔑 لديّ رمز باس") + "</a></p>";
+      return;
+    }
+    if (PASS_R) { comp.innerHTML = '<p class="inv-pass-actif">✅ ' + T("Votre Pass est actif", "الباس مفعّل") + "</p>" + completPayant(PASS_R.R, t, a, g, q, b); return; }
+    if (PASS_R === false && PASS_CODE === code) {
+      comp.innerHTML = "<p>" + T("Votre code " + esc(code) + " n’est pas (encore) payé : le résultat complet s’ouvre dès que le paiement est reçu.", "رمزك " + esc(code) + " غير مدفوع (بعد): تُفتح النتيجة الكاملة بمجرد وصول الدفع.") + '</p><p class="inv-deja"><a href="pass/#' + esc(code) + '">' + T("Voir mon Pass", "شاهد باسي") + "</a></p>";
+      return;
+    }
+    comp.innerHTML = "<p>" + T("Ouverture de votre résultat complet…", "جارٍ فتح نتيجتك الكاملة…") + "</p>";
+    passCharge(code).then(function () { calculer(); });
   }
   function tout() { remplirLieux(); calculer(); }
   f.addEventListener("change", function (e) { if (e.target.id === "inv-t" || e.target.id === "inv-g") remplirLieux(); calculer(); });

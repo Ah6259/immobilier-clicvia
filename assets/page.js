@@ -188,7 +188,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     if (e) e.innerHTML =
       '<div class="wrap">' +
         '<a class="logo" href="' + (racine || "./") + '"><img class="logo-mark" src="' + racine + 'assets/logo.svg" alt="" width="38" height="38">' +
-          // 27/10/2026 (Ahmed) : « Notre agent immobilier IA vous aide » remplace le nom pendant 6 secondes, puis le nom revient, et ainsi de suite
+          // 27/10/2026 (Ahmed) : « Notre agent immobilier IA vous aide » remplace le nom pendant 3 secondes (6 s avant le 27/10 soir, Ahmed : « 3 s c’est mieux »), puis le nom revient, et ainsi de suite
           '<span class="logo-nom"><span class="logo-a">' + T('Immobilier <span class="nom2">Tunisie <span class="logo-by">by</span><span class="mot-ia logo-ia">IA</span></span>', 'عقارات <span class="nom2">تونس <span class="logo-by">by</span><span class="mot-ia logo-ia">IA</span></span>') + '</span>' +
           '<span class="logo-b" aria-hidden="true">' + T('Notre agent <span class="nom2">immobilier <span class="mot-ia logo-ia">IA</span></span> <span class="nom3">vous aide</span>', 'وكيلنا <span class="nom2">العقاري <span class="mot-ia logo-ia">IA</span></span> <span class="nom3">يساعدك</span>') + '</span>' +
           '<small>' + T("Annonces gratuites · 24 gouvernorats", "إعلانات مجانية · 24 ولاية") + '</small></span></a>' +
@@ -295,7 +295,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     var m = im.closest ? im.closest(".an-media") || im.parentNode : im.parentNode; im.remove();
     if (m) { m.classList.add("photo-ko"); var c = m.closest(".annonce"); if (c) c.classList.remove("a-photo"); }
   }, true);
-  // nom du site <-> « Notre agent immobilier IA vous aide » toutes les 6 s (27/10/2026, Ahmed) ; jamais pour un navigateur automatique
+  // nom du site <-> « Notre agent immobilier IA vous aide » toutes les 3 s (27/10/2026, Ahmed) ; jamais pour un navigateur automatique
   // (tests, visiteur simulé) ni si le visiteur a demandé moins d'animations
   var minuterieLogo;
   function alterneLogo() {
@@ -304,7 +304,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     minuterieLogo = setInterval(function () {
       var n = document.querySelector(".entete .logo-nom");
       if (n && !document.hidden) n.classList.toggle("alt");
-    }, 6000);
+    }, 3000);
   }
   function appliquer(l) {
     html.lang = l; html.dir = l === "ar" ? "rtl" : "ltr";

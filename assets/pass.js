@@ -7,9 +7,8 @@
    Rien n'est envoyé : la page ne fait que lire ses deux fichiers. */
 (function () {
   var zone = document.getElementById("pass-web");
-  if (!zone) return;
   var CLE = "pass-immobilier", ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
-  var R = null, ACCES = null, etat = lire();
+  var R = null, ACCES = null, etat = null;
   function el(id) { return document.getElementById(id); }
   function ar() { return document.documentElement.lang === "ar"; }
   function T2(fr, a) { return ar() ? a : fr; }
@@ -45,7 +44,28 @@
       return crypto.subtle.decrypt({name: "AES-GCM", iv: u.slice(0, 12), additionalData: TE.encode(contexte)}, k, u.slice(12));
     }).then(function (b) { return new Uint8Array(b); });
   }
-  window.PASS_IMMO = {normaliser: normaliser, deriver: deriver, dechiffrer: dechiffrer};
+  function aujourdhui0() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  // 27/10/2026 (Ahmed : « le résultat complet pour MON budget et MON bien doit être sur la même page ») : la page « Où investir ? » ouvre
+  // le même tableau chiffré avec le code Pass gardé dans le téléphone ; mêmes calculs, rien n'est envoyé. -> {R, fin} ou null (pas payé)
+  function charger(code, dossier) {
+    if (!code || !(window.crypto && crypto.subtle)) return Promise.resolve(null);
+    var A, C2;
+    return Promise.all([
+      fetch(dossier + "rapport.dat", {cache: "no-cache"}).then(function (r) { return r.text(); }).then(function (t) { var l = t.split("\n"); C2 = l[0].trim() === "v2" ? (l[1] || "").trim() : null; }),
+      fetch(dossier + "acces.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (a) { A = a; })
+    ]).then(function () {
+      if (!C2 || !A) return null;
+      return deriver(code).then(function (d) {
+        var e = (A.codes || {})[d.id];
+        if (!e || !e.k || e.fin < aujourdhui0()) return null;
+        return dechiffrer(d.kek, e.k, "cle").then(function (cle) { return dechiffrer(cle, C2, "rapport"); })
+          .then(function (u) { return {R: JSON.parse(new TextDecoder().decode(u)), fin: e.fin}; });
+      });
+    }).catch(function () { return null; });
+  }
+  window.PASS_IMMO = {normaliser: normaliser, deriver: deriver, dechiffrer: dechiffrer, charger: charger};
+  if (!zone) return;                 // page « Où investir ? » : seulement les calculs ci-dessus
+  etat = lire();
 
   // ---- mémoire de ce navigateur (peut être vide ou refusée : la page marche quand même)
   function lire() { try { var v = JSON.parse(localStorage.getItem(CLE) || "null"); return v && typeof v.code === "string" ? v : null; } catch (e) { return null; } }

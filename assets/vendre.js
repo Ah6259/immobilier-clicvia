@@ -250,7 +250,8 @@
     var dz = dv || (qslug && OF[g + "/" + qslug] ? OF[g + "/" + qslug][0] : "");
     function dansZone(a) { return !(qslug || dz) || (qslug && a.l === qslug) || (dz && delegA(a) === dz); }
     function tailleProche(a) { return !(s && a.s) || (a.s / s >= 2 / 3 && a.s / s <= 1.5); }
-    var zone = ventes.filter(function (a) { return dansZone(a) && memeSorte(a); });
+    // 27/10/2026 (Ahmed) : un fonds de commerce (ou murs + fonds) n'est jamais montré comme référence pour un local (fo : f / mf)
+    var zone = ventes.filter(function (a) { return dansZone(a) && memeSorte(a) && !(t === "commerce" && (a.fo === "f" || a.fo === "mf")); });
     function distance(a) {           // même quartier d'abord, puis même délégation, puis pièces et surface
       var d = (qslug && a.l === qslug) ? 0 : 1;
       d += (ch !== null && a.c != null) ? Math.abs(a.c - ch) : (ch !== null ? 0.7 : 0);

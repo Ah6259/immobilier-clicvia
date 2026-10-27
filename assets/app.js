@@ -60,7 +60,11 @@
       dm2 = function (v) { return L(m2t(v) + "\u00a0DT/m²", iso(m2t(v)) + "\u00a0دينار/م²"); };
     // sorte du logement (duplex, villas…) : comparé seulement à la même sorte (15/10/2026)
     var SORTES = { etage_villa: ["étages de villa", "طوابق فيلا"], duplex: ["duplex", "دوبلكس"], penthouse: ["penthouses", "بنتهاوس"], studio: ["studios", "ستوديوهات"], villa: ["villas", "فيلات"], maison_trad: ["maisons traditionnelles", "منازل تقليدية"] };
-    var so = SORTES[x.st], ann = L(x.n + " annonces semblables" + (so ? " (" + so[0] + ")" : ""), iso(x.n) + " إعلانات مشابهة" + (so ? " (" + so[1] + ")" : ""));
+    // meublé comparé à des meublés, non meublé à des non meublés (27/10/2026, x.mb)
+    var MB = { m: ["meublées", "مفروشة"], v: ["non meublées", "غير مفروشة"] };
+    var prec = [SORTES[x.st], MB[x.mb]].filter(Boolean);
+    var ann = L(x.n + " annonces semblables" + (prec.length ? " (" + prec.map(function (p) { return p[0]; }).join(", ") + ")" : ""),
+      iso(x.n) + " إعلانات مشابهة" + (prec.length ? " (" + prec.map(function (p) { return p[1]; }).join("، ") + ")" : ""));
     var sembl = x.z === "m" ? L("l’estimation de notre IA (≈ ", "تقدير ذكائنا الاصطناعي (≈ ") + dt(x.r) + ")"
       : m2 ? ann + ou + L(", au m² (la moitié entre ", "، بالمتر المربع (نصفها بين ") + dm2(m2[2]) + L(" et ", " و") + dm2(m2[3]) + ")"
       : ann + ou + " (" + L("de ", "من ") + dt(x.lo) + L(" à ", " إلى ") + dt(x.hi) + ")";
@@ -485,8 +489,11 @@
       });
       return INDEX;
     }
-    function compter(x) {
-      return tout.filter(function (a) { return a.g === x.g && (!x.d || dansDeleg(a, x.d)) && (!x.l || dansLoc(a, x.l)); }).length;
+    // 27/10/2026 (Ahmed : « 78 annonces » dans la suggestion, « Voir les 51 annonces » sur le bouton) : le nombre d'un lieu proposé
+    // compte les annonces qui passent TOUS les autres filtres choisis (Acheter / Louer, type, prix…), comme le bouton
+    function compter(x, v) {
+      v = v || valeurs();
+      return tout.filter(function (a) { return a.g === x.g && (!x.d || dansDeleg(a, x.d)) && (!x.l || dansLoc(a, x.l)) && passe(a, v, { g: 1, d: 1, l: 1, compte: false }); }).length;
     }
     function ouChercher() {
       var champ = document.getElementById("f-ou"), boite = document.getElementById("ou-suggestions");
@@ -510,7 +517,7 @@
         var tape = brut(champ.value).trim().split(" ").pop() || "";
         var faible = mots[mots.length - 1].length < 3 && tape.length >= 3;
         var colle = mots.join("");
-        var vu = {};
+        var vu = {}, vOu = valeurs();
         // 19/10/2026 (vérification de 5 210 lieux après « aouina ») : on peut ajouter la ville ou la délégation (« cité erriadh bizerte ») ;
         // le nom écrit EXACTEMENT passe avant tout (« El Aroussa » avant Ben Arous, « Kesra » avant Kasserine)
         var sansEsp = function (t) { return cle(t).replace(/ /g, ""); }, tapeSon = sansEsp(champ.value);
@@ -532,7 +539,7 @@
           // ses autres écritures (sinon le doublon retiré était le vrai nom)
           .sort(function (a, b) { return (a.al || 0) - (b.al || 0); })
           .filter(function (x) { var c = x.g + "/" + x.d + "/" + x.l; if (vu[c]) return false; vu[c] = 1; return true; })
-          .map(function (x) { return { x: x, n: compter(x), debut: x.k.indexOf(" " + mots[0]) === 0, lit: litOk(x), ex: exact(x) }; })
+          .map(function (x) { return { x: x, n: compter(x, vOu), debut: x.k.indexOf(" " + mots[0]) === 0, lit: litOk(x), ex: exact(x) }; })
           // nom exact qui a des annonces (Shotrana = Chotrana), puis lieux avec annonces, puis nom exact sans annonce ; délégation avant localité
           .sort(function (a, b) { return ((b.ex && b.n > 0) - (a.ex && a.n > 0)) || (faible ? (b.lit - a.lit) : 0) || ((b.n > 0) - (a.n > 0)) || (b.ex - a.ex) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); });
         var restants = choix.length - 8;
@@ -566,6 +573,21 @@
         var cz = document.getElementById("cp-carte"), l = cz || document.getElementById("liste");
         if (l && l.scrollIntoView) l.scrollIntoView({ behavior: "smooth", block: cz ? "center" : "start" });
       }
+      // 27/10/2026 (Ahmed : « j'ai effacé la recherche mais la liste « Ajouter des quartiers proches » est restée ») : champ vidé (croix
+      // du téléphone ou effacé à la main) = plus de lieu choisi ni de quartiers proches
+      function videLieu() {
+        if (champ.value.trim()) return;
+        var avait = (selD && selD.value) || (selL && selL.value) || (selG && !gFixe && selG.value) || Object.keys(proches).length;
+        if (!avait) return;
+        proches = {}; prochesTous = 7;
+        if (selG && !gFixe) selG.value = "";
+        suivreGouv();
+        if (selD) selD.value = ""; if (selL) selL.value = "";
+        suivreGouv();
+        memoriser(filtrer());
+      }
+      champ.addEventListener("input", videLieu);
+      champ.addEventListener("search", videLieu);
       champ.addEventListener("input", proposer);
       champ.addEventListener("focus", proposer);
       champ.addEventListener("keydown", function (e) {
@@ -638,7 +660,7 @@
     // et affiche combien de filtres sont choisis ; un onglet Acheter / Louer déjà choisi se désélectionne d'un 2e toucher ;
     // « Estimer » montre les deux estimations (prix de vente, loyer)
     var plusF = form.querySelector(".plus-filtres"), nbF = form.querySelector(".nb-filtres");
-    var CLES_F = ["y", "d", "l", "c", "fo", "du", "pmin", "p", "smin", "smax", "v", "ph", "pb", "at", "et", "nv", "st", "eb"].concat(gFixe ? [] : ["g"]);
+    var CLES_F = ["y", "d", "l", "c", "fo", "pmin", "p", "smin", "smax", "v", "ph", "pb", "at", "et", "nv", "st", "eb"].concat(gFixe ? [] : ["g"]);
     function compterFiltres() {
       var n = CLES_F.filter(function (k) { return [].some.call(form.querySelectorAll('[name="' + k + '"]'), function (c) { return c.type === "checkbox" ? c.checked : c.value; }); }).length;
       if (nbF) { nbF.hidden = !n; nbF.textContent = n; }
@@ -658,20 +680,61 @@
     // 3 onglets (22/10/2026, Ahmed) : « Annonces » (recherche, filtres, bouton « Être alerté ») ou « Estimer votre bien » (prix de
     // vente, loyer ; PAS d'alerte : « le bouton alerte ne doit apparaître que dans la section annonces »)
     // 23/10/2026 (Ahmed) : 4e onglet « Agences » : recherche des agences de l'annuaire (pros.clicvia.com), comme l'onglet Estimer
-    var bEst = form.querySelector(".onglet-estimer"), bAnn = form.querySelector(".onglet-annonces"), bAg = form.querySelector(".onglet-agences");
-    function mode(m) {          // "annonces" | "estimer" | "agences" (true / false : ancien appel, estimer ou annonces)
+    var bEst = form.querySelector(".onglet-estimer"), bAnn = form.querySelector(".onglet-annonces"), bAg = form.querySelector(".onglet-agences"),
+      bVac = form.querySelector(".onglet-vacances"), bInv = form.querySelector("button.onglet-investir");
+    // 27/10/2026 (Ahmed) : onglet « Vacances » = locations à la nuit / au jour, logements seulement (durée et type fixés, jamais choisis) ;
+    // onglet « Annonces » = ventes et locations AU MOIS. La durée est gardée dans le champ caché « du » (adresse ?du=c = Vacances).
+    var champDu = form.querySelector('[name="du"]'), selTy = form.querySelector('[name="y"]');
+    var HABITATION = ["", "appartement", "maison"];
+    function typesVacances(on) {
+      if (!selTy) return;
+      [].forEach.call(selTy.querySelectorAll("optgroup"), function (g) {
+        var garde = [].some.call(g.querySelectorAll("option"), function (o) { return HABITATION.indexOf(o.value) > 0; });
+        g.hidden = on && !garde;
+      });
+      [].forEach.call(selTy.querySelectorAll("option"), function (o) { o.hidden = on && HABITATION.indexOf(o.value) < 0; });
+      if (on && HABITATION.indexOf(selTy.value) < 0) { selTy.value = ""; selTy.dispatchEvent(new Event("change", { bubbles: true })); }
+    }
+    function mode(m) {          // "annonces" | "vacances" | "estimer" | "agences" (true / false : ancien appel, estimer ou annonces)
       m = m === true ? "estimer" : m === false ? "annonces" : m;
-      var pe = form.querySelector(".panneau-estimer"), pa = form.querySelector(".panneau-agences"), al = document.getElementById("c-alerte");
+      var pe = form.querySelector(".panneau-estimer"), pa = form.querySelector(".panneau-agences"), al = document.getElementById("c-alerte"),
+        iv = form.querySelector(".info-vacances"), vac = m === "vacances", avant = champDu ? champDu.value : "";
       if (bEst) bEst.setAttribute("aria-pressed", m === "estimer" ? "true" : "false");
       if (bAnn) bAnn.setAttribute("aria-pressed", m === "annonces" ? "true" : "false");
+      if (bVac) bVac.setAttribute("aria-pressed", vac ? "true" : "false");
       if (bAg) bAg.setAttribute("aria-pressed", m === "agences" ? "true" : "false");
-      form.classList.toggle("mode-estimer", m !== "annonces"); form.classList.toggle("mode-agences", m === "agences");
+      if (bInv) bInv.setAttribute("aria-pressed", m === "investir" ? "true" : "false");
+      var pinv = form.querySelector(".panneau-investir"); if (pinv) pinv.hidden = m !== "investir";
+      form.classList.toggle("mode-estimer", m === "estimer" || m === "agences" || m === "investir"); form.classList.toggle("mode-agences", m === "agences");
+      form.classList.toggle("mode-vacances", vac);
       if (pe) pe.hidden = m !== "estimer";
       if (pa) pa.hidden = m !== "agences";
-      if (al) (al.closest("nav") || al).hidden = m !== "annonces";
+      if (iv) iv.hidden = !vac;
+      if (al) (al.closest("nav") || al).hidden = m !== "annonces" && !vac;
+      if (m === "annonces" || vac) {
+        if (champDu) champDu.value = vac ? "c" : "";
+        if (vac) { var rl = form.querySelector('input[name="t"][value="l"]'); if (rl) rl.checked = true; }
+        typesVacances(vac);
+        if (champDu && champDu.value !== avant) form.dispatchEvent(new Event("change", { bubbles: true }));
+      }
     }
     if (bEst) bEst.addEventListener("click", function () { mode("estimer"); });
     if (bAnn) bAnn.addEventListener("click", function () { mode("annonces"); });
+    if (bVac) bVac.addEventListener("click", function () { mode("vacances"); });
+    if (bInv) bInv.addEventListener("click", function () { mode("investir"); });
+    // « Voir le résultat » (27/10/2026) : la page investir/ s'ouvre avec ces choix (?t=&g=&b=), modifiables là-bas
+    var piV = document.getElementById("pi-voir");
+    function lienInvestir() {
+      if (!piV) return;
+      var base = piV.getAttribute("href").split("?")[0].split("#")[0], p = new URLSearchParams();
+      [].forEach.call(form.querySelectorAll("[data-investir]"), function (c) { var x = String(c.value || "").trim(); if (x) p.set(c.getAttribute("data-investir"), x); });
+      if (document.documentElement.lang === "ar") p.set("lang", "ar");
+      piV.setAttribute("href", base + (p.toString() ? "?" + p.toString() : "") + "#inv-resultat");
+    }
+    [].forEach.call(form.querySelectorAll("[data-investir]"), function (c) { c.addEventListener("change", lienInvestir); c.addEventListener("input", lienInvestir); });
+    document.addEventListener("langue", lienInvestir);
+    lienInvestir();
+    if (q.get("du") === "c") mode("vacances");
     if (bAg) bAg.addEventListener("click", function () { mode("agences"); });
     var agG = form.querySelector('[data-agences="g"]'), agQ = form.querySelector('[data-agences="q"]'), agV = document.getElementById("ag-voir");
     function lienAgences() {
@@ -700,7 +763,7 @@
       var val = function (k) { return (form.querySelector('[name="' + k + '"]') || {}).value || ""; };
       var utileY = function (champ) { return !window.champUtile || window.champUtile(champ, val("y")); };
       return { t: t ? t.value : "", y: val("y"), g: g ? g.value : "", d: val("d"), l: val("l"), lx: val("l") ? Object.keys(proches) : [], c: (window.champUtile && !window.champUtile("pieces", val("y"))) ? 0 : n("c"), v: val("v"),
-               fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"), du: utileY("duree") ? val("du") : "",
+               fo: (window.champUtile && !window.champUtile("fonds", val("y"))) ? "" : val("fo"), du: form.classList.contains("mode-vacances") ? "c" : (val("du") === "m" ? "m" : ""),
                p: n("p"), pmin: n("pmin"), smin: n("smin"), smax: n("smax"), ph: casePh && casePh.checked ? 1 : 0, pb: casePb && casePb.checked ? 1 : 0, tri: tri ? tri.value : "photo",
                at: [].map.call(form.querySelectorAll('input[name="at"]:checked'), function (x) { return x.value; }).join(""),
                // mêmes champs que l'estimation (21/10/2026) : un champ caché pour ce type ne filtre jamais
@@ -723,8 +786,9 @@
         if (v.fo && a.fo !== v.fo) return false;
         // durée de la location (22/10/2026, Ahmed : « la location par jour, par journée ou par nuit ») : c = à la nuit / au jour /
         // vacances, m = au mois (location habituelle)
-        if (v.du === "c" && !(a.t === "l" && a.lc)) return false;
+        if (v.du === "c" && !(a.t === "l" && a.lc && (a.y === "appartement" || a.y === "maison"))) return false;   // Vacances : logements seulement
         if (v.du === "m" && !(a.t === "l" && !a.lc)) return false;
+        if (v.du !== "c" && a.lc) return false;         // onglet « Annonces » (27/10/2026, Ahmed) : jamais une location à la nuit / au jour
         // étage, niveaux, standing, état (21/10/2026, mêmes critères que l'estimation ; codes de robot/criteres.py)
         if (v.et !== "" && a.et !== +v.et) return false;
         if (v.nv && a.nv !== +v.nv) return false;

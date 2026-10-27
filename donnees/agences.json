@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-26",
+ "maj": "2026-10-27",
  "agences": [
   {
    "nom": "AKNAR Immo",
@@ -24,7 +24,7 @@
    "site": "https://ayoubimmobilierhammamet.com/",
    "facebook": "https://www.facebook.com/ayoubimmobilierhammamet",
    "adresse": "Rue Dag Hammarskjold 8050, Hammamet, Tunisie.",
-   "tel": "+216 53 564 536",
+   "tel": "+216 53 564 038",
    "gouvernorat": "nabeul",
    "annonces": 590
   },
@@ -51,18 +51,9 @@
    "site": "https://cactusimmobilier.com/",
    "facebook": "https://www.facebook.com/cactusimmobilier",
    "adresse": "Résidence Horizon+, Local n°06, Cité el Wafa, Nabeul 8000, Tunisie.",
-   "tel": "+216 56 103 783",
+   "tel": "+216 29 074 198",
    "gouvernorat": "nabeul",
    "annonces": 101
-  },
-  {
-   "nom": "CASA IMMO",
-   "site": "https://casaimmo.tn/",
-   "facebook": "https://www.facebook.com/casaimmo.tn",
-   "adresse": "Avenue de république, Résidence Zaineb BLOC A, Magasin N° 7-1, La Nouvelle Médina, 2063, Ben Arous, Tunisie.",
-   "tel": "+216 20 813 000",
-   "gouvernorat": "ben-arous",
-   "annonces": 16
   },
   {
    "nom": "Colombus Immo",
@@ -72,15 +63,6 @@
    "tel": "+216 98 271 714",
    "gouvernorat": "tunis",
    "annonces": 31
-  },
-  {
-   "nom": "EDF IMMOBILIÈRE",
-   "site": "https://edf.tn/",
-   "facebook": "https://www.facebook.com/limmobiliere",
-   "adresse": "Complexe commercial Bizerte Center, bureau n° 58.",
-   "tel": "+216 29 276 849",
-   "gouvernorat": "bizerte",
-   "annonces": 121
   },
   {
    "nom": "Expats and housing Immobilier",
@@ -125,14 +107,14 @@
    "adresse": null,
    "tel": "+216 29 343 143",
    "gouvernorat": "tunis",
-   "annonces": 247
+   "annonces": 246
   },
   {
    "nom": "Agence immobilière Kerkouane",
    "site": "https://kelibiaimmo.tn/",
    "facebook": "https://www.facebook.com/Immobili%C3%A9re-Kerkouane-456975651053691",
    "adresse": "31 rue ibn khaldoun -Residencenajjar –kelibia-8090 tunisie.",
-   "tel": "+216 55 464 235",
+   "tel": "+216 55 461 455",
    "gouvernorat": "nabeul",
    "annonces": 216
   },
@@ -161,14 +143,14 @@
    "adresse": "Local C01, Immeuble Dar El Khir, Cité les Pins, Lac 2.",
    "tel": "+216 23 219 610",
    "gouvernorat": "tunis",
-   "annonces": 245
+   "annonces": 246
   },
   {
    "nom": "Luxury House",
    "site": "https://luxury-house.tn/",
    "facebook": "https://www.facebook.com/pg/luxuryHouse.Tunisie/posts",
    "adresse": "131 Avenue Khaled Ibn El Walid, l’Aouina 2045, Tunis.",
-   "tel": "+216 94 990 579",
+   "tel": "+216 99 308 359",
    "gouvernorat": "tunis",
    "annonces": 135
   },
@@ -189,15 +171,6 @@
    "tel": "+216 55 153 800",
    "gouvernorat": "sousse",
    "annonces": 220
-  },
-  {
-   "nom": "New Key Immobilier",
-   "site": "https://newkey.com.tn/",
-   "facebook": "https://www.facebook.com/AgenceImmobiliereNewKey",
-   "adresse": null,
-   "tel": "+216 29 232 927",
-   "gouvernorat": "tunis",
-   "annonces": 161
   },
   {
    "nom": "Perla Immo",
@@ -251,7 +224,7 @@
    "adresse": "29 Rue Sour, Neapolis, Nabeul 8000",
    "tel": "+216 24 388 922",
    "gouvernorat": "nabeul",
-   "annonces": 158
+   "annonces": 150
   },
   {
    "nom": "Agence Immoblière Amine Djerba",
@@ -260,7 +233,7 @@
    "adresse": "Midoun Tezdaine à côté de mosquée Khaled ibn Walid",
    "tel": "+216 95 340 869",
    "gouvernorat": "medenine",
-   "annonces": 26
+   "annonces": 25
   },
   {
    "nom": "IMMOBILIÉRE EL MOUSTAKBAL",
@@ -281,6 +254,15 @@
    "annonces": 204
   },
   {
+   "nom": "New Key Immobilier",
+   "site": "https://www.newkey.com.tn/",
+   "facebook": "https://www.facebook.com/AgenceImmobiliereNewKey",
+   "adresse": null,
+   "tel": "+216 29 232 927",
+   "gouvernorat": "tunis",
+   "annonces": 164
+  },
+  {
    "nom": "Nova Immo Sfax",
    "site": "https://www.nova-immo.tn/",
    "facebook": "https://www.facebook.com/immobiliere.Nova.sfax",
@@ -288,6 +270,15 @@
    "tel": "+216 58 318 521",
    "gouvernorat": "sfax",
    "annonces": 5
+  },
+  {
+   "nom": "Verdar",
+   "site": "https://www.verdar.tn/",
+   "facebook": "https://www.facebook.com/verdar.tn",
+   "adresse": null,
+   "tel": "+216 28 600 612",
+   "gouvernorat": null,
+   "annonces": 0
   },
   {
    "nom": "Agence immobilière du Vieux Port Djerba",
@@ -312,7 +303,7 @@
    "site": "https://zarzidar.com/",
    "facebook": "https://www.facebook.com/profile.php?id=61565868279605",
    "adresse": "1ere etage,Bureau N° 2 Immeuble Baaboura",
-   "tel": "+216 22 285 809",
+   "tel": "+216 51 426 226",
    "gouvernorat": "medenine",
    "annonces": 19
   },

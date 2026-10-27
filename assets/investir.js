@@ -51,9 +51,9 @@
   function escT(t) { return esc(t).replace(/S\+\d/, '<bdi dir="ltr">$&</bdi>'); }   // « S+2 » dans une phrase arabe
   function nomG(g) { for (var i = 0; i < Z.g.length; i++) if (Z.g[i][0] === g) return ar() ? Z.g[i][2] : Z.g[i][1]; return ""; }
   function remplirTypes() {
-    var t = el("inv-t"), garde = t.value || "a2", dispo = ["a1", "a2", "a3"];
-    Z.m2.forEach(function (x) { if (dispo.indexOf(x[0]) < 0) dispo.push(x[0]); });
-    Z.t.forEach(function (x) { if (dispo.indexOf(x[0]) < 0) dispo.push(x[0]); });
+    // 27/10/2026 (Ahmed : « pourquoi pas les mêmes types que le filtre des annonces ? ») : TOUS les types, toujours dans le même ordre ;
+    // un type sans assez d'annonces reste proposé et la page le dit (« Pas encore assez d'annonces pour ce type de bien »)
+    var t = el("inv-t"), garde = t.value || "a2", dispo = ["a1", "a2", "a3", "maison", "bureau", "commerce", "industriel", "terrain", "terrainind", "agricole"];
     t.innerHTML = dispo.map(function (k) { return '<option value="' + k + '">' + esc(nom(NOMS[k] || [k, k])) + "</option>"; }).join("");
     t.value = dispo.indexOf(garde) >= 0 ? garde : "a2";
   }
@@ -140,15 +140,37 @@
                T("Le <b>rendement net</b> et le calcul <b>avec un crédit</b>", "<b>المردود الصافي</b> والحساب <b>بالقرض</b>"),
                T("Les <b>bonnes affaires</b> de la semaine", "<b>الصفقات الجيدة</b> لهذا الأسبوع")];
     var code = aPass(), lien = "pass/" + (g ? "?g=" + encodeURIComponent(g) : "") + (code ? "#" + code : "");
-    comp.innerHTML = '<ul class="res-verrou">' + l.map(function (x) { return "<li>🔒 " + x + "</li>"; }).join("") + "</ul>" +
-      (code ? '<p><a class="btn-paie" href="' + lien + '">' + T("Voir mon résultat complet dans mon Pass", "شاهد نتيجتي الكاملة في باسي") + "</a></p>"
-            : '<p class="v-pour">🔒 <b>' + T("Disponible avec le Pass Investisseur", "متاح مع باس المستثمر") + "</b>.</p>" +
-              '<p class="res-boutons"><a class="btn-exemple" href="exemple/">' + T("👀 Voir l’exemple complet", "👀 شاهد المثال الكامل") + '</a> <a class="btn-paie" href="#pass">' + T("Voir le prix du Pass", "شاهد سعر الباس") + "</a></p>");
+    // 27/10/2026 (Ahmed : « je ne vois pas le résultat complet alors que j'ai le Pass ») : Pass gardé dans le téléphone -> « ✅ Pass
+    // actif » et un gros bouton ; sans Pass : ce que contient le résultat (🔒), l'exemple, le prix, et « J'ai déjà un code Pass »
+    comp.innerHTML = code
+      ? '<p class="inv-pass-actif">✅ ' + T("Votre Pass est actif (" + esc(code) + ")", "الباس مفعّل (" + esc(code) + ")") + "</p>" +
+        '<ul class="res-inclus">' + l.map(function (x) { return "<li>✓ " + x + "</li>"; }).join("") + "</ul>" +
+        '<p><a class="btn-paie btn-paie-grand" href="' + lien + '">' + T("Voir mon résultat complet", "شاهد نتيجتي الكاملة") + "</a></p>"
+      : '<ul class="res-verrou">' + l.map(function (x) { return "<li>🔒 " + x + "</li>"; }).join("") + "</ul>" +
+        '<p class="v-pour">🔒 <b>' + T("Disponible avec le Pass Investisseur", "متاح مع باس المستثمر") + "</b>.</p>" +
+        '<p class="res-boutons"><a class="btn-exemple" href="exemple/">' + T("👀 Voir l’exemple complet", "👀 شاهد المثال الكامل") + '</a> <a class="btn-paie" href="#pass">' + T("Voir le prix du Pass", "شاهد سعر الباس") + "</a></p>" +
+        '<p class="inv-deja"><a href="pass/">' + T("🔑 J’ai déjà un code Pass", "🔑 لديّ رمز باس") + "</a></p>";
   }
   function tout() { remplirLieux(); calculer(); }
   f.addEventListener("change", function (e) { if (e.target.id === "inv-t" || e.target.id === "inv-g") remplirLieux(); calculer(); });
   f.addEventListener("input", function (e) { if (e.target.id === "inv-b") calculer(); });
   document.addEventListener("langue", function () { if (Z) { remplirTypes(); tout(); } });
-  fetch("zones.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (z) { Z = z; remplirTypes(); tout(); })
+  // 27/10/2026 (Ahmed) : choix faits sur l'accueil (onglet « Investir » -> « Voir le résultat ») : ?t=&g=&q=&b=, toujours modifiables ici
+  function choixAdresse() {
+    var p = new URLSearchParams(location.search), mis = false;
+    var t = p.get("t"), g = p.get("g"), q = p.get("q"), b = p.get("b");
+    if (t && el("inv-t").querySelector('option[value="' + esc(t) + '"]')) { el("inv-t").value = t; mis = true; }
+    remplirLieux();
+    if (g && el("inv-g").querySelector('option[value="' + esc(g) + '"]')) { el("inv-g").value = g; mis = true; remplirLieux(); }
+    if (q && el("inv-q").querySelector('option[value="' + esc(q) + '"]')) { el("inv-q").value = q; mis = true; }
+    if (b && +b > 0) { el("inv-b").value = String(Math.round(+b)); mis = true; }
+    return mis;
+  }
+  fetch("zones.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (z) {
+    Z = z; remplirTypes();
+    var mis = choixAdresse(); calculer();
+    var r2 = el("inv-resultat");
+    if (mis && r2 && r2.scrollIntoView && location.hash === "#inv-resultat") r2.scrollIntoView({ block: "start" });
+  })
     .catch(function () { res.innerHTML = "<p>" + T("Les chiffres n’ont pas pu être chargés : réessayez plus tard.", "تعذّر تحميل الأرقام: أعد المحاولة لاحقًا.") + "</p>"; });
 })();

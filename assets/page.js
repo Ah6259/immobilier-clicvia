@@ -573,6 +573,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     function remplir() {
       panneau.innerHTML = "";
       [].forEach.call(sel.children, function (x) {
+        if (x.hidden) return;                                          // groupe caché (onglet Vacances : seulement l'habitation)
         if (x.tagName === "OPTGROUP") {
           var t = document.createElement("div"); t.className = "sj-groupe"; t.textContent = x.label; panneau.appendChild(t);
           [].forEach.call(x.children, function (o) { ajouter(o, true); });

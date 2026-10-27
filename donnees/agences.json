@@ -15,7 +15,7 @@
    "site": "https://aspisimmo.com/",
    "facebook": "https://www.facebook.com/vente.location.kelibia",
    "adresse": "Avenue du militant Abdelkader Dardouri, 8090, Kélibia, Tunisie.",
-   "tel": "+216 29 760 600",
+   "tel": "+216 29 760 700",
    "gouvernorat": "nabeul",
    "annonces": 131
   },
@@ -24,9 +24,9 @@
    "site": "https://ayoubimmobilierhammamet.com/",
    "facebook": "https://www.facebook.com/ayoubimmobilierhammamet",
    "adresse": "Rue Dag Hammarskjold 8050, Hammamet, Tunisie.",
-   "tel": "+216 53 564 038",
+   "tel": "+216 53 564 536",
    "gouvernorat": "nabeul",
-   "annonces": 590
+   "annonces": 591
   },
   {
    "nom": "Agence Immobilière BIG IMMO",
@@ -35,7 +35,7 @@
    "adresse": "Khezama Ouest, rue Hassan Ben Said (près de librairie SIAB), 4051 Sousse",
    "tel": "+216 94 818 484",
    "gouvernorat": "sousse",
-   "annonces": 180
+   "annonces": 181
   },
   {
    "nom": "CABINET Immo",
@@ -56,13 +56,22 @@
    "annonces": 101
   },
   {
+   "nom": "CASA IMMO",
+   "site": "https://casaimmo.tn/",
+   "facebook": "https://www.facebook.com/casaimmo.tn",
+   "adresse": "Avenue de république, Résidence Zaineb BLOC A, Magasin N° 7-1, La Nouvelle Médina, 2063, Ben Arous, Tunisie.",
+   "tel": "+216 20 813 000",
+   "gouvernorat": "ben-arous",
+   "annonces": 16
+  },
+  {
    "nom": "Colombus Immo",
    "site": "https://colombusimmobilier.com/",
    "facebook": "https://www.facebook.com/agencecolombusimmo",
    "adresse": "Centre Aida, Menzah 9 A, avenue Taher Ben Ammar, 1013 Tunis, Tunisie.",
    "tel": "+216 98 271 714",
    "gouvernorat": "tunis",
-   "annonces": 31
+   "annonces": 29
   },
   {
    "nom": "Expats and housing Immobilier",
@@ -71,7 +80,7 @@
    "adresse": "01 rue d'Amérique , La Marsa, Tunisia",
    "tel": "+216 29 886 630",
    "gouvernorat": "tunis",
-   "annonces": 226
+   "annonces": 228
   },
   {
    "nom": "IGH International Golden House",
@@ -89,14 +98,14 @@
    "adresse": "Rue Marrakech, Khezema Est, Sousse 4051.",
    "tel": "+216 55 528 102",
    "gouvernorat": "sousse",
-   "annonces": 342
+   "annonces": 343
   },
   {
    "nom": "Immobiliere Nour Ennasr",
    "site": "https://immobiliere-nour-ennasr.com/",
    "facebook": null,
    "adresse": null,
-   "tel": "+216 20 400 655",
+   "tel": "+216 70 036 231",
    "gouvernorat": "ben-arous",
    "annonces": 630
   },
@@ -132,9 +141,9 @@
    "site": "https://leboulevardimmo.com/",
    "facebook": "https://www.facebook.com/LeBoulevard.immobiliere",
    "adresse": "Rue ibnou sina, oued souhil, Nabeul - 8000",
-   "tel": "+216 55 982 862",
+   "tel": "+216 22 232 885",
    "gouvernorat": "nabeul",
-   "annonces": 113
+   "annonces": 116
   },
   {
    "nom": "Le Carré 9",
@@ -143,7 +152,7 @@
    "adresse": "Local C01, Immeuble Dar El Khir, Cité les Pins, Lac 2.",
    "tel": "+216 23 219 610",
    "gouvernorat": "tunis",
-   "annonces": 246
+   "annonces": 242
   },
   {
    "nom": "Luxury House",
@@ -161,16 +170,16 @@
    "adresse": "Résidence Ahlem cité el wafa Mrezga , Nabeul, Tunisia",
    "tel": "+216 55 390 787",
    "gouvernorat": "nabeul",
-   "annonces": 110
+   "annonces": 112
   },
   {
    "nom": "Agence Immobilière Narjess Immo",
    "site": "https://narjess-immo.tn/",
    "facebook": "https://www.facebook.com/profile.php?id=100092324713150",
    "adresse": "93 Route de la plage 4011 - Hammam Sousse, Tunisie.",
-   "tel": "+216 55 153 800",
+   "tel": "+216 52 502 988",
    "gouvernorat": "sousse",
-   "annonces": 220
+   "annonces": 221
   },
   {
    "nom": "Perla Immo",
@@ -188,7 +197,7 @@
    "adresse": null,
    "tel": "+216 23 262 470",
    "gouvernorat": "tunis",
-   "annonces": 228
+   "annonces": 230
   },
   {
    "nom": "Agence Immobilière Riahi",
@@ -197,7 +206,7 @@
    "adresse": "N°07, Rue Ribat, bureau N°105, corniche Sousse, Sousse Médina, IMMEUBLE Raouf Mfarj.",
    "tel": "+216 50 232 727",
    "gouvernorat": "sousse",
-   "annonces": 147
+   "annonces": 148
   },
   {
    "nom": "Agence SAIEK & Belhouane",
@@ -242,7 +251,7 @@
    "adresse": "Nabeul, Tunisie.",
    "tel": "+216 98 688 569",
    "gouvernorat": "nabeul",
-   "annonces": 71
+   "annonces": 68
   },
   {
    "nom": "Mouin Immobilier",
@@ -251,7 +260,7 @@
    "adresse": "Hammamet 8050",
    "tel": "+216 52 605 844",
    "gouvernorat": "nabeul",
-   "annonces": 204
+   "annonces": 187
   },
   {
    "nom": "New Key Immobilier",
@@ -260,7 +269,7 @@
    "adresse": null,
    "tel": "+216 29 232 927",
    "gouvernorat": "tunis",
-   "annonces": 164
+   "annonces": 356
   },
   {
    "nom": "Nova Immo Sfax",
@@ -277,8 +286,8 @@
    "facebook": "https://www.facebook.com/verdar.tn",
    "adresse": null,
    "tel": "+216 28 600 612",
-   "gouvernorat": null,
-   "annonces": 0
+   "gouvernorat": "ben-arous",
+   "annonces": 216
   },
   {
    "nom": "Agence immobilière du Vieux Port Djerba",
@@ -303,7 +312,7 @@
    "site": "https://zarzidar.com/",
    "facebook": "https://www.facebook.com/profile.php?id=61565868279605",
    "adresse": "1ere etage,Bureau N° 2 Immeuble Baaboura",
-   "tel": "+216 51 426 226",
+   "tel": "+216 97 541 641",
    "gouvernorat": "medenine",
    "annonces": 19
   },
@@ -314,7 +323,7 @@
    "adresse": "5 Rue El Manfalouti",
    "tel": "+216 29 226 466",
    "gouvernorat": "tunis",
-   "annonces": 279
+   "annonces": 281
   },
   {
    "nom": "Zitouna Immobilier",
@@ -323,7 +332,7 @@
    "adresse": null,
    "tel": "+216 71 982 230",
    "gouvernorat": "tunis",
-   "annonces": 213
+   "annonces": 214
   },
   {
    "nom": "Tecnocasa Aouina 1",
@@ -408,6 +417,18 @@
    "gouvernorat": "ben-arous",
    "lu_le": "2026-10-27",
    "annonces": 5
+  },
+  {
+   "nom": "Tecnocasa Borj Cédria",
+   "reseau": "Tecnocasa",
+   "id_reseau": "tecnocasa-tuhd2",
+   "site": "https://borjcedria1.tecnocasa.tn/borj-cedria/borj-cedria/",
+   "facebook": "https://www.facebook.com/profile.php?id=100064063602000&locale=fr_FR",
+   "adresse": "Avenue de Tunis, Borj Cédria , 2084 Borj Cédria",
+   "tel": "+216 23 610 010",
+   "gouvernorat": "ben-arous",
+   "lu_le": "2026-10-27",
+   "annonces": 6
   },
   {
    "nom": "Tecnocasa Akouda",
@@ -758,6 +779,18 @@
    "annonces": 15
   },
   {
+   "nom": "Tecnocasa M'Saken",
+   "reseau": "Tecnocasa",
+   "id_reseau": "tecnocasa-ssca7",
+   "site": "https://msaken1.tecnocasa.tn/msaken/msaken/",
+   "facebook": null,
+   "adresse": "Avenue De l'Environnement N°02, 4070 M'Saken",
+   "tel": "+216 29 619 555",
+   "gouvernorat": "sousse",
+   "lu_le": "2026-10-27",
+   "annonces": 6
+  },
+  {
    "nom": "Tecnocasa Rejiche",
    "reseau": "Tecnocasa",
    "id_reseau": "tecnocasa-mdca3",
@@ -792,6 +825,18 @@
    "gouvernorat": "nabeul",
    "lu_le": "2026-10-27",
    "annonces": 27
+  },
+  {
+   "nom": "Tecnocasa Mégrine",
+   "reseau": "Tecnocasa",
+   "id_reseau": "tecnocasa-tucc1",
+   "site": "https://megrine.tecnocasa.tn/megrine/megrine/",
+   "facebook": "https://www.facebook.com/Tecnocasa.Megrine",
+   "adresse": "Rue HEDI ERRAYES N°75, 2014 2014 Mégrine",
+   "tel": "+216 29 676 673",
+   "gouvernorat": "ben-arous",
+   "lu_le": "2026-10-27",
+   "annonces": 10
   },
   {
    "nom": "Tecnocasa Sahline",
@@ -1034,6 +1079,30 @@
    "annonces": 7
   },
   {
+   "nom": "Tecnocasa El Menzah 5, 6",
+   "reseau": "Tecnocasa",
+   "id_reseau": "tecnocasa-arcb1",
+   "site": "https://ariana2.tecnocasa.tn/ariana/el-menzah-56/",
+   "facebook": "https://www.facebook.com/tecnocasamenzahV",
+   "adresse": "Avenue d'Afrique N°38, Menzah 5 2080 Ariana",
+   "tel": "+216 71 750 630",
+   "gouvernorat": "ariana",
+   "lu_le": "2026-10-27",
+   "annonces": 7
+  },
+  {
+   "nom": "Tecnocasa Mutuelleville",
+   "reseau": "Tecnocasa",
+   "id_reseau": "tecnocasa-tuch3",
+   "site": "https://mutuelleville.tecnocasa.tn/mutuelleville/mutuelleville/",
+   "facebook": "https://www.facebook.com/Tecnocasamutuelleville",
+   "adresse": "Place MENDÉS FRANCE,N° 12 RUE OUHOD, 1082 Mutuelleville",
+   "tel": "+216 71 844 351",
+   "gouvernorat": "tunis",
+   "lu_le": "2026-10-27",
+   "annonces": 3
+  },
+  {
    "nom": "Tecnocasa Manar 1",
    "reseau": "Tecnocasa",
    "id_reseau": "tecnocasa-tuch4",
@@ -1058,6 +1127,18 @@
    "annonces": 10
   },
   {
+   "nom": "Tecnocasa Monastir La Falaise",
+   "reseau": "Tecnocasa",
+   "id_reseau": "tecnocasa-moca1",
+   "site": "https://monastirlafalaise.tecnocasa.tn/monastir/monastir-la-falaise/",
+   "facebook": "https://www.facebook.com/tecnocasamonastirlafalaise",
+   "adresse": "Avenue De La République N° 3 Monastir, 5060 Monastir",
+   "tel": "+216 73 505 111",
+   "gouvernorat": "monastir",
+   "lu_le": "2026-10-27",
+   "annonces": 10
+  },
+  {
    "nom": "Tecnocasa Mahdia Centre Ville",
    "reseau": "Tecnocasa",
    "id_reseau": "tecnocasa-mdca1",
@@ -1068,18 +1149,6 @@
    "gouvernorat": "mahdia",
    "lu_le": "2026-10-27",
    "annonces": 8
-  },
-  {
-   "nom": "Tecnocasa El Menzah 5, 6",
-   "reseau": "Tecnocasa",
-   "id_reseau": "tecnocasa-arcb1",
-   "site": "https://ariana2.tecnocasa.tn/ariana/el-menzah-56/",
-   "facebook": "https://www.facebook.com/tecnocasamenzahV",
-   "adresse": "Avenue d'Afrique N°38, Menzah 5 2080 Ariana",
-   "tel": "+216 71 750 630",
-   "gouvernorat": "ariana",
-   "lu_le": "2026-10-27",
-   "annonces": 7
   },
   {
    "nom": "Tecnocasa Mahdia Zone Touristique",
@@ -1104,18 +1173,6 @@
    "gouvernorat": "mahdia",
    "lu_le": "2026-10-27",
    "annonces": 0
-  },
-  {
-   "nom": "Tecnocasa Monastir La Falaise",
-   "reseau": "Tecnocasa",
-   "id_reseau": "tecnocasa-moca1",
-   "site": "https://monastirlafalaise.tecnocasa.tn/monastir/monastir-la-falaise/",
-   "facebook": "https://www.facebook.com/tecnocasamonastirlafalaise",
-   "adresse": "Avenue De La République N° 3 Monastir, 5060 Monastir",
-   "tel": "+216 73 505 111",
-   "gouvernorat": "monastir",
-   "lu_le": "2026-10-27",
-   "annonces": 10
   },
   {
    "nom": "Tecnocasa El Kantaoui",
@@ -1166,18 +1223,6 @@
    "annonces": 3
   },
   {
-   "nom": "Tecnocasa M'Saken",
-   "reseau": "Tecnocasa",
-   "id_reseau": "tecnocasa-ssca7",
-   "site": "https://msaken1.tecnocasa.tn/msaken/msaken/",
-   "facebook": null,
-   "adresse": "Avenue De l'Environnement N°02, 4070 M'Saken",
-   "tel": "+216 29 619 555",
-   "gouvernorat": "sousse",
-   "lu_le": "2026-10-27",
-   "annonces": 6
-  },
-  {
    "nom": "Tecnocasa Le Lac 2",
    "reseau": "Tecnocasa",
    "id_reseau": "tecnocasa-tuca3",
@@ -1188,18 +1233,6 @@
    "gouvernorat": "tunis",
    "lu_le": "2026-10-27",
    "annonces": 12
-  },
-  {
-   "nom": "Tecnocasa Mégrine",
-   "reseau": "Tecnocasa",
-   "id_reseau": "tecnocasa-tucc1",
-   "site": "https://megrine.tecnocasa.tn/megrine/megrine/",
-   "facebook": "https://www.facebook.com/Tecnocasa.Megrine",
-   "adresse": "Rue HEDI ERRAYES N°75, 2014 2014 Mégrine",
-   "tel": "+216 29 676 673",
-   "gouvernorat": "ben-arous",
-   "lu_le": "2026-10-27",
-   "annonces": 10
   },
   {
    "nom": "Tecnocasa Manouba",
@@ -1226,18 +1259,6 @@
    "annonces": 1
   },
   {
-   "nom": "Tecnocasa Mutuelleville",
-   "reseau": "Tecnocasa",
-   "id_reseau": "tecnocasa-tuch3",
-   "site": "https://mutuelleville.tecnocasa.tn/mutuelleville/mutuelleville/",
-   "facebook": "https://www.facebook.com/Tecnocasamutuelleville",
-   "adresse": "Place MENDÉS FRANCE,N° 12 RUE OUHOD, 1082 Mutuelleville",
-   "tel": "+216 71 844 351",
-   "gouvernorat": "tunis",
-   "lu_le": "2026-10-27",
-   "annonces": 3
-  },
-  {
    "nom": "Tecnocasa La Soukra 2",
    "reseau": "Tecnocasa",
    "id_reseau": "tecnocasa-tuha6",
@@ -1248,18 +1269,6 @@
    "gouvernorat": "ariana",
    "lu_le": "2026-10-27",
    "annonces": 1
-  },
-  {
-   "nom": "Tecnocasa Borj Cédria",
-   "reseau": "Tecnocasa",
-   "id_reseau": "tecnocasa-tuhd2",
-   "site": "https://borjcedria1.tecnocasa.tn/borj-cedria/borj-cedria/",
-   "facebook": "https://www.facebook.com/profile.php?id=100064063602000&locale=fr_FR",
-   "adresse": "Avenue de Tunis, Borj Cédria , 2084 Borj Cédria",
-   "tel": "+216 23 610 010",
-   "gouvernorat": "ben-arous",
-   "lu_le": "2026-10-27",
-   "annonces": 6
   },
   {
    "nom": "Century 21 Alliance",

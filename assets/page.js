@@ -803,3 +803,42 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   function tous() { [].forEach.call(document.querySelectorAll("form"), appliquer); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tous); else tous();
 })();
+
+/* SITE LÉGER (27/10/2026, Ahmed : « le site est devenu lourd ») : donnees/annonces.js (ou donnees/annonces/<gouvernorat>.js) n'a plus les
+   champs lourds (avis de l'IA « ia », avis sur le bien « ab », lien « u », photo « ph », numéro « tel ») : ils sont dans
+   donnees/details/<n>.json, par paquet (n = paquetDe(id), même calcul que paquet() de robot/collecter.py), lus SEULEMENT pour les
+   annonces affichées. Une annonce déjà complète (ancien fichier, tests) ou un fichier sans « dv » : rien à lire. Réseau en panne :
+   l'annonce est montrée sans ses détails (jamais bloquée). */
+(function () {
+  var NB = 512, cache = {}, prom = {};
+  function paquetDe(i) { var h = 0; i = String(i); for (var k = 0; k < i.length; k++) h = (h * 31 + i.charCodeAt(k)) >>> 0; return h % NB; }
+  function dv() { return window.ANNONCES && window.ANNONCES.dv; }
+  function pret(a) {
+    if (!a || a.dt || !dv() || typeof fetch !== "function") return true;
+    var p = cache[paquetDe(a.i)];
+    if (!p) return false;
+    var d = p[a.i];
+    if (d) for (var k in d) if (Object.prototype.hasOwnProperty.call(d, k)) a[k] = d[k];
+    a.dt = 1;
+    return true;
+  }
+  function prets(l) { var ok = true; (l || []).forEach(function (a) { if (!pret(a)) ok = false; }); return ok; }
+  function lire(n) {
+    if (!prom[n]) {
+      var r = document.documentElement.getAttribute("data-racine") || "";
+      prom[n] = fetch(r + "donnees/details/" + n + ".json?v=" + dv())
+        .then(function (x) { return x.ok ? x.json() : {}; })
+        .catch(function () { return {}; })
+        .then(function (j) { cache[n] = (j && typeof j === "object") ? j : {}; });
+    }
+    return prom[n];
+  }
+  function charger(l) {
+    l = (l || []).filter(Boolean);
+    if (prets(l)) return Promise.resolve(l);
+    var ns = {};
+    l.forEach(function (a) { if (!pret(a)) ns[paquetDe(a.i)] = 1; });
+    return Promise.all(Object.keys(ns).map(lire)).then(function () { prets(l); return l; });
+  }
+  window.DETAILS_IMMO = { paquet: paquetDe, prets: prets, charger: charger, NB: NB };
+})();

@@ -67,6 +67,9 @@
     });
     document.addEventListener("favoris", dessiner);   // cœur touché ici ou « Retirer » : la liste suit
     dessiner();
+    // site léger (27/10/2026) : photo, avis de l'IA et lien des favoris encore en ligne lus avec leurs détails, puis la liste redessinée
+    var DET = window.DETAILS_IMMO, mes = enLigne ? F.lire().map(function (f) { return enLigne[f.i]; }).filter(Boolean) : [];
+    if (DET && !DET.prets(mes)) DET.charger(mes).then(dessiner);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", demarrer); else demarrer();
 })();

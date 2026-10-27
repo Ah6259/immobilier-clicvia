@@ -97,7 +97,7 @@
       var cm = m2 && c.s ? c.p / c.s : null;
       return "<li>" + dt(c.p) + (c.c != null ? " · " + iso("S+" + c.c) : "") + (c.s ? " · " + L(nb(c.s) + "\u00a0m²", iso(nb(c.s)) + "\u00a0م²") : "") +
         (cm ? " (" + dm2(cm < 100 ? Math.round(cm * 10) / 10 : Math.round(cm)) + ")" : "") +
-        (cl ? " · " + L(E(cl[0]), cl[1]) : "") + ' · <a href="' + U(c.u) + '" target="_blank" rel="noopener nofollow">' + L("voir", "شاهد") + "</a></li>";
+        (cl ? " · " + L(E(cl[0]), cl[1]) : "") + ' · <a href="' + (c.u ? U(c.u) : E((racine || "") + "annonce/" + idFiche(c) + "/")) + '" target="_blank" rel="noopener nofollow">' + L("voir", "شاهد") + "</a></li>";
     }).join("");
     var quatre = (x.c || []).length === 4 && x.n > 4;
     var plus = (comps ? "<p>" + L("Annonces comparées" + (quatre ? " (la moins chère, deux au milieu, la plus chère)" : "") + " :", "الإعلانات المقارنة" + (quatre ? " (الأرخص، اثنان في الوسط، الأغلى)" : "") + ":") + "</p><ul>" + comps + "</ul>" : "") +
@@ -306,6 +306,8 @@
       (a.pb && a.p != null && !court ? '<span class="an-badge baisse">' + L("Prix baissé de " + (+a.pb) + "\u00a0%", "انخفض السعر " + iso((+a.pb) + "\u00a0%")) + "</span>" : "");
   }
   function PHOTO_OK(u) { return /^https:\/\/[^\s"'<>]+$/.test(u || ""); }
+  // site léger (27/10/2026) : la liste n'a pas la photo (« ph », lue avec les détails) mais sait si l'annonce en a une (« hp »)
+  function aPhoto(a) { return a.ph ? PHOTO_OK(a.ph) : !!a.hp; }
 
   // Contact (décision d'Ahmed du 11/10/2026) — même logique que robot/construire_site.py, fonction actions()
   // « Description, photos et contact » (26/10/2026, décision d'Ahmed) : fiche ouverte sans quitter le site (assets/page.js)
@@ -804,7 +806,7 @@
         if (v.v && (a.v || "a") !== v.v && !(v.v === "p" && a.v === "d")) return false;   // « Particulier » : aussi les annonces déposées ici
         // un prix à la nuit n'est jamais comparé à un loyer au mois (22/10/2026)
         if (v.p || v.pmin) { if (a.p == null || (a.lc && v.du !== "c")) { if (sauf.compte !== false) sansPrix++; return false; } if ((v.p && a.p > v.p) || (v.pmin && a.p < v.pmin)) return false; }
-        if (v.ph && !PHOTO_OK(a.ph)) return false;
+        if (v.ph && !aPhoto(a)) return false;
         if (v.pb && !(a.pb > 0)) return false;          // « Baisses de prix seulement » (25/10/2026)
         if (v.smin || v.smax) { if (a.s == null) return false; if ((v.smin && a.s < v.smin) || (v.smax && a.s > v.smax)) return false; }
         if (v.at && !v.at.split("").every(function (c) { return (a.at || "").indexOf(c) >= 0; })) return false;   // tous les atouts cochés
@@ -847,7 +849,7 @@
                   "surface": function (a, b) { return (b.s || 0) - (a.s || 0); },
                   // prix au m² le moins cher (20/10/2026) : seulement prix SÛR et surface connue ; les autres à la fin
                   "m2-asc": function (a, b) { var x = a.p && a.s ? a.p / a.s : null, y = b.p && b.s ? b.p / b.s : null; return (x == null) - (y == null) || x - y; },
-                  "photo": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (PHOTO_OK(b.ph) - PHOTO_OK(a.ph)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
+                  "photo": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (aPhoto(b) - aPhoto(a)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
                   "date": function (a, b) { return ((b.av || 0) - (a.av || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
                   // 25/10/2026 (Ahmed) : badge « Nouveau » d'abord (nw), ou plus forte baisse de prix d'abord (pb), puis les plus récentes
                   "nouveau": function (a, b) { return ((b.nw || 0) - (a.nw || 0)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); },
@@ -855,25 +857,29 @@
       // 21/10/2026 (Ahmed) : trier par AVIS DE L'IA (le même que sous chaque annonce, avisIA) : les annonces qui ont cet avis d'abord
       // (plus forte baisse ou hausse d'abord), puis les autres, les plus récentes d'abord
       if (!cle && /^avis-[bnhxi]$/.test(v.tri || "")) {
-        var voulu = v.tri.slice(5), sorte = function (a) { var x = a.p != null && a.ia; return !x ? "" : x.i ? "i" : x.x ? "x" : x.v; };
+        // (site léger : « ix » = [sorte, écart] écrit par le robot ; sinon calculé sur « ia »)
+        var ixDe = function (a) { if (a.ix) return a.ix; var x = a.p != null && a.ia; return !x ? ["", 0] : [x.i ? "i" : x.x ? "x" : x.v, Math.abs(x.p || 0)]; };
+        var voulu = v.tri.slice(5), sorte = function (a) { return ixDe(a)[0]; };
         cle = function (a, b) {
           var ma = sorte(a) === voulu, mb = sorte(b) === voulu;
           if (ma !== mb) return ma ? -1 : 1;
-          if (ma && (voulu === "b" || voulu === "h")) { var d = Math.abs(b.ia.p || 0) - Math.abs(a.ia.p || 0); if (d) return d; }
+          if (ma && (voulu === "b" || voulu === "h")) { var d = ixDe(b)[1] - ixDe(a)[1]; if (d) return d; }
           return a.d < b.d ? 1 : a.d > b.d ? -1 : 0;
         };
       }
       // 23/10/2026 (Ahmed) : « avis de l'IA sur le bien, le meilleur d'abord » : bon bien, puis classique, puis moins complet, puis sans
       // avis ; à verdict égal, le plus de points forts et le moins de points faibles, puis les plus récentes
       if (!cle && v.tri === "bien") {
-        var rangB = function (a) { var x = a.ab; return !x ? 9 : { h: 0, n: 1, b: 2 }[x.v] !== undefined ? { h: 0, n: 1, b: 2 }[x.v] : 3; };
-        var soldeB = function (a) { var x = a.ab || {}; return (x.f || []).length - (x.w || []).length; };
+        // (site léger : « ax » = [verdict, points forts − faibles] écrit par le robot ; sinon calculé sur « ab »)
+        var axDe = function (a) { if (a.ax) return a.ax; var x = a.ab; return !x ? null : [x.v, (x.f || []).length - (x.w || []).length]; };
+        var rangB = function (a) { var x = axDe(a); return !x ? 9 : { h: 0, n: 1, b: 2 }[x[0]] !== undefined ? { h: 0, n: 1, b: 2 }[x[0]] : 3; };
+        var soldeB = function (a) { var x = axDe(a); return x ? x[1] : 0; };
         cle = function (a, b) { return (rangB(a) - rangB(b)) || (soldeB(b) - soldeB(a)) || (a.d < b.d ? 1 : a.d > b.d ? -1 : 0); };
       }
       if (cle) liste.sort(cle);
       window.FILTRE_AT = v.at;      // 23/10/2026 : atouts cherchés, confirmés dans l'avis sur le bien (« Votre recherche : … »)
-      montre = 0; zone.innerHTML = "";
-      afficher(premier);
+      montre = 0;
+      afficher(premier, true);      // la liste d'avant reste jusqu'à ce que les nouvelles cartes soient prêtes (pas de page blanche)
       var n = liste.length;
       // bouton « Voir les N annonces » de la recherche simple (18/10/2026 : remplace la tuile « Voir N annonces » de la carte IA)
       var nbB = form.querySelector(".nb-annonces");
@@ -946,12 +952,29 @@
     if (selD) selD.addEventListener("change", oublierProches, true);
     if (selG) selG.addEventListener("change", oublierProches, true);
     form.addEventListener("reset", oublierProches);
-    function afficher(k) {
-      var bout = liste.slice(montre, montre + k);
-      zone.insertAdjacentHTML("beforeend", bout.map(function (a) { return carte(a, racine); }).join(""));
+    // site léger (27/10/2026) : les détails (avis de l'IA, photo, lien, numéro) des cartes à montrer sont lus d'abord
+    // (window.DETAILS_IMMO d'assets/page.js) ; déjà lus : tout de suite. « remplacer » : nouvelle recherche (la liste d'avant reste
+    // affichée jusque-là) ; sinon les cartes s'ajoutent à leur place (repère), même si d'autres arrivent avant elles.
+    var tour = 0, DET = window.DETAILS_IMMO;
+    function afficher(k, remplacer) {
+      var bout = liste.slice(montre, montre + k), t = remplacer ? ++tour : tour;
       montre += bout.length;
       if (plus) plus.hidden = montre >= liste.length;
-      if (window.AVIS_IA) window.AVIS_IA.appliquer();       // bouton + / − des nouvelles cartes : même état que les autres
+      function poser(ici) {
+        var h = bout.map(function (a) { return carte(a, racine); }).join("");
+        if (remplacer) zone.innerHTML = h; else if (ici) { ici.insertAdjacentHTML("beforebegin", h); ici.remove(); } else zone.insertAdjacentHTML("beforeend", h);
+        if (window.AVIS_IA) window.AVIS_IA.appliquer();       // bouton + / − des nouvelles cartes : même état que les autres
+      }
+      if (!DET || DET.prets(bout)) { poser(null); window.LISTE_PRETE = Promise.resolve(); return window.LISTE_PRETE; }
+      var ici = null;
+      if (!remplacer) { ici = document.createElement("span"); ici.className = "an-attente"; ici.hidden = true; zone.appendChild(ici); }
+      zone.setAttribute("aria-busy", "true");
+      window.LISTE_PRETE = DET.charger(bout).then(function () {
+        if (t !== tour || (ici && !ici.isConnected)) return;      // une autre recherche est passée entre-temps
+        zone.removeAttribute("aria-busy");
+        poser(ici);
+      });
+      return window.LISTE_PRETE;
     }
     function memoriser(v) {
       var p = new URLSearchParams();
@@ -984,15 +1007,15 @@
     var qa = q.get("a");
     if (qa && zone) {
       var ann = tout.filter(function (x) { return x.i === qa; })[0];
-      if (ann) {
+      if (ann) (DET ? Promise.all([window.LISTE_PRETE, DET.charger([ann])]) : Promise.resolve()).then(function () {
         var ex = document.getElementById("a-" + qa); if (ex) ex.remove();
         zone.insertAdjacentHTML("afterbegin", '<div class="annonce-partagee" id="partagee"><p class="partagee-titre">' +
           L("Annonce partagée avec vous", "إعلان شاركه معك أحدهم") + '</p>' + carte(ann, racine) + '</div>');
         setTimeout(function () { var el = document.getElementById("partagee"); if (el && el.scrollIntoView) el.scrollIntoView({ block: "start" }); }, 400);
-      } else {
+      }); else Promise.resolve(window.LISTE_PRETE).then(function () {   // après la 1re liste (site léger : elle peut arriver après)
         zone.insertAdjacentHTML("afterbegin", '<p class="vide-msg partagee-absente">' +
           L("Cette annonce n’est plus en ligne. Voici d’autres annonces.", "هذا الإعلان لم يعد متاحًا. إليك إعلانات أخرى.") + '</p>');
-      }
+      });
     }
   }
   window.carteAnnonce = carte;   // utilisé par les tests

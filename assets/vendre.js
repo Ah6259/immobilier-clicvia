@@ -678,6 +678,10 @@
     if (typeof document === "undefined" || !document) return;   // calcul du Pass (PBKDF2) fini après la fermeture de la page
     var r = calcul();
     dernier = r;
+    // site léger (27/10/2026) : le lien « voir » des annonces de référence est dans leurs détails (assets/page.js DETAILS_IMMO) ;
+    // pas encore lus : on les lit, puis le résultat est redessiné (seulement si c'est toujours le même calcul)
+    var DET = window.DETAILS_IMMO, refs = [].concat(r.trouvees || [], r.proches || []);
+    if (DET && !DET.prets(refs)) DET.charger(refs).then(function () { if (dernier === r && typeof document !== "undefined" && document) { afficherGratuit(r); afficherAnalyse(r); } });
     afficherGratuit(r);
     afficherAnalyse(r);
     afficherEtat();

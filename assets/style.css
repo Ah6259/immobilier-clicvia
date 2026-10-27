@@ -1532,37 +1532,37 @@ html[dir="rtl"] .fiche-boite h2{margin:0 0 10px 40px}
 .panneau-investir .champ{display:block;margin-bottom:10px}
 .panneau-investir .btn-chercher{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:999px;margin-top:4px;text-decoration:none}
 .onglets-5 button.onglet-investir{text-decoration:none}
-/* 27/10/2026 (Ahmed : « je n'aime pas les couleurs de la page investisseur ») : page « Où investir ? » aux couleurs du site — cartes
+/* 27/10/2026 (Ahmed : « je n'aime pas les couleurs de la page investisseur » ; puis « améliore aussi les pages Estimation ») : pages « Où investir ? », Vendre et Louer aux couleurs du site — cartes
    blanches, étapes numérotées en terre cuite, « Gratuit » en vert et « Pass » en doré à côté des titres, plus de bleu ni de vert en fond */
-[data-page="investir"] .inv-etape{background:#fff;border:1px solid var(--ligne);border-radius:var(--r);padding:16px;
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-etape{background:#fff;border:1px solid var(--ligne);border-radius:var(--r);padding:16px;
   box-shadow:0 2px 10px rgba(30,42,48,.06)}
-[data-page="investir"] .inv-e1.ia-bloc{background:#fff;border-color:var(--ligne)}
-[data-page="investir"] .inv-e1 h2 svg{color:var(--terre)}
-[data-page="investir"] .inv-num{display:inline-flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;margin-inline-end:8px;
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-e1.ia-bloc{background:#fff;border-color:var(--ligne)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-e1 h2 svg{color:var(--terre)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-num{display:inline-flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;margin-inline-end:8px;
   border-radius:50%;background:var(--terre);color:#fff;font:700 15px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;vertical-align:middle}
-[data-page="investir"] .zone-titre-remplir{display:flex;align-items:center;color:var(--encre);margin:10px 0 8px}
-[data-page="investir"] .zone-saisie{border:2px dashed var(--terre);background:var(--terre-voile)}
-[data-page="investir"] .inv-titre{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0 0 2px;color:var(--encre)}
-[data-page="investir"] .inv-titre .inv-num{margin-inline-end:2px}
-[data-page="investir"] .inv-pastille{display:inline-block;padding:3px 10px;border-radius:999px;font:700 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .zone-titre-remplir{display:flex;align-items:center;color:var(--encre);margin:10px 0 8px}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .zone-saisie{border:2px dashed var(--terre);background:var(--terre-voile)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-titre{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0 0 2px;color:var(--encre)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-titre .inv-num{margin-inline-end:2px}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-pastille{display:inline-block;padding:3px 10px;border-radius:999px;font:700 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   letter-spacing:.02em;vertical-align:middle}
-[data-page="investir"] .inv-pastille-gratuit{background:#E6F2E8;color:#1F6B3A;border:1px solid #A9D3B4}
-[data-page="investir"] .inv-pastille-pass{background:#FFF3D6;color:#7A4E00;border:1px solid var(--or)}
-[data-page="investir"] .inv-sous{margin:0 0 10px;color:var(--doux);font-size:14px}
-[data-page="investir"] .resultat-general{background:#fff;border:1px solid var(--ligne)}
-[data-page="investir"] .resultat-general .res-gratuit{border:0;padding:0;background:none}
-[data-page="investir"] .zone-resultat{border:1px solid var(--ligne)!important;border-inline-start:4px solid var(--terre)!important;box-shadow:none;background:#fff}
-[data-page="investir"] .note-gratuit{background:var(--sable);border:0;color:var(--doux);font-size:13.5px}
-[data-page="investir"] .inv-e3{border-top:4px solid var(--or)}
-[data-page="investir"] .inv-e3 .res-payant{border:0;background:none;padding:0}
-[data-page="investir"] .inv-pass-actif{margin:0 0 8px;padding:8px 12px;border-radius:12px;background:#E6F2E8;color:#1F6B3A;font-weight:700}
-[data-page="investir"] .res-inclus{list-style:none;margin:0 0 10px;padding:0}
-[data-page="investir"] .res-inclus li{margin:6px 0;line-height:1.4}
-[data-page="investir"] .inv-deja{text-align:center;margin:10px 0 0}
-[data-page="investir"] .inv-deja a{color:var(--terre-f);font-weight:600}
-[data-page="investir"] .inv-aiguillage{border-inline-start-color:var(--terre)}
-[data-page="investir"] .ia-bloc{background:#fff;border-color:var(--ligne)}
-[data-page="investir"] .ia-bloc h2 svg{color:var(--terre)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-pastille-gratuit{background:#E6F2E8;color:#1F6B3A;border:1px solid #A9D3B4}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-pastille-pass{background:#FFF3D6;color:#7A4E00;border:1px solid var(--or)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-sous{margin:0 0 10px;color:var(--doux);font-size:14px}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .resultat-general{background:#fff;border:1px solid var(--ligne)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .resultat-general .res-gratuit{border:0;padding:0;background:none}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .zone-resultat{border:1px solid var(--ligne)!important;border-inline-start:4px solid var(--terre)!important;box-shadow:none;background:#fff}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .note-gratuit{background:var(--sable);border:0;color:var(--doux);font-size:13.5px}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-e3{border-top:4px solid var(--or)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-e3 .res-payant{border:0;background:none;padding:0}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-pass-actif{margin:0 0 8px;padding:8px 12px;border-radius:12px;background:#E6F2E8;color:#1F6B3A;font-weight:700}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .res-inclus{list-style:none;margin:0 0 10px;padding:0}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .res-inclus li{margin:6px 0;line-height:1.4}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-deja{text-align:center;margin:10px 0 0}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-deja a{color:var(--terre-f);font-weight:600}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .inv-aiguillage{border-inline-start-color:var(--terre)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .ia-bloc{background:#fff;border-color:var(--ligne)}
+:is([data-page="investir"],[data-page="vendre"],[data-page="louer"]) .ia-bloc h2 svg{color:var(--terre)}
 /* 27/10/2026 (Ahmed) : « ou » entre Acheter et Louer tant qu'aucun n'est choisi ; un choix fait -> « ou » disparaît */
 .ligne-transaction{grid-template-columns:1fr auto 1fr;align-items:center}
 .seg-ou{padding:0 4px;font-size:14px;font-weight:600;color:var(--doux);font-style:italic}
@@ -1571,3 +1571,50 @@ html[dir="rtl"] .fiche-boite h2{margin:0 0 10px 40px}
 /* « Prix de vente » / « Loyer » soulignés : on voit tout de suite la différence entre les deux boutons (27/10/2026, Ahmed) */
 .panneau-estimer u{text-decoration-thickness:2px;text-underline-offset:4px}
 .onglets-5 .onglet[aria-pressed="true"] span{font-size:12px;letter-spacing:-.02em}
+/* 27/10/2026 (Ahmed) : une explication de deux lignes ou plus est rangée dans un petit bouton « ? » ; touché, il ouvre le texte dessous */
+.aide-q{display:block;margin:6px 0;text-align:end}
+.aide-q>summary{list-style:none;cursor:pointer;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#FFF3D6;
+  border:1.5px solid var(--or);color:var(--encre);font:800 15px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.aide-q>summary::-webkit-details-marker{display:none}
+.aide-q[open]>summary{background:var(--or)}
+.aide-q>p{text-align:start;margin:6px 0 0;padding:10px 12px;border-radius:12px;background:var(--sable);border:1px solid var(--ligne);font-size:13.5px;line-height:1.45;color:var(--encre)}
+.cp-zone-outils{flex-wrap:wrap}
+.cp-zone-outils .aide-q{margin:0 0 0 auto;flex:1 1 auto}
+html[dir="rtl"] .cp-zone-outils .aide-q{margin:0 auto 0 0}
+.cp-zone-outils .aide-q[open]{flex-basis:100%}
+/* 27/10/2026 (Ahmed) : « Trier » sur la même ligne que le titre de la liste */
+.bloc-tete{display:block}
+.titre-tri{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.titre-tri h2{margin:0;flex:none}
+.titre-tri .tri{margin:0;flex:0 1 auto;min-width:0}
+@media (max-width:420px){.titre-tri .tri label{font-size:13px}}
+/* 27/10/2026 (Ahmed) : des flèches entre les étapes 1 → 2 → 3 pour que le visiteur comprenne l'ordre */
+.etapes-ico li{position:relative}
+.etapes-ico li:not(:last-child)::after{content:"➜";position:absolute;top:26px;right:0;transform:translate(50%,-50%);color:var(--terre);
+  font:700 20px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;pointer-events:none}
+html[dir="rtl"] .etapes-ico li:not(:last-child)::after{right:auto;left:0;transform:translate(-50%,-50%) scaleX(-1)}
+@media (max-width:699px){.etapes-ico li:not(:last-child)::after{top:23px;font-size:17px}}
+/* 27/10/2026 (Ahmed) : pages Vendre / Louer, verbe souligné et « Connaissez le juste prix » sur sa propre ligne */
+.hero-page h1 u{text-decoration-thickness:3px;text-underline-offset:4px;text-decoration-color:var(--terre)}
+.h1-suite{display:block}
+/* 27/10/2026 (Ahmed) : le nom du site et « Notre agent immobilier IA vous aide » se relaient toutes les 6 secondes (assets/page.js) */
+.logo-b{display:none;font-size:.84em}
+.logo-nom.alt .logo-a{display:none}
+.logo-nom.alt .logo-b{display:inline;animation:logo-fondu .6s ease}
+.logo-nom:not(.alt) .logo-a{animation:logo-fondu .6s ease}
+@keyframes logo-fondu{from{opacity:0}to{opacity:1}}
+@media (max-width:440px){.logo-b .nom3{display:block}}
+@media (prefers-reduced-motion:reduce){.logo-nom .logo-a,.logo-nom .logo-b{animation:none}}
+/* 27/10/2026 (Ahmed) : les photos d'une annonce glissent sur la carte (assets/page.js) ; compteur « 📷 2/8 » et flèches */
+.an-defile{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.an-defile::-webkit-scrollbar{display:none}
+.an-media .an-defile .an-img{position:relative;inset:auto;flex:0 0 100%;width:100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always}
+.annonce:hover .an-media.a-galerie .an-img{transform:none}
+.an-nb-ph{position:absolute;bottom:8px;inset-inline-end:8px;padding:3px 9px;border-radius:999px;background:rgba(20,30,40,.62);color:#fff;
+  font:700 12.5px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;pointer-events:none;direction:ltr}
+.an-gal{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;padding:0;cursor:pointer;
+  background:rgba(255,255,255,.88);color:var(--encre);font:700 22px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;box-shadow:0 1px 5px rgba(20,30,40,.25)}
+.an-gal-prec{left:8px} .an-gal-suiv{right:8px}
+html[dir="rtl"] .an-gal-prec{left:auto;right:8px} html[dir="rtl"] .an-gal-suiv{right:auto;left:8px}
+html[dir="rtl"] .an-gal{transform:translateY(-50%) scaleX(-1)}
+.an-gal[hidden]{display:none}

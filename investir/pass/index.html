@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=df83341bb9">
-<script src="../../assets/page.js?v=df83341bb9"></script>
+<link rel="stylesheet" href="../../assets/style.css?v=39e18c66f6">
+<script src="../../assets/page.js?v=39e18c66f6"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body data-maj="2026-10-27" data-cv="099514c3c4" data-nb="38720" data-page="investir">
@@ -65,7 +65,7 @@
 <section class="bloc res-payant pass-analyse" id="p-analyse">
 <h2 class="pass-analyse-titre"><span data-l="fr">⭐ Votre analyse complète et détaillée pour investir (Pass actif)</span><span data-l="ar">⭐ تحليلك الكامل والمفصّل للاستثمار (الباس مفعّل)</span></h2>
 <section class="bloc" id="p-classement"><details class="pliable"><summary><h2><span data-l="fr">Classement des quartiers (note sur 10)</span><span data-l="ar">ترتيب الأحياء (عدد من 10)</span></h2><span class="pli-sous"><span data-l="fr">Tous les quartiers notés sur 10, avec leur fiche détaillée.</span><span data-l="ar">كل الأحياء بعدد من 10، مع بطاقتها المفصّلة.</span></span></summary>
-  <p class="petit"><span data-l="fr">Note : rendement net (5 points), prix d’entrée (2), fiabilité des chiffres (1,5), marché locatif actif (1,5). Touchez « Fiche » pour le détail.</span><span data-l="ar">العدد: المردود الصافي (5 نقاط)، سعر الدخول (2)، موثوقية الأرقام (1,5)، نشاط سوق الكراء (1,5). المس « البطاقة » للتفاصيل.</span></p>
+  <details class="aide-q"><summary aria-label="Explication" title="Explication">?</summary><p class="petit"><span data-l="fr">Note : rendement net (5 points), prix d’entrée (2), fiabilité des chiffres (1,5), marché locatif actif (1,5). Touchez « Fiche » pour le détail.</span><span data-l="ar">العدد: المردود الصافي (5 نقاط)، سعر الدخول (2)، موثوقية الأرقام (1,5)، نشاط سوق الكراء (1,5). المس « البطاقة » للتفاصيل.</span></p></details>
   <label class="p-filtre"><span data-l="fr">Gouvernorat</span><span data-l="ar">الولاية</span> <select id="p-filtre"></select></label>
   <ol class="p-liste" id="p-liste" data-limite="10"></ol></details></section>
 <section class="bloc p-fiche-bloc" id="p-fiche" hidden></section>
@@ -74,7 +74,7 @@
   <div class="calc"><label><span data-l="fr">Quartier 1</span><span data-l="ar">الحي 1</span><select id="p-c1"></select></label><label><span data-l="fr">Quartier 2</span><span data-l="ar">الحي 2</span><select id="p-c2"></select></label><label><span data-l="fr">Quartier 3 (facultatif)</span><span data-l="ar">الحي 3 (اختياري)</span><select id="p-c3"></select></label></div>
   <div class="calc-res" id="p-comp-res"></div></details></section>
 <section class="bloc" id="p-affaires-bloc"><details class="pliable"><summary><h2><span data-l="fr">Bonnes affaires de la semaine</span><span data-l="ar">صفقات الأسبوع الجيدة</span></h2><span class="pli-sous"><span data-l="fr">Ventes nettement sous le prix de leur quartier.</span><span data-l="ar">بيوع أقل بكثير من سعر حيّها.</span></span></summary>
-  <p class="petit"><span data-l="fr">Ventes 15 à 45 % sous le prix médian de leur quartier, dans une zone rentable. Vérifiez toujours le bien et le titre foncier avant d’acheter.</span><span data-l="ar">بيوع أقل بـ 15 إلى 45 % من السعر الوسط لحيّها، في منطقة مربحة. تحقّق دائمًا من العقار والرسم العقاري قبل الشراء.</span></p>
+  <details class="aide-q"><summary aria-label="Explication" title="Explication">?</summary><p class="petit"><span data-l="fr">Ventes 15 à 45 % sous le prix médian de leur quartier, dans une zone rentable. Vérifiez toujours le bien et le titre foncier avant d’acheter.</span><span data-l="ar">بيوع أقل بـ 15 إلى 45 % من السعر الوسط لحيّها، في منطقة مربحة. تحقّق دائمًا من العقار والرسم العقاري قبل الشراء.</span></p></details>
   <label class="tri"><span data-l="fr">Trier</span><span data-l="ar">ترتيب</span> <select data-trier="p-affaires"><option value="pert" data-sens="desc" data-fr="Plus pertinents" data-ar="الأكثر أهمية">Plus pertinents</option><option value="prix" data-sens="asc" data-fr="Moins chers" data-ar="الأقل سعرًا">Moins chers</option><option value="rdt" data-sens="desc" data-fr="Meilleur rendement" data-ar="أفضل مردود">Meilleur rendement</option></select></label><small class="tri-aide"><span data-l="fr">Plus pertinents = plus forte baisse sous le prix du quartier.</span><span data-l="ar">الأكثر أهمية = أكبر انخفاض تحت سعر الحي.</span></small>
   <ul class="p-affaires" id="p-affaires" data-limite="10"></ul>
   <p class="petit"><span data-l="fr">En direct (dès qu’une bonne affaire paraît) : sur Telegram,</span><span data-l="ar">مباشرة (فور ظهور صفقة جيدة): على تيليغرام،</span> <a href="https://t.me/AlerteImmobilierTunisieBot?start=investir" target="_blank" rel="noopener"><span data-l="fr">ouvrir le robot</span><span data-l="ar">افتح الروبوت</span></a>.</p></details></section>
@@ -90,7 +90,7 @@
 <section class="bloc pass" id="pass-payer" hidden>
   <h2><span data-l="fr">Continuer avec le Pass</span><span data-l="ar">واصل مع الباس</span></h2>
   <p class="pass-prix"><span data-l="fr"><b>49 DT</b> / mois <small>ou 390 DT / an</small></span><span data-l="ar"><b>⁦49⁩ دينار</b> / شهر <small>أو ⁦390⁩ دينار / سنة</small></span></p>
-  <p class="petit"><span data-l="fr">Après le paiement, votre Pass est activé sur votre code dans la journée : cette même page reste ouverte, sans rien changer.</span><span data-l="ar">بعد الدفع، يُفعَّل باسك على رمزك في نفس اليوم: تبقى هذه الصفحة مفتوحة، دون تغيير أي شيء.</span></p>
+  <details class="aide-q"><summary aria-label="Explication" title="Explication">?</summary><p class="petit"><span data-l="fr">Après le paiement, votre Pass est activé sur votre code dans la journée : cette même page reste ouverte, sans rien changer.</span><span data-l="ar">بعد الدفع، يُفعَّل باسك على رمزك في نفس اليوم: تبقى هذه الصفحة مفتوحة، دون تغيير أي شيء.</span></p></details>
   <details class="paiement"><summary class="btn-paie"><span data-l="fr">Paiement</span><span data-l="ar">الدفع</span></summary>
   <div class="paie"><ol class="paie-etapes">
     <li><span data-l="fr">Ouvrez l'application :</span><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="fr">Sur iPhone :</span><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li>
@@ -106,6 +106,6 @@
 </main>
 <footer id="pied" class="pied"></footer>
 
-<script src="../../assets/pass.js?v=df83341bb9" defer></script>
+<script src="../../assets/pass.js?v=39e18c66f6" defer></script>
 </body>
 </html>

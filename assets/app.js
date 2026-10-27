@@ -283,7 +283,9 @@
       ? '<img class="an-img" src="' + E(a.ph) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
       : '<div class="an-vignette v-' + a.y + '">' + (VIGNETTE[a.y] || VIGNETTE.autre || "") + '</div>';
     return '<article class="annonce' + (a.av ? " en-avant" : "") + (PHOTO_OK(a.ph) ? " a-photo" : "") + '" id="a-' + E(a.i) + '" data-t="' + a.t + '" data-y="' + a.y + '" data-v="' + (a.v || "p") + '">' +
-      '<div class="an-media v-' + a.y + '">' + media +
+      // 27/10/2026 (Ahmed) : les photos de la fiche glissent sur la carte (assets/page.js), même balisage que carte_annonce() du robot
+      '<div class="an-media v-' + a.y + '"' + (a.np >= 2 && PHOTO_OK(a.ph) ? ' data-galerie="' + E(idFiche(a)) + '"' : "") + '>' + media +
+      (a.np >= 2 && PHOTO_OK(a.ph) ? '<span class="an-nb-ph">📷 1/' + (+a.np) + '</span>' : "") +
       '<div class="an-etiquettes"><span class="an-badge ' + (loc ? "louer" : "vendre") + '">' + (loc ? L("À louer", "للكراء") : L("À vendre", "للبيع")) + '</span>' +
       (a.av ? '<span class="an-badge avant">' + L("⭐ En avant", "⭐ مميّز") + '</span>' : "") +
       (a.fo === "f" ? '<span class="an-badge fonds">' + L("Fonds de commerce", "أصل تجاري") + '</span>' :     // 20/10/2026 (Ahmed)
@@ -307,11 +309,11 @@
 
   // Contact (décision d'Ahmed du 11/10/2026) — même logique que robot/construire_site.py, fonction actions()
   // « Description, photos et contact » (26/10/2026, décision d'Ahmed) : fiche ouverte sans quitter le site (assets/page.js)
+  // même calcul que id_partage() du robot et window.idPartage (page.js peut être chargé après ce fichier)
+  function idFiche(a) { return String(a.i).replace(/[^a-z0-9-]/g, function (c) { return "-x" + c.charCodeAt(0).toString(16) + "-"; }); }
   function boutonFiche(a) {
-    // même calcul que id_partage() du robot et window.idPartage (page.js peut être chargé après ce fichier)
-    var id = String(a.i).replace(/[^a-z0-9-]/g, function (c) { return "-x" + c.charCodeAt(0).toString(16) + "-"; });
-    return a.fd ? '<button class="an-fiche" type="button" data-fiche="' + E(id) + '">' +
-      L("Description, photos et contact", "الوصف والصور والاتصال") + '</button>' : "";
+    return a.fd ? '<button class="an-fiche" type="button" data-fiche="' + E(idFiche(a)) + '">' +
+      L("Description et contact", "الوصف والاتصال") + '</button>' : "";   // 27/10/2026 (Ahmed) : les photos glissent sur la carte
   }
   function actions(a, racine) { return boutonFiche(a) + actionsContact(a, racine); }
   function actionsContact(a, racine) {

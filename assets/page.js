@@ -184,10 +184,13 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
       };
       if (!calme && !bia.getAttribute("data-anime")) { bia.setAttribute("data-anime", "1"); avancer(); }
     }
+    alterneLogo();
     if (e) e.innerHTML =
       '<div class="wrap">' +
         '<a class="logo" href="' + (racine || "./") + '"><img class="logo-mark" src="' + racine + 'assets/logo.svg" alt="" width="38" height="38">' +
-          '<span class="logo-nom">' + T('Immobilier <span class="nom2">Tunisie <span class="logo-by">by</span><span class="mot-ia logo-ia">IA</span></span>', 'عقارات <span class="nom2">تونس <span class="logo-by">by</span><span class="mot-ia logo-ia">IA</span></span>') +
+          // 27/10/2026 (Ahmed) : « Notre agent immobilier IA vous aide » remplace le nom pendant 6 secondes, puis le nom revient, et ainsi de suite
+          '<span class="logo-nom"><span class="logo-a">' + T('Immobilier <span class="nom2">Tunisie <span class="logo-by">by</span><span class="mot-ia logo-ia">IA</span></span>', 'عقارات <span class="nom2">تونس <span class="logo-by">by</span><span class="mot-ia logo-ia">IA</span></span>') + '</span>' +
+          '<span class="logo-b" aria-hidden="true">' + T('Notre agent <span class="nom2">immobilier <span class="mot-ia logo-ia">IA</span></span> <span class="nom3">vous aide</span>', 'وكيلنا <span class="nom2">العقاري <span class="mot-ia logo-ia">IA</span></span> <span class="nom3">يساعدك</span>') + '</span>' +
           '<small>' + T("Annonces gratuites · 24 gouvernorats", "إعلانات مجانية · 24 ولاية") + '</small></span></a>' +
         '<div class="entete-boutons">' +
           // bouton doré « IA pour l'immobilier » (15/10/2026, demande d'Ahmed) -> ia/ : vendre, louer votre bien, investir
@@ -287,9 +290,22 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
       var n = im.cloneNode(false); n.dataset.relais = "1"; n.src = "https://wsrv.nl/?url=" + encodeURIComponent(src) + "&w=640";
       im.parentNode.replaceChild(n, im); return;
     }
-    var m = im.parentNode; im.remove();
+    // 27/10/2026 : une photo de plus de la galerie de la carte qui ne s'affiche pas est simplement retirée (la carte garde les autres)
+    if (im.classList.contains("an-img-plus")) { var bd = im.parentNode; im.remove(); if (bd && bd.majGalerie) bd.majGalerie(); return; }
+    var m = im.closest ? im.closest(".an-media") || im.parentNode : im.parentNode; im.remove();
     if (m) { m.classList.add("photo-ko"); var c = m.closest(".annonce"); if (c) c.classList.remove("a-photo"); }
   }, true);
+  // nom du site <-> « Notre agent immobilier IA vous aide » toutes les 6 s (27/10/2026, Ahmed) ; jamais pour un navigateur automatique
+  // (tests, visiteur simulé) ni si le visiteur a demandé moins d'animations
+  var minuterieLogo;
+  function alterneLogo() {
+    if (minuterieLogo || navigator.webdriver || /jsdom/i.test(navigator.userAgent || "")) return;
+    try { if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; } catch (x) {}
+    minuterieLogo = setInterval(function () {
+      var n = document.querySelector(".entete .logo-nom");
+      if (n && !document.hidden) n.classList.toggle("alt");
+    }, 6000);
+  }
   function appliquer(l) {
     html.lang = l; html.dir = l === "ar" ? "rtl" : "ltr";
     try { localStorage.setItem("langue-immobilier", l); } catch (e) {}
@@ -434,6 +450,68 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
       if (boite.scrollTo) boite.scrollTo(0, 0);
     }).catch(function () { zd.textContent = T("Fiche indisponible pour le moment : voyez l’annonce sur le site d’origine.", "البطاقة غير متوفرة الآن: شاهد الإعلان في الموقع الأصلي."); });
   };
+  // PHOTOS QUI GLISSENT SUR LA CARTE (27/10/2026, Ahmed : « je veux glisser la photo principale pour voir les autres, c'est plus rapide ») :
+  // une carte dont la fiche a au moins 2 photos (data-galerie, « np » de annonces.js) lit annonce/<id>/fiche.json quand elle approche de
+  // l'écran, puis ses photos défilent du doigt (ou avec les flèches) ; seulement des liens https, jamais copiés ; compteur « 2/8 »
+  function nomPhoto(u) {
+    var q = /[?&]url=([^&]+)/.exec(u || ""), v = q ? decodeURIComponent(q[1]) : String(u || "");
+    var n = v.split("?")[0].split("/").pop().toLowerCase();
+    return n.replace(/-\d+x\d+(?=\.\w+$)/, "").replace(/_property_(?:x?large|medium|small)(?=\.\w+$)/, "");
+  }
+  function galerieCarte(m, ph) {
+    var img = m.querySelector("img.an-img");
+    if (!img || m.querySelector(".an-defile")) return;
+    ph = (Array.isArray(ph) ? ph : []).filter(function (u) { return /^https:\/\/[^\s"'<>]+$/.test(u); }).slice(0, 20);
+    if (ph.length && nomPhoto(ph[0]) === nomPhoto(img.getAttribute("src"))) ph = ph.slice(1);
+    if (!ph.length) return;
+    var bande = el("div", "an-defile");
+    m.insertBefore(bande, img); bande.appendChild(img);
+    ph.forEach(function (u) {
+      var x = el("img", "an-img an-img-plus"); x.alt = ""; x.loading = "lazy"; x.decoding = "async"; x.referrerPolicy = "no-referrer"; x.src = u;
+      bande.appendChild(x);
+    });
+    var nb = m.querySelector(".an-nb-ph") || m.appendChild(el("span", "an-nb-ph"));
+    var prec = el("button", "an-gal an-gal-prec", "‹"), suiv = el("button", "an-gal an-gal-suiv", "›");
+    prec.type = suiv.type = "button"; prec.setAttribute("aria-label", T("Photo précédente", "الصورة السابقة")); suiv.setAttribute("aria-label", T("Photo suivante", "الصورة التالية"));
+    m.appendChild(prec); m.appendChild(suiv);
+    function rang() { return Math.round(Math.abs(bande.scrollLeft) / Math.max(1, bande.clientWidth)); }
+    bande.majGalerie = function () {
+      var n = bande.children.length, i = Math.min(rang(), n - 1);
+      nb.textContent = "📷 " + (i + 1) + "/" + n;
+      prec.hidden = i <= 0; suiv.hidden = i >= n - 1;
+      if (n < 2) { prec.remove(); suiv.remove(); }
+    };
+    function aller(d) {
+      var sens = html.dir === "rtl" ? -1 : 1;
+      bande.scrollBy({ left: d * sens * bande.clientWidth, behavior: "smooth" });
+    }
+    prec.addEventListener("click", function (e) { e.stopPropagation(); aller(-1); });
+    suiv.addEventListener("click", function (e) { e.stopPropagation(); aller(1); });
+    var att; bande.addEventListener("scroll", function () { clearTimeout(att); att = setTimeout(bande.majGalerie, 60); }, { passive: true });
+    m.classList.add("a-galerie");
+    bande.majGalerie();
+  }
+  function preparerGalerie(m) {
+    if (m.dataset.galLue) return;
+    m.dataset.galLue = "1";
+    fetch(racine + "annonce/" + encodeURIComponent(m.getAttribute("data-galerie")) + "/fiche.json")
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) { galerieCarte(m, d.ph); }).catch(function () {});
+  }
+  var obsGal = window.IntersectionObserver ? new IntersectionObserver(function (l) {
+    l.forEach(function (x) { if (x.isIntersecting) { obsGal.unobserve(x.target); preparerGalerie(x.target); } });
+  }, { rootMargin: "300px 0px" }) : null;
+  function chercherGaleries() {
+    var l = document.querySelectorAll(".an-media[data-galerie]:not([data-gal-vue])");
+    for (var i = 0; i < l.length; i++) { l[i].setAttribute("data-gal-vue", "1"); if (obsGal) obsGal.observe(l[i]); }
+  }
+  window.chercherGaleries = chercherGaleries; window.galerieCarte = galerieCarte;   // galerieCarte : utilisé par les tests
+  if (window.MutationObserver) {
+    var attGal; new MutationObserver(function () { clearTimeout(attGal); attGal = setTimeout(chercherGaleries, 150); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", chercherGaleries); else chercherGaleries();
+  // toucher la photo sans glisser ouvre toujours l'annonce (assets/app.js) ; un glissement ne compte pas comme un toucher
   document.addEventListener("click", function (e) {
     var b = e.target && e.target.closest && e.target.closest(".an-fiche");
     if (!b) return;

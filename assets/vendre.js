@@ -606,8 +606,8 @@
       // carte générale du résultat : avec le Pass, plus de « gratuit » ni de « payant » (15/10/2026, Ahmed)
       if (el("res-titre-a")) {
         ["res-titre-a", "res-titre-b"].forEach(function (id) { if (!el(id).dataset.libre) el(id).dataset.libre = el(id).innerHTML; });
-        el("res-titre-a").innerHTML = a.ok ? esc(T2("⚡ Estimation rapide", "⚡ تقدير سريع")) : el("res-titre-a").dataset.libre;
-        el("res-titre-b").innerHTML = a.ok ? esc(T2("⭐ Votre analyse complète et détaillée (Pass actif)", "⭐ تحليلك الكامل والمفصّل (الباس مفعّل)")) : el("res-titre-b").dataset.libre;
+        el("res-titre-a").innerHTML = a.ok ? esc(T2("Votre estimation rapide", "تقديرك السريع")) : el("res-titre-a").dataset.libre;
+        el("res-titre-b").innerHTML = a.ok ? esc(T2("Votre analyse complète et détaillée", "تحليلك الكامل والمفصّل")) : el("res-titre-b").dataset.libre;
       }
       if (el("p-ruban")) { if (!el("p-ruban").dataset.libre) el("p-ruban").dataset.libre = el("p-ruban").innerHTML;
         el("p-ruban").innerHTML = a.ok ? esc(T2("✅ Votre Pass est actif", "✅ باسك مفعّل")) : el("p-ruban").dataset.libre; }

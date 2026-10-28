@@ -23,7 +23,7 @@ env:
 jobs:
   depots:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60     # 28/10/2026 : 30 min dépassées depuis le 27/10 (41 000 annonces avec Mubawab : pages ~10 min) -> robot annulé
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,6 +46,20 @@ jobs:
         id: change
         run: |
           if git diff --quiet -- donnees/; then echo "oui=non" >> "$GITHUB_OUTPUT"; echo "Rien de nouveau : pas de reconstruction"; else echo "oui=oui" >> "$GITHUB_OUTPUT"; fi
+      # 28/10/2026 : le travail du robot des liens (textes lus, fiches complétées, annonces disparues) était PERDU chaque fois qu'une
+      # étape suivante échouait ou dépassait le temps (robot annulé depuis le 27/10 : 980 annonces Tecnocasa et 13 El Moustakbal restées
+      # sans texte, robot maj rouge). Comme maj.yml : le fichier du robot (donnees/annonces.json) est enregistré TOUT DE SUITE ; les pages
+      # et les données publiques (lues par les visiteurs) ne changent qu'après les tests.
+      - name: Garder les liens vérifiés (même si une étape suivante échoue)
+        if: steps.change.outputs.oui == 'oui'
+        run: |
+          git config user.name "robot-immobilier"
+          git config user.email "robot-immobilier@users.noreply.github.com"
+          git add donnees/annonces.json journaux/depots.log
+          git diff --cached --quiet && exit 0
+          git commit -qm "Liens vérifiés le $(date +'%d/%m/%Y %Hh%M') (avant les pages)"
+          for essai in 1 2 3 4; do git pull --rebase --autostash -q && git push -q && exit 0; sleep $((essai * 10)); done
+          echo "ÉCHEC : liens vérifiés non enregistrés (ils le seront avec les pages)"; exit 1
       - name: Pages du site
         if: steps.change.outputs.oui == 'oui'
         run: python robot/construire_site.py

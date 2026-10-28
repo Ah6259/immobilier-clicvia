@@ -73,7 +73,9 @@ jobs:
         run: |
           git config user.name "robot-immobilier"
           git config user.email "robot-immobilier@users.noreply.github.com"
-          mkdir -p journaux; python -u robot/collecter.py ${SEULEMENT:+--seulement "$SEULEMENT"} > journaux/maj.log 2>&1; c=$?; tail -2 journaux/maj.log; exit $c
+          # 28/10/2026 : journal écrit HORS du dépôt pendant la lecture : l'envoi après chaque source (git pull --autostash) mettait de côté
+          # journaux/maj.log en cours d'écriture -> journal tronqué (39 lignes le 28/10, plus rien sur Tecnocasa). Copié à la fin.
+          mkdir -p journaux; python -u robot/collecter.py ${SEULEMENT:+--seulement "$SEULEMENT"} > /tmp/maj.log 2>&1 && c=0 || c=$?; cp /tmp/maj.log journaux/maj.log; tail -2 journaux/maj.log; exit $c
         timeout-minutes: 175
         env:
           SEULEMENT: ${{ github.event.inputs.seulement }}

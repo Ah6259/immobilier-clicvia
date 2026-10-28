@@ -498,9 +498,18 @@
     }
     // 27/10/2026 (Ahmed : « 78 annonces » dans la suggestion, « Voir les 51 annonces » sur le bouton) : le nombre d'un lieu proposé
     // compte les annonces qui passent TOUS les autres filtres choisis (Acheter / Louer, type, prix…), comme le bouton
+    // 28/10/2026 (Ahmed : « j'écris une lettre, puis la deuxième : le site met du temps à afficher ») : avant, CHAQUE lieu proposé refaisait
+    // les filtres sur les ~40 000 annonces ; maintenant les annonces qui passent les autres filtres sont triées UNE fois par gouvernorat
+    // (mémorisées tant que les filtres et la liste ne changent pas) et un lieu ne compte que dans son gouvernorat
+    var baseCompte = { cle: null, liste: null, parG: null };
     function compter(x, v) {
       v = v || valeurs();
-      return tout.filter(function (a) { return a.g === x.g && (!x.d || dansDeleg(a, x.d)) && (!x.l || dansLoc(a, x.l)) && passe(a, v, { g: 1, d: 1, l: 1, compte: false }); }).length;
+      var cle = JSON.stringify(v) + "|" + tout.length;
+      if (baseCompte.cle !== cle) {
+        baseCompte.cle = cle; baseCompte.parG = {};
+        tout.forEach(function (a) { if (passe(a, v, { g: 1, d: 1, l: 1, compte: false })) (baseCompte.parG[a.g] = baseCompte.parG[a.g] || []).push(a); });
+      }
+      return (baseCompte.parG[x.g] || []).filter(function (a) { return (!x.d || dansDeleg(a, x.d)) && (!x.l || dansLoc(a, x.l)); }).length;
     }
     function ouChercher() {
       var champ = document.getElementById("f-ou"), boite = document.getElementById("ou-suggestions");
@@ -546,6 +555,10 @@
           // ses autres écritures (sinon le doublon retiré était le vrai nom)
           .sort(function (a, b) { return (a.al || 0) - (b.al || 0); })
           .filter(function (x) { var c = x.g + "/" + x.d + "/" + x.l; if (vu[c]) return false; vu[c] = 1; return true; })
+          // 28/10/2026 (Ahmed : « a » puis « aaaaa » : lent) : une ou deux lettres proposent des centaines de lieux ; on garde les 60 plus
+          // probables (nom exact, début du nom, délégation avant localité) AVANT de compter leurs annonces
+          .sort(function (a, b) { return (exact(b) - exact(a)) || (litOk(b) - litOk(a)) || ((b.k.indexOf(" " + mots[0]) === 0) - (a.k.indexOf(" " + mots[0]) === 0)) || (a.r - b.r); })
+          .slice(0, 60)
           .map(function (x) { return { x: x, n: compter(x, vOu), debut: x.k.indexOf(" " + mots[0]) === 0, lit: litOk(x), ex: exact(x) }; })
           // nom exact qui a des annonces (Shotrana = Chotrana), puis lieux avec annonces, puis nom exact sans annonce ; délégation avant localité
           .sort(function (a, b) { return ((b.ex && b.n > 0) - (a.ex && a.n > 0)) || (faible ? (b.lit - a.lit) : 0) || ((b.n > 0) - (a.n > 0)) || (b.ex - a.ex) || (a.x.r - b.x.r) || (b.debut - a.debut) || (b.n - a.n) || a.x.fr.localeCompare(b.x.fr, "fr"); });

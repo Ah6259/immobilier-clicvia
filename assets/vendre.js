@@ -254,7 +254,10 @@
     // RÈGLE (Ahmed, 15/10/2026 : « une pomme et une orange ») : lieu choisi -> seulement le même quartier ou la même délégation
     // officielle, et une surface proche ; jamais le reste du gouvernorat. « Tout le gouvernorat » choisi : tout le gouvernorat.
     var dz = dv || (qslug && OF[g + "/" + qslug] ? OF[g + "/" + qslug][0] : "");
-    function dansZone(a) { return !(qslug || dz) || (qslug && a.l === qslug) || (dz && delegA(a) === dz); }
+    // 28/10/2026 : dans la délégation, seulement des lieux de même nature (zone touristique avec zone touristique, comme robot/investir.SAISON)
+    var TOUR = ["gammarth", "la-marsa", "sidi-bou-said", "les-berges-du-lac", "hammamet", "yasmine-hammamet", "port-el-kantaoui"];
+    function memeNature(l) { return (TOUR.indexOf(l) >= 0) === (TOUR.indexOf(qslug) >= 0); }
+    function dansZone(a) { return !(qslug || dz) || (qslug && a.l === qslug) || (dz && delegA(a) === dz && (!qslug || memeNature(a.l))); }
     function tailleProche(a) { return !(s && a.s) || (a.s / s >= 2 / 3 && a.s / s <= 1.5); }
     // 27/10/2026 (Ahmed) : un fonds de commerce (ou murs + fonds) n'est jamais montré comme référence pour un local (fo : f / mf)
     // 27/10/2026 (contrôleur des analyses payées : à La Marsa, un S+3 de 160 m² comparé à 1 400 DT ET à 6 500 DT) : une location n'est

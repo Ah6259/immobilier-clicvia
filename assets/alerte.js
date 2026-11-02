@@ -34,12 +34,12 @@
   function urlBrevo() { var u = window.BREVO_FORM_URL_ESSAI || BREVO_FORM_URL; return MOTIF_BREVO.test(u) ? u : ""; }   // _ESSAI : tests seulement
   // types (11/10/2026 : aussi bureaux, commerces, usines, terrains industriels et agricoles) ; « pro » = tous les biens professionnels
   var TYPES = [["pro", "Professionnels & industriels (tous)", "المهنيون والصناعيون (الكل)"],
-               ["appartement", "Appartement", "شقة"], ["maison", "Maison / villa", "منزل / فيلا"],
+               ["appartement", "Appartement", "شقة"], ["maison", "Maison / villa", "منزل / فيلا"], ["duplex", "Duplex", "دوبلكس"],
                ["bureau", "Bureau", "مكتب"], ["commerce", "Local commercial", "محل تجاري"], ["industriel", "Usine / entrepôt / dépôt", "مصنع / مستودع"],
                ["terrain", "Terrain à bâtir", "أرض للبناء"], ["terrainind", "Terrain industriel / commercial", "أرض صناعية / تجارية"],
                ["agricole", "Terrain agricole / ferme", "أرض فلاحية / ضيعة"], ["autre", "Autre bien", "عقار آخر"],
                ["local", "Bureau / local (tous)", "مكتب / محل (الكل)"]];
-  var COURT = { appartement: "ap", maison: "ma", terrain: "te", local: "lo", autre: "au", bureau: "bu", commerce: "co",
+  var COURT = { duplex: "dx", appartement: "ap", maison: "ma", terrain: "te", local: "lo", autre: "au", bureau: "bu", commerce: "co",
                 industriel: "in", terrainind: "ti", agricole: "ag", pro: "pr" };
   var SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
   var G2 = { "tunis": "tu", "ariana": "an", "ben-arous": "ba", "manouba": "mn", "nabeul": "na", "zaghouan": "za", "bizerte": "bz", "beja": "be",

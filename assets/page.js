@@ -737,17 +737,18 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    caché, sa valeur est effacée (un filtre caché ne filtre jamais). Le type de bien du formulaire est marqué data-type-bien.
    Même liste dans robot/modele_ia.py (TYPES_PIECES) : test croisé dans tools/test_site.mjs. */
 (function () {
-  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison"], fonds: ["commerce"], duree: ["", "appartement", "maison"],   // durée : location d'habitation (22/10/2026)   // "" = « Tous les biens » ; fonds : 20/10/2026
+  // 01/11/2026 : « duplex » (choix du menu Type de bien) a les champs d'un appartement ou d'une maison
+  var CHAMPS_TYPE = { pieces: ["", "appartement", "maison", "duplex"], fonds: ["commerce"], duree: ["", "appartement", "maison", "duplex"],   // durée : location d'habitation (22/10/2026)   // "" = « Tous les biens » ; fonds : 20/10/2026
     // ATOUTS (20/10/2026, Ahmed : « pour un local commercial on ne peut pas avoir ces atouts, c'est quelque chose qu'on a déjà réglé »)
-    atouts: ["", "appartement", "maison", "terrain", "bureau"],
-    at_e: ["", "appartement", "maison", "terrain"], at_m: ["", "appartement", "maison", "terrain"],
-    at_p: ["", "appartement", "maison"], at_j: ["", "appartement", "maison"], at_t: ["", "appartement", "maison"],
-    at_g: ["", "appartement", "maison", "bureau", "commerce", "industriel"], at_u: ["", "appartement", "maison", "bureau"], at_n: ["", "appartement", "maison", "bureau"],
-    at_a: ["", "appartement", "bureau"],
-    at_k: ["", "appartement", "maison", "bureau"], at_h: ["", "appartement", "maison"],   // climatisation, chauffage (22/10/2026, Ahmed)
+    atouts: ["", "appartement", "maison", "terrain", "bureau", "duplex"],
+    at_e: ["", "appartement", "maison", "terrain", "duplex"], at_m: ["", "appartement", "maison", "terrain", "duplex"],
+    at_p: ["", "appartement", "maison", "duplex"], at_j: ["", "appartement", "maison", "duplex"], at_t: ["", "appartement", "maison", "duplex"],
+    at_g: ["", "appartement", "maison", "bureau", "commerce", "industriel", "duplex"], at_u: ["", "appartement", "maison", "bureau", "duplex"], at_n: ["", "appartement", "maison", "bureau", "duplex"],
+    at_a: ["", "appartement", "bureau", "duplex"],
+    at_k: ["", "appartement", "maison", "bureau", "duplex"], at_h: ["", "appartement", "maison", "duplex"],   // climatisation, chauffage (22/10/2026, Ahmed)
     // 21/10/2026 (Ahmed) : MÊMES champs dans la recherche et l'estimation (robot/criteres.py CHAMPS : test croisé)
-    niveaux: ["maison", "industriel", "autre"], etage: ["appartement", "bureau", "commerce"],
-    standing: ["", "appartement", "maison", "bureau"], etat: ["", "appartement", "maison", "bureau", "commerce"] };
+    niveaux: ["maison", "industriel", "autre"], etage: ["appartement", "bureau", "commerce", "duplex"],
+    standing: ["", "appartement", "maison", "bureau", "duplex"], etat: ["", "appartement", "maison", "bureau", "commerce", "duplex"] };
   if (window.CRITERES && window.CRITERES.champs) Object.keys(window.CRITERES.champs).forEach(function (k) { CHAMPS_TYPE[k] = window.CRITERES.champs[k]; });
   /* ATOUTS COMMUNS (21/10/2026, Ahmed : « le filtre des estimations et le filtre de recherche devraient être les mêmes ») : la liste
      d'un type de bien vient de donnees/criteres.js (robot/criteres.py) pour les DEUX formulaires. cont : le cadre des cases ;

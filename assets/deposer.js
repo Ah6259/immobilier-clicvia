@@ -93,6 +93,10 @@
     autre.name = "localite_autre"; autre.maxLength = 60; autre.hidden = true; autre.className = "localite-autre";
     autre.placeholder = T("Écrivez la localité", "اكتب المنطقة"); autre.setAttribute("aria-label", T("Autre localité", "منطقة أخرى"));
     selLoc.parentNode.appendChild(autre);
+    var dxl = form.querySelector(".champ-type-duplex");          // petite question du duplex, montrée seulement pour « Duplex »
+    var majDx = function () { var t = form.querySelector('[name="type"]'); if (dxl) dxl.hidden = !(t && t.value === "duplex"); };
+    form.addEventListener("change", function (e) { if (e.target.name === "type") majDx(); });
+    majDx();
     form.addEventListener("change", function (e) {
       if (e.target.name === "gouvernorat") delegations(form);
       else if (e.target.name === "lieu") localites(form);
@@ -157,6 +161,9 @@
         if (!c || !CHAMPS[k]) return;
         if (c.type === "checkbox") { if (c.checked) d.append(CHAMPS[k], c.value); }
         else if (k === "localite" && c.value === AUTRE) d.append(CHAMPS[k], autre.value.trim());
+        // 01/11/2026 (Ahmed) : « Duplex » + sa précision (dans un immeuble / maison ou villa) -> « duplex-appartement » / « duplex-maison »,
+        // lu par robot/sources/depot.py (type + sorte « duplex »)
+        else if (k === "type" && c.value === "duplex") { var dx = form.querySelector('[name="type_duplex"]'); d.append(CHAMPS[k], "duplex-" + (dx && dx.value === "maison" ? "maison" : "appartement")); }
         else if (k === "description" && fb) d.append(CHAMPS[k], c.value.trim() + "\n#fb:" + fb.value.trim());
         else if (k === "titre" && fb && c.value.trim().length < 5) d.append(CHAMPS[k], titreFb(form));
         else if (k === "email" && fb) d.append(CHAMPS[k], "facebook@immobilier.clicvia.com");

@@ -16,7 +16,8 @@
   var TY = (window.LIEUX && window.LIEUX.t) || {}, TGROUPES = (window.LIEUX && window.LIEUX.tg) || {};
   var VIGNETTE = {}, TYPE_FR = {}, TYPE_AR = {};
   Object.keys(TY).forEach(function (k) { TYPE_FR[k] = k === "autre" ? "Bien immobilier" : TY[k][0]; TYPE_AR[k] = k === "autre" ? "عقار" : TY[k][1]; VIGNETTE[k] = TY[k][2]; });
-  function typeVoulu(a, y) { return a.y === y || (TGROUPES[y] || []).indexOf(a.y) >= 0; }   // « pro », « local » : plusieurs types
+  // 01/11/2026 (Ahmed) : « Duplex » = duplex d'appartement ou de maison (sorte « st » lue dans l'annonce)
+  function typeVoulu(a, y) { return y === "duplex" ? a.st === "duplex" && (a.y === "appartement" || a.y === "maison") : a.y === y || (TGROUPES[y] || []).indexOf(a.y) >= 0; }   // « pro », « local » : plusieurs types
 
   function E(t) { return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   // audit de sécurité (16/10/2026) : un lien d'annonce n'est jamais « javascript: » ni autre chose que http(s) (3e barrière, après le robot et la CSP)

@@ -70,6 +70,14 @@
     if (a) (Z.v || []).forEach(function (x) {                 // gouvernorat aux prix trop variés pour cette taille : proposé, avec le message
       if (!x[1] && x[2] === a && !L.some(function (y) { return y[0] === x[0]; })) L.push([x[0], x[3], x[4]]);
     });
+    // 01/11/2026 (contrôleur du Pass : « Sfax S+1 » choisi -> menu sans Sfax -> « Toute la Tunisie » -> quartiers de Tunis montrés) :
+    // un gouvernorat sans ligne de gouvernorat pour cette taille mais avec au moins un quartier est proposé quand même
+    if (a) Z.q.forEach(function (x) {
+      if (x[4] === a && !L.some(function (y) { return y[0] === x[0]; })) {
+        var gl = Z.g.filter(function (y) { return y[0] === x[0]; })[0];     // nom du gouvernorat (FR, AR) : sa ligne d'une autre taille
+        L.push([x[0], gl ? gl[1] : x[0], gl ? gl[2] : x[0], null, null, null, 0, 1]);
+      }
+    });
     L.sort(function (x, y) { return x[1].localeCompare(y[1]); });
     g.innerHTML = '<option value="">' + T("Toute la Tunisie", "كامل تونس") + "</option>" + L.map(function (x) { return '<option value="' + esc(x[0]) + '">' + esc(ar() ? x[2] : x[1]) + "</option>"; }).join("");
     g.value = L.some(function (x) { return x[0] === gg; }) ? gg : "";

@@ -1646,3 +1646,33 @@ button.an-appel{font:inherit;cursor:pointer;width:100%}
 .verrou-ex .tampon-bas{top:68%}
 .bandeau-exemple{margin:10px 0 6px;padding:8px 12px;border-radius:10px;background:#B22222;color:#fff;font-weight:800;text-align:center;font-size:15px}
 .v-tres-varies{margin:8px 0 12px;padding:10px 12px;border-radius:12px;background:#FFF3D6;border:1px solid var(--or);font-size:14px;line-height:1.45}
+/* BAROMÈTRE IMMOBILIER (01/11/2026, Ahmed) : page Où investir, #barometre */
+.barometre .bloc-sous{margin:4px 0 12px;color:var(--doux)}
+.baro-form .champ-ou{display:block;margin-bottom:8px}
+.baro-form .champ-ou input{width:100%;box-sizing:border-box;min-height:44px;font:inherit;font-size:15px;padding:8px 12px;border:1px solid var(--ligne);border-radius:10px;background:#fff}
+.baro-choisis{list-style:none;display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:0 0 10px}
+.baro-choisis li{display:inline-flex;align-items:center;gap:6px;padding:5px 8px 5px 10px;border-radius:999px;background:#fff;border:1.5px solid var(--c,var(--bleu));font-size:14px;font-weight:600;color:var(--encre)}
+.baro-puce{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--c,var(--bleu));flex:none}
+.baro-retirer{border:0;background:none;font:inherit;font-size:18px;line-height:1;color:var(--doux);cursor:pointer;padding:0 2px}
+.baro-periode{display:flex;gap:6px;padding:3px;background:var(--sable);border:1px solid var(--ligne);border-radius:999px;margin-bottom:12px}
+.baro-periode label{flex:1;text-align:center}.baro-periode input{position:absolute;opacity:0;width:1px;height:1px}
+.baro-periode span{display:block;padding:8px 4px;border-radius:999px;font-weight:600;color:var(--doux);cursor:pointer}
+.baro-periode input:checked+span{background:var(--encre);color:#fff}
+.baro-periode input:focus-visible+span{outline:3px solid var(--or)}
+.baro-gratuit{margin-bottom:12px}
+.baro-cartes{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.baro-carte{border:1.5px solid var(--c,var(--ligne));border-radius:12px;padding:10px 12px;background:#fff}
+.baro-carte h4{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:7px}
+.baro-niv{display:flex;justify-content:space-between;gap:8px;margin:4px 0 0;font-size:14px}.baro-niv b{font-size:15px}
+.baro-evo{margin:0 0 6px;font-size:13px;color:var(--doux)}
+.baro-tend{font-weight:700}.baro-th{color:#1F6E43}.baro-tb{color:#B3261E}.baro-tn{color:var(--doux)}
+.baro-svg{width:100%;height:auto;display:block;margin:4px 0 2px}
+.baro-grille{stroke:var(--ligne);stroke-width:1}
+.baro-axe{font-size:11px;fill:var(--doux)}
+.baro-courbe{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.baro-prev{fill:none;stroke-width:2;stroke-dasharray:5 5;opacity:.7}
+.baro-legende{list-style:none;display:flex;flex-wrap:wrap;gap:4px 14px;padding:0;margin:0 0 10px;font-size:13px}
+.baro-legende li{display:inline-flex;align-items:center;gap:6px}
+.baro-prevs{padding-inline-start:18px;margin:4px 0 10px;font-size:14px;line-height:1.5}
+.baro-fiab{font-size:12.5px;padding:1px 7px;border-radius:999px;background:var(--sable)}
+.baro-fb{background:#E6F2E8;color:#1F6B3A}.baro-fm{background:#FFF3D6;color:#7A4E00}.baro-ff{background:#FDECEA;color:#B3261E}

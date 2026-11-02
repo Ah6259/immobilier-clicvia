@@ -228,7 +228,12 @@
   // ---- le calcul
   var MIN_REF = 5;                                // biens comparables (même type, même S+, même zone) au moins pour un chiffre de référence
   function calcul() {
-    var t = el("v-t").value, g = el("v-g").value, q = el("v-q").value, s = parseFloat((el("v-s").value || "").replace(",", ".")),
+    // 01/11/2026 (Ahmed, demande du 28/10) : « Duplex » = un choix du menu Type de bien ; une petite question dit s'il est dans un
+    // immeuble (appartement) ou une maison / villa ; l'IA estime ce type et le compare SEULEMENT à des duplex
+    var tChoisi = el("v-t").value, dxl = el("v-dx-l");
+    if (dxl) dxl.hidden = tChoisi !== "duplex";
+    var t = tChoisi === "duplex" ? ((el("v-dx") && el("v-dx").value) || "appartement") : tChoisi,
+        g = el("v-g").value, q = el("v-q").value, s = parseFloat((el("v-s").value || "").replace(",", ".")),
         ch = el("v-p").value === "" ? null : parseInt(el("v-p").value, 10);
     s = isFinite(s) && s >= 8 ? s : null;
     // formulaire vide au départ (15/10/2026, Ahmed) : rien n'est estimé tant que le type et le gouvernorat ne sont pas choisis
@@ -245,6 +250,7 @@
       if (so.selectedOptions && so.selectedOptions[0] && so.selectedOptions[0].disabled) so.value = "";
       sorte = el("v-so-l").hidden ? "" : so.value;
     }
+    if (tChoisi === "duplex") { sorte = "duplex"; if (el("v-so-l")) el("v-so-l").hidden = true; }   // la sorte est déjà dite par le type
     var SPEC = ["etage_villa", "duplex", "penthouse", "studio", "villa", "maison_trad"];
     function memeSorte(a) { var s2 = a.st || ""; return (SPEC.indexOf(sorte) >= 0 || SPEC.indexOf(s2) >= 0) ? s2 === sorte : true; }
     var A = (window.ANNONCES && ANNONCES.a) || [];

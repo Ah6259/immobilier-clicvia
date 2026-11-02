@@ -49,9 +49,14 @@
       k = (v === null || v === undefined) ? (n[2] ? n[3] : n[4]) : (v <= n[1] ? n[3] : n[4]);
     }
   }
+  var SORTES_SPECIALES = ["etage_villa", "duplex", "penthouse", "studio", "villa", "maison_trad"];   // = SPECIAUX de robot/modele_ia.py
   function estimer(tr, t, g, q, s, ch, at, et, plus) {
     var m = M && M.modeles && M.modeles[tr], pr = m && m.precision && m.precision[t], tm = m && m.types && m.types[t];
     if (!tm || !tm.params || !pr || !pr.fiable) return null;                  // (modèle v6 : chaque type a ses paramètres)
+    // 01/11/2026 (Ahmed : un penthouse ou un duplex n'est JAMAIS estimé comme un appartement ordinaire) : sorte particulière que ce
+    // modèle ne distingue pas (paramètre « st_<sorte> » refusé par la mesure) -> pas de chiffre du modèle (comme sorte_inconnue() du robot)
+    var stp = plus && plus.st;
+    if (stp && SORTES_SPECIALES.indexOf(stp) >= 0 && tm.params.indexOf("st_" + stp) < 0) return null;
     // 21/10/2026 : quartier sans assez d'annonces de ce type ici mais avec un niveau DÉDUIT de l'autre marché, méthode mesurée fiable :
     // estimé avec sa fourchette propre (plus large), marquée « deduit » pour la page — comme quartier_croise() / estimer(croise=True)
     var k = g + "|" + (q || ""), cr = !!(q && !tm.niveaux.q[k] && tm.niveaux.qx && tm.niveaux.qx[k] && pr.croise && pr.croise.fiable);

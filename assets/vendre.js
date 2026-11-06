@@ -535,14 +535,14 @@
       var d = e1[0] - e0[0];
       // 27/10/2026 (vérification de l'analyse payée : « garage +68 000 DT » sur un appartement de 208 000 DT) : au-delà de 20 % du prix,
       // l'écart vient de trop peu d'annonces avec cet atout ici : pas montré (un chiffre douteux ne se vend pas)
-      if (d / e0[0] >= 0.02 && d / e0[0] <= ATOUT_MAX) lignes.push([d, b.checked, nomAtout(b, ar() ? "ar" : "fr")]);
+      if (d / e0[0] >= 0.02 && d / e0[0] <= ATOUT_MAX && d <= ATOUT_MAX * r.ia[0]) lignes.push([d, b.checked, nomAtout(b, ar() ? "ar" : "fr")]);
     });
     // standing et état : le même bien en standing normal / bon état, puis haut standing, neuf, rénové
     var base = r.at.filter(function (x) { var n = x.replace(/^\?/, ""); return n !== "haut_standing" && ETATS.indexOf(n) < 0; });
     [["haut_standing", T2("Haut standing", "راقٍ"), el("v-std") && el("v-std").value === "haut"], ["neuf", T2("Neuf", "جديد"), el("v-etb") && el("v-etb").value === "neuf"],
      ["renove", T2("Rénové", "مجدَّد"), el("v-etb") && el("v-etb").value === "renove"]].forEach(function (v) {
       var e1 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base.concat([v[0]]), r.et, r.plus), e0 = IA_IMMO.estimer(TR, r.t, r.g, r.q, r.s, r.ch, base, r.et, r.plus);
-      if (e1 && e0 && (e1[0] - e0[0]) / e0[0] >= 0.02 && (e1[0] - e0[0]) / e0[0] <= ATOUT_MAX) lignes.push([e1[0] - e0[0], !!v[2], v[1]]);
+      if (e1 && e0 && (e1[0] - e0[0]) / e0[0] >= 0.02 && (e1[0] - e0[0]) / e0[0] <= ATOUT_MAX && e1[0] - e0[0] <= ATOUT_MAX * r.ia[0]) lignes.push([e1[0] - e0[0], !!v[2], v[1]]);
     });
     lignes.sort(function (x, y) { return y[0] - x[0]; });
     var h = "<h3>" + T2("Ce que chaque atout ajoute à votre prix", "ما تضيفه كل ميزة إلى سعرك") + '</h3><ul class="v-atouts-valeur">';

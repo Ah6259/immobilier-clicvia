@@ -898,6 +898,11 @@
       // bouton « Voir les N annonces » de la recherche simple (18/10/2026 : remplace la tuile « Voir N annonces » de la carte IA)
       var nbB = form.querySelector(".nb-annonces");
       if (nbB) nbB.innerHTML = L("les " + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f") + " ", iso(n) + " ");   // espace fine insécable : le nombre ne se coupe pas
+      // 07/11/2026 (Ahmed : « pourquoi 17 000 annonces ? » avec « Louer » choisi) : le bouton dit CE qu'il compte
+      var motB = form.querySelector(".mot-annonces"), un = n === 1;
+      if (motB) motB.innerHTML = v.du === "c" ? L(un ? "location de vacances" : "locations de vacances", "كراء العطل")
+        : v.t === "l" ? L(un ? "location" : "locations", "إعلانات الكراء")
+        : v.t === "v" ? L(un ? "bien à vendre" : "biens à vendre", "عقارات للبيع") : L(un ? "annonce" : "annonces", "الإعلانات");
       res.innerHTML = L(n + " annonce" + (n > 1 ? "s" : "") + (sansPrix ? " (" + sansPrix + " sans prix affiché, masquées par le prix maximum)" : ""),
                         iso(n) + " إعلان" + (sansPrix ? " (" + iso(sansPrix) + " دون سعر، أُخفيت بسبب السعر الأقصى)" : ""));
       if (v.z) res.innerHTML += L(" dans la zone dessinée" + (sansPos ? " (" + sansPos + " sans position connue, exclues)" : ""),

@@ -78,6 +78,16 @@
         L.push([x[0], gl ? gl[1] : x[0], gl ? gl[2] : x[0], null, null, null, 0, 1]);
       }
     });
+    // 07/11/2026 (robots maj et depots rouges : Monastir S+1, seul quartier « prix trop variés ») : un gouvernorat dont un quartier
+    // a des prix trop variés pour cette taille est proposé aussi, sinon ce quartier et son message restent introuvables
+    if (a) (Z.v || []).forEach(function (x) {
+      if (x[1] && x[2] === a && !L.some(function (y) { return y[0] === x[0]; })) {
+        var gl = Z.g.filter(function (y) { return y[0] === x[0]; })[0];
+        var nf = gl ? gl[1] : (window.LIEUX && LIEUX.g && LIEUX.g[x[0]] ? LIEUX.g[x[0]][0] : x[0].replace(/-/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); }));
+        var na = gl ? gl[2] : (window.LIEUX && LIEUX.g && LIEUX.g[x[0]] ? LIEUX.g[x[0]][1] : nf);
+        L.push([x[0], nf, na, null, null, null, 0, 1]);
+      }
+    });
     L.sort(function (x, y) { return x[1].localeCompare(y[1]); });
     g.innerHTML = '<option value="">' + T("Toute la Tunisie", "كامل تونس") + "</option>" + L.map(function (x) { return '<option value="' + esc(x[0]) + '">' + esc(ar() ? x[2] : x[1]) + "</option>"; }).join("");
     g.value = L.some(function (x) { return x[0] === gg; }) ? gg : "";

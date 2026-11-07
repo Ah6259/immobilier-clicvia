@@ -90,7 +90,7 @@ jobs:
           python tools/visites_reelles.py > /tmp/vr.log 2>&1 || { grep -E "visites|ANOMALIES" /tmp/vr.log; exit 1; }
           grep -E "visites|ANOMALIES" /tmp/vr.log
           # visiteur simulé commun (règle générale du 18/10/2026) : liens et images morts, pages sur téléphone de 390 px, scénarios
-          python tools/visiteur_simule.py > /tmp/vs.log 2>&1 || { grep -E "Visiteur simulé|ANOMALIES" /tmp/vs.log; exit 1; }
+          python tools/visiteur_simule.py > /tmp/vs.log 2>&1 || { grep -E "Visiteur simulé|ANOMALIES|^  - " /tmp/vs.log | head -30; exit 1; }
           grep -E "Visiteur simulé|ANOMALIES" /tmp/vs.log
       - name: Publier
         if: steps.v.outputs.pub == 'oui'

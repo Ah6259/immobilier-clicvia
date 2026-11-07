@@ -1676,3 +1676,7 @@ button.an-appel{font:inherit;cursor:pointer;width:100%}
 .baro-prevs{padding-inline-start:18px;margin:4px 0 10px;font-size:14px;line-height:1.5}
 .baro-fiab{font-size:12.5px;padding:1px 7px;border-radius:999px;background:var(--sable)}
 .baro-fb{background:#E6F2E8;color:#1F6B3A}.baro-fm{background:#FFF3D6;color:#7A4E00}.baro-ff{background:#FDECEA;color:#B3261E}
+/* 07/11/2026 : « ? » sous « Prendre le Pass » (vendre/, louer/) centré entre le bouton et la case du code : même écart dessus et dessous
+   (avant : 6 px / 44 px, signalé par le visiteur simulé : publication bloquée au hasard des pages tirées) */
+.btn-paie+.aide-q{margin:14px 0 0}
+.btn-paie+.aide-q+.pass-code-form{margin-top:26px}

@@ -111,6 +111,24 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
   } catch (e) {}
   var demande = new URLSearchParams(location.search).get("lang");
   if (demande === "ar" || demande === "fr") langue = demande;
+  // une adresse par langue (07/11/2026, plan SEO) : la langue est celle de l'adresse (ar/… = arabe). On va vers l'autre version
+  // seulement si le lien demande l'autre langue (?lang=, anciens liens) ou si le visiteur vient d'une autre page du site avec
+  // l'autre langue choisie ; jamais pour un lien partagé ou Google (pas de page d'origine).
+  var fixe = html.getAttribute("data-langue-fixe"), autreAdr = html.getAttribute("data-autre-langue");
+  window.versAutreLangue = function () {
+    var q = location.search.replace(/([?&])lang=(fr|ar)&?/, "$1").replace(/[?&]$/, "");
+    return autreAdr + q + location.hash;
+  };
+  if (fixe) {
+    var interne = false;
+    try { interne = !!document.referrer && new URL(document.referrer).host === location.host && window.top === window.self; } catch (e) {}   // jamais dans un cadre (outils de contrôle)
+    var veut = demande || (interne ? langue : fixe);
+    if (veut !== fixe && autreAdr) {
+      try { localStorage.setItem("langue-immobilier", veut); } catch (e) {}
+      try { location.replace(window.versAutreLangue()); } catch (e) {}
+    }
+    langue = fixe;
+  }
 
   window.T = function (fr, ar) { return html.lang === "ar" ? ar : fr; };
   window.iso = function (t) { return "⁦" + t + "⁩"; };
@@ -238,7 +256,15 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
       '</div>';
     if (window.FAVORIS) window.FAVORIS.maj();
     var b = document.querySelectorAll(".langue");
-    for (var i = 0; i < b.length; i++) b[i].addEventListener("click", function () { appliquer(html.lang === "ar" ? "fr" : "ar"); });
+    for (var i = 0; i < b.length; i++) b[i].addEventListener("click", function () {
+      var l = html.lang === "ar" ? "fr" : "ar";
+      if (fixe && autreAdr) {               // page à langue fixe : l'autre langue a sa propre adresse
+        try { localStorage.setItem("langue-immobilier", l); } catch (e) {}
+        location.href = window.versAutreLangue();
+        return;
+      }
+      appliquer(l);
+    });
     var s = document.querySelectorAll(".partager");
     for (var k = 0; k < s.length; k++) s[k].addEventListener("click", partager);
     // bloc « Partager ce rapport » (18/10/2026, Ahmed) : clic compté par réseau ; « Copier le lien »

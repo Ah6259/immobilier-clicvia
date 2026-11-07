@@ -1181,6 +1181,8 @@ main > .comment-marche:first-child{margin-top:14px}
 .rp-citer summary,.rp-methode summary{cursor:pointer}
 .rp-citer summary h2,.rp-methode summary h2{display:inline}
 .rp-lien-page{margin:0 0 12px}
+.prix-phrase{margin:0 0 12px;font-size:15px;line-height:1.45}
+.prix-phrase a{color:var(--encre);text-decoration:underline dotted var(--terre-f)}
 .rp-lien-page a{font-weight:600;color:var(--terre-f)}
 .rp-saison{display:block;font-size:12px;font-style:italic}
 /* Partager ce rapport (18/10/2026) */

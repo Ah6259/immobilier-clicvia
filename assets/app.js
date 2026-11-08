@@ -297,8 +297,8 @@
       (window.FAVORIS ? window.FAVORIS.bouton(a.i) : "") + '</div>' +
       '<div class="an-corps">' + prix + '<ul class="an-faits">' + faits + '</ul>' +
       '<h3 class="an-titre">' + titre + '</h3>' + sous + '<p class="an-lieu">' + ICO.lieu + lieu + '</p>' +
-      // a.an : annonce de plus de 2 mois gardée pour un gouvernorat faible (17/10/2026), même texte que construire_site.py
-      (a.an ? '<p class="an-ancienne">' + L("⏳ Annonce de plus de 2 mois : vérifiez qu’elle est toujours disponible.", "⏳ إعلان عمره أكثر من شهرين: تأكّد أنه ما زال متاحًا.") + '</p>' : "") +
+      // a.an : annonce de plus de 3 mois (90 jours) gardée pour un gouvernorat faible (17/10/2026), même texte que construire_site.py
+      (a.an ? '<p class="an-ancienne">' + L("⏳ Annonce de plus de 3 mois : vérifiez qu’elle est toujours disponible.", "⏳ إعلان عمره أكثر من 3 أشهر: تأكّد أنه ما زال متاحًا.") + '</p>' : "") +
       texte + actions(a, racine) + lienEstimer(a, racine) + '</div></article>';
   }
   // « Nouveau » (nw : vue il y a 3 jours au plus) et « Prix baissé de X % » (pb) : calculés par le robot (collecter.py), même texte
@@ -327,7 +327,7 @@
     if (a.ft && a.fd && a.v !== "a" && a.v !== "d") origine = '<button class="an-appel an-appel-fiche" type="button" data-fiche="' + E(idFiche(a)) + '">' + ICO.tel + L("Appeler", "اتصل") + '</button>';
     // annonce vue sur Facebook, ajoutée par Ahmed (18/10/2026) : un seul bouton, vers Facebook (nom et numéro y sont, pas chez nous)
     // 08/11/2026 (Ahmed : « comment savoir si l'annonce est expirée ? ») : Facebook ne peut pas être revérifié par un robot -> date + « vérifiez » ;
-    // l'annonce s'efface seule 45 jours après sa publication (robot/sources/facebook_apify.py). Même texte que actions_contact() du robot
+    // l'annonce s'efface seule 90 jours après sa publication (robot/sources/facebook_apify.py). Même texte que actions_contact() du robot
     if (/^https:\/\/(www\.|m\.|web\.)?facebook\.com\//.test(a.u || "")) return '<a class="an-contact an-fb" href="' + url + '" target="_blank" rel="noopener nofollow">' + L("Voir l’annonce sur Facebook", "عرض الإعلان على فيسبوك") + ICO.lien + '</a>' +
       (a.d ? '<p class="an-fb-note">' + L("Vue sur Facebook le " + dfr(a.d) + " : vérifiez qu’elle est encore disponible.", "شوهد على فيسبوك يوم " + iso(dfr(a.d)) + ": تأكد أنه ما زال متاحًا.") + '</p>' : "");
     if (a.v === "a") {

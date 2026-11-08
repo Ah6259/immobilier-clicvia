@@ -741,7 +741,8 @@ html[dir="rtl"] .paie-etapes>li::before{left:auto;right:12px}
 .depot-avant{background:#FFF3D6;border:1px solid #E7C27A;color:#7A4E00;border-radius:12px;padding:10px 12px;font-weight:700;margin:0 0 12px}
 .an-badge.nouveau{background:#E3F4EA;color:#1E6B3A;border:1px solid #9FD3B0;margin-inline-start:4px}   /* vue il y a 3 jours au plus (25/10/2026) */
 .an-badge.baisse{background:#FDE8E4;color:#A1301C;border:1px solid #F0B2A6;margin-inline-start:4px}    /* prix baissé de X % (25/10/2026) */
-.an-prix-avant{margin:2px 0 6px;font-size:13px;color:var(--doux)}   /* prix d'avant une baisse (25/10/2026) */
+.an-prix-avant{margin:2px 0 6px;font-size:13px;color:var(--doux)}
+.an-fb-note{margin:6px 0 0;font-size:12.5px;line-height:1.35;color:var(--doux)}   /* annonce vue sur Facebook : date + « vérifiez » (08/11/2026) */   /* prix d'avant une baisse (25/10/2026) */
 .an-badge.avant{background:#FFF3D6;color:#7A4E00;border:1px solid #E7C27A;margin-inline-start:4px}
 .annonce.en-avant{border-color:#E7C27A;box-shadow:0 0 0 2px #F5E2B8}
 .trois-prix{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:1fr}

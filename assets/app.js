@@ -281,7 +281,7 @@
     // carte façon SeLoger (19/10/2026, Ahmed) : grande photo (lien de l'image chez la source, jamais copiée), étiquette et cœur posés
     // dessus ; sans photo : le dessin du type de bien, même hauteur. Même carte que carte() de robot/construire_site.py
     var media = PHOTO_OK(a.ph)
-      ? '<img class="an-img" src="' + E(a.ph) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+      ? '<img class="an-img" src="' + E(a.ph) + '" alt="' + E(document.documentElement.lang === "ar" ? tar + " – " + (lar || g[1]) : tfr + " – " + (lfr || g[0])) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
       : '<div class="an-vignette v-' + a.y + '">' + (VIGNETTE[a.y] || VIGNETTE.autre || "") + '</div>';
     return '<article class="annonce' + (a.av ? " en-avant" : "") + (PHOTO_OK(a.ph) ? " a-photo" : "") + '" id="a-' + E(a.i) + '" data-t="' + a.t + '" data-y="' + a.y + '" data-v="' + (a.v || "p") + '">' +
       // 27/10/2026 (Ahmed) : les photos de la fiche glissent sur la carte (assets/page.js), même balisage que carte_annonce() du robot

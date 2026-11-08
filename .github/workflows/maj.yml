@@ -92,7 +92,19 @@ jobs:
           git add donnees/agences.json donnees/agences-decouvertes.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
           git commit -qm "Annonces lues le $(date +%d/%m/%Y) (avant les pages)"
-          for essai in 1 2 3 4; do git pull --rebase --autostash -q && git push -q && exit 0; sleep $((essai * 10)); done
+          for essai in 1 2 3 4; do
+            if git pull --rebase --autostash -q; then git push -q && exit 0; fi
+            # 08/11/2026 (règle § 55, robot depots rouge : conflit sur annonces.json avec un envoi fait pendant le passage, puis 3 essais
+            # « fichiers non fusionnés ») : le commit du robot, le plus récent, l'emporte sur chaque fichier en conflit (pendant un rebase,
+            # « --theirs » = le commit rejoué = celui du robot) ; jamais « à relancer à la main »
+            if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+              git diff --name-only --diff-filter=U | xargs -r git checkout --theirs --
+              git add -A
+              GIT_EDITOR=true git rebase --continue || git rebase --abort
+              echo "conflit réglé seul : la version du robot l'emporte (règle § 55)"
+            fi
+            sleep $((essai * 10))
+          done
           echo "ÉCHEC : annonces lues non enregistrées (elles le seront avec les pages)"; exit 1
       # positions des nouveaux quartiers DANS le même passage (15/10/2026 : le robot positions-quartiers en attente était annulé par
       # GitHub quand un autre robot du même groupe arrivait) ; une panne d'OpenStreetMap n'arrête pas le relevé
@@ -111,7 +123,19 @@ jobs:
           git add donnees/coords-quartiers.json
           git diff --cached --quiet && exit 0
           git commit -qm "Positions des quartiers du $(date +%d/%m/%Y) (avant les pages)"
-          for essai in 1 2 3 4; do git pull --rebase --autostash -q && git push -q && exit 0; sleep $((essai * 10)); done
+          for essai in 1 2 3 4; do
+            if git pull --rebase --autostash -q; then git push -q && exit 0; fi
+            # 08/11/2026 (règle § 55, robot depots rouge : conflit sur annonces.json avec un envoi fait pendant le passage, puis 3 essais
+            # « fichiers non fusionnés ») : le commit du robot, le plus récent, l'emporte sur chaque fichier en conflit (pendant un rebase,
+            # « --theirs » = le commit rejoué = celui du robot) ; jamais « à relancer à la main »
+            if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+              git diff --name-only --diff-filter=U | xargs -r git checkout --theirs --
+              git add -A
+              GIT_EDITOR=true git rebase --continue || git rebase --abort
+              echo "conflit réglé seul : la version du robot l'emporte (règle § 55)"
+            fi
+            sleep $((essai * 10))
+          done
           echo "ÉCHEC : positions non enregistrées (elles le seront avec les pages)"; exit 1
       # modèle COMPLET de l'IA (avec ses erreurs) : INTERNE (décision d'Ahmed, 15/10/2026), enregistré dans le dépôt PRIVÉ
       # (donnees-internes/, depuis le 16/10/2026) et jamais publié (tools/publier.py) ; sert à refuser un nouveau modèle moins bon

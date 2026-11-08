@@ -1,5 +1,5 @@
 {
- "maj": "2026-11-07",
+ "maj": "2026-11-08",
  "agences": [
   {
    "nom": "AKNAR Immo",
@@ -8,25 +8,25 @@
    "adresse": "8050 Mnaret Hammamet (Barreket Sahel), Route Yassmine Hammamet..",
    "tel": "+216 93 155 966",
    "gouvernorat": "nabeul",
-   "annonces": 2
+   "annonces": 52
   },
   {
    "nom": "ASPIS IMMO",
    "site": "https://aspisimmo.com/",
    "facebook": "https://www.facebook.com/vente.location.kelibia",
    "adresse": "Avenue du militant Abdelkader Dardouri, 8090, Kélibia, Tunisie.",
-   "tel": "+216 29 760 700",
+   "tel": "+216 29 760 600",
    "gouvernorat": "nabeul",
-   "annonces": 118
+   "annonces": 132
   },
   {
    "nom": "Ayoub Immobilier",
    "site": "https://ayoubimmobilierhammamet.com/",
    "facebook": "https://www.facebook.com/ayoubimmobilierhammamet",
    "adresse": "Rue Dag Hammarskjold 8050, Hammamet, Tunisie.",
-   "tel": "+216 53 564 536",
+   "tel": "+216 53 564 014",
    "gouvernorat": "nabeul",
-   "annonces": 590
+   "annonces": 594
   },
   {
    "nom": "Agence Immobilière BIG IMMO",
@@ -35,25 +35,25 @@
    "adresse": "Khezama Ouest, rue Hassan Ben Said (près de librairie SIAB), 4051 Sousse",
    "tel": "+216 94 818 484",
    "gouvernorat": "sousse",
-   "annonces": 165
+   "annonces": 185
   },
   {
    "nom": "CABINET Immo",
    "site": "https://cabinetimmo.com/",
    "facebook": null,
    "adresse": "Immeuble aicha médical Bloc B bureau B2-1 Les jardins de l'Aouina",
-   "tel": "+216 26 126 000",
+   "tel": "+216 70 750 980",
    "gouvernorat": "tunis",
-   "annonces": 56
+   "annonces": 58
   },
   {
    "nom": "Agence Immobilière Cactus Immo",
    "site": "https://cactusimmobilier.com/",
    "facebook": "https://www.facebook.com/cactusimmobilier",
    "adresse": "Résidence Horizon+, Local n°06, Cité el Wafa, Nabeul 8000, Tunisie.",
-   "tel": "+216 29 074 198",
+   "tel": "+216 56 103 783",
    "gouvernorat": "nabeul",
-   "annonces": 23
+   "annonces": 109
   },
   {
    "nom": "CASA IMMO",
@@ -62,7 +62,7 @@
    "adresse": "Avenue de république, Résidence Zaineb BLOC A, Magasin N° 7-1, La Nouvelle Médina, 2063, Ben Arous, Tunisie.",
    "tel": "+216 20 813 000",
    "gouvernorat": "ben-arous",
-   "annonces": 19
+   "annonces": 20
   },
   {
    "nom": "Colombus Immo",
@@ -71,7 +71,7 @@
    "adresse": "Centre Aida, Menzah 9 A, avenue Taher Ben Ammar, 1013 Tunis, Tunisie.",
    "tel": "+216 98 271 714",
    "gouvernorat": "tunis",
-   "annonces": 32
+   "annonces": 30
   },
   {
    "nom": "EDF IMMOBILIÈRE",
@@ -80,7 +80,7 @@
    "adresse": "Complexe commercial Bizerte Center, bureau n° 58.",
    "tel": "+216 29 276 849",
    "gouvernorat": "bizerte",
-   "annonces": 128
+   "annonces": 129
   },
   {
    "nom": "Expats and housing Immobilier",
@@ -89,7 +89,7 @@
    "adresse": "01 rue d'Amérique , La Marsa, Tunisia",
    "tel": "+216 29 886 630",
    "gouvernorat": "tunis",
-   "annonces": 234
+   "annonces": 237
   },
   {
    "nom": "IGH International Golden House",
@@ -98,7 +98,7 @@
    "adresse": "Rue Bechir Sfar, immeuble Abed 1 ère étage appt N°2",
    "tel": "+216 54 549 054",
    "gouvernorat": "sousse",
-   "annonces": 364
+   "annonces": 382
   },
   {
    "nom": "L'immobilière Internationale Tunisie",
@@ -107,7 +107,7 @@
    "adresse": "Rue Marrakech, Khezema Est, Sousse 4051.",
    "tel": "+216 55 528 102",
    "gouvernorat": "sousse",
-   "annonces": 341
+   "annonces": 340
   },
   {
    "nom": "Immobiliere Nour Ennasr",
@@ -125,7 +125,7 @@
    "adresse": null,
    "tel": "+216 29 343 143",
    "gouvernorat": "tunis",
-   "annonces": 241
+   "annonces": 244
   },
   {
    "nom": "Agence immobilière Kerkouane",
@@ -134,7 +134,7 @@
    "adresse": "31 rue ibn khaldoun -Residencenajjar –kelibia-8090 tunisie.",
    "tel": "+216 55 464 235",
    "gouvernorat": "nabeul",
-   "annonces": 203
+   "annonces": 213
   },
   {
    "nom": "Agence Immobilière Klouz immo",
@@ -143,16 +143,16 @@
    "adresse": "Rue Jugurtha (à côté du magasin Aziza & du jardin public) 7000 Bhira Bizerte, Tunisie.",
    "tel": "+216 28 026 120",
    "gouvernorat": "bizerte",
-   "annonces": 445
+   "annonces": 436
   },
   {
    "nom": "Le Boulevard",
    "site": "https://leboulevardimmo.com/",
    "facebook": "https://www.facebook.com/LeBoulevard.immobiliere",
    "adresse": "Rue ibnou sina, oued souhil, Nabeul - 8000",
-   "tel": "+216 29 698 992",
+   "tel": "+216 55 982 862",
    "gouvernorat": "nabeul",
-   "annonces": 101
+   "annonces": 120
   },
   {
    "nom": "Le Carré 9",
@@ -161,7 +161,7 @@
    "adresse": "Le Carré 9 Lac 2",
    "tel": "+216 23 219 610",
    "gouvernorat": "tunis",
-   "annonces": 233
+   "annonces": 245
   },
   {
    "nom": "Luxury House",
@@ -170,7 +170,7 @@
    "adresse": "131 Avenue Khaled Ibn El Walid, l’Aouina 2045, Tunis.",
    "tel": "+216 94 990 579",
    "gouvernorat": "tunis",
-   "annonces": 168
+   "annonces": 201
   },
   {
    "nom": "Agence Immobilière Metis",
@@ -179,7 +179,7 @@
    "adresse": "Résidence Ahlem cité el wafa Mrezga , Nabeul, Tunisia",
    "tel": "+216 55 390 787",
    "gouvernorat": "nabeul",
-   "annonces": 116
+   "annonces": 119
   },
   {
    "nom": "Agence Immobilière Narjess Immo",
@@ -188,7 +188,7 @@
    "adresse": "93 Route de la plage 4011 - Hammam Sousse, Tunisie.",
    "tel": "+216 55 153 800",
    "gouvernorat": "sousse",
-   "annonces": 211
+   "annonces": 229
   },
   {
    "nom": "Perla Immo",
@@ -197,7 +197,7 @@
    "adresse": "Rue de Monastir Menzah 7 - Ariana, Tunisie.",
    "tel": "+216 98 617 607",
    "gouvernorat": "ariana",
-   "annonces": 408
+   "annonces": 409
   },
   {
    "nom": "PLAZA IMMO",
@@ -206,7 +206,7 @@
    "adresse": "Bureau A24 Résidence Laguna Square- 1053-LAC 2",
    "tel": "+216 23 262 470",
    "gouvernorat": "tunis",
-   "annonces": 215
+   "annonces": 228
   },
   {
    "nom": "Agence Immobilière Riahi",
@@ -215,7 +215,7 @@
    "adresse": "N°07, Rue Ribat, bureau N°105, corniche Sousse, Sousse Médina, IMMEUBLE Raouf Mfarj.",
    "tel": "+216 50 232 727",
    "gouvernorat": "sousse",
-   "annonces": 151
+   "annonces": 153
   },
   {
    "nom": "Agence SAIEK & Belhouane",
@@ -224,7 +224,7 @@
    "adresse": null,
    "tel": "+216 70 001 109",
    "gouvernorat": "bizerte",
-   "annonces": 215
+   "annonces": 178
   },
   {
    "nom": "Vecteurimmo",
@@ -233,7 +233,7 @@
    "adresse": "7 Bis rue de la Moselle Bellevue",
    "tel": "+216 22 308 176",
    "gouvernorat": "tunis",
-   "annonces": 44
+   "annonces": 45
   },
   {
    "nom": "ADAM Immobilière",
@@ -242,7 +242,7 @@
    "adresse": "29 Rue Sour, Neapolis, Nabeul 8000",
    "tel": "+216 24 388 922",
    "gouvernorat": "nabeul",
-   "annonces": 135
+   "annonces": 133
   },
   {
    "nom": "Agence Immoblière Amine Djerba",
@@ -260,7 +260,7 @@
    "adresse": "Nabeul, Tunisie.",
    "tel": "+216 98 688 569",
    "gouvernorat": "nabeul",
-   "annonces": 71
+   "annonces": 68
   },
   {
    "nom": "Mouin Immobilier",
@@ -269,7 +269,7 @@
    "adresse": "Hammamet 8050",
    "tel": "+216 52 605 844",
    "gouvernorat": "nabeul",
-   "annonces": 204
+   "annonces": 186
   },
   {
    "nom": "New Key Immobilier",
@@ -278,7 +278,7 @@
    "adresse": "Rue de la Feuille d'Erable, Résidence Araucaria, Les Berges du Lac 2, 1053",
    "tel": "+216 29 232 927",
    "gouvernorat": "tunis",
-   "annonces": 334
+   "annonces": 336
   },
   {
    "nom": "Nova Immo Sfax",
@@ -296,7 +296,7 @@
    "adresse": "Avenue de L'environnement - Boumhel - Ben Arous",
    "tel": "+216 28 600 612",
    "gouvernorat": "ben-arous",
-   "annonces": 214
+   "annonces": 220
   },
   {
    "nom": "Agence immobilière du Vieux Port Djerba",
@@ -332,7 +332,7 @@
    "adresse": "5 Rue El Manfalouti",
    "tel": "+216 29 226 466",
    "gouvernorat": "tunis",
-   "annonces": 211
+   "annonces": 220
   },
   {
    "nom": "Zitouna Immobilier",
@@ -341,7 +341,7 @@
    "adresse": "Centre commercial L’Esplanade, Bureau n° 21, avenue Habib Bourguiba, La Marsa Plage, Tunis, Tunisie.",
    "tel": "+216 71 982 230",
    "gouvernorat": "tunis",
-   "annonces": 202
+   "annonces": 221
   },
   {
    "nom": "Tecnocasa Aouina 1",
@@ -377,7 +377,7 @@
    "tel": "+216 21 122 100",
    "gouvernorat": "ariana",
    "lu_le": "2026-10-27",
-   "annonces": 11
+   "annonces": 9
   },
   {
    "nom": "Tecnocasa La Marsa",
@@ -581,7 +581,7 @@
    "tel": "+216 28 556 266",
    "gouvernorat": "ariana",
    "lu_le": "2026-11-05",
-   "annonces": 20
+   "annonces": 18
   },
   {
    "nom": "Tecnocasa Aouina 3",
@@ -605,7 +605,7 @@
    "tel": "+216 28 600 641",
    "gouvernorat": "mahdia",
    "lu_le": "2026-11-05",
-   "annonces": 10
+   "annonces": 7
   },
   {
    "nom": "Tecnocasa Les Jardins De Carthage 2",
@@ -641,7 +641,7 @@
    "tel": "+216 28 766 777",
    "gouvernorat": "ariana",
    "lu_le": "2026-11-05",
-   "annonces": 16
+   "annonces": 15
   },
   {
    "nom": "Tecnocasa Kélibia",
@@ -665,7 +665,7 @@
    "tel": "+216 28 842 842",
    "gouvernorat": "kairouan",
    "lu_le": "2026-11-05",
-   "annonces": 20
+   "annonces": 16
   },
   {
    "nom": "Tecnocasa Radés",
@@ -677,7 +677,7 @@
    "tel": "+216 28 864 849",
    "gouvernorat": "ben-arous",
    "lu_le": "2026-11-05",
-   "annonces": 11
+   "annonces": 7
   },
   {
    "nom": "Tecnocasa Gammarth 2",
@@ -725,7 +725,7 @@
    "tel": "+216 29 398 537",
    "gouvernorat": "ariana",
    "lu_le": "2026-11-05",
-   "annonces": 16
+   "annonces": 15
   },
   {
    "nom": "Tecnocasa Sahloul 4",
@@ -761,7 +761,7 @@
    "tel": "+216 29 590 900",
    "gouvernorat": "nabeul",
    "lu_le": "2026-11-05",
-   "annonces": 18
+   "annonces": 16
   },
   {
    "nom": "Tecnocasa M'Saken",
@@ -833,7 +833,7 @@
    "tel": "+216 29 694 990",
    "gouvernorat": "monastir",
    "lu_le": "2026-11-06",
-   "annonces": 10
+   "annonces": 9
   },
   {
    "nom": "Tecnocasa Kssour Essef, Salakta",
@@ -884,6 +884,18 @@
    "annonces": 27
   },
   {
+   "nom": "Tecnocasa Sahloul Ghrabi",
+   "reseau": "Tecnocasa",
+   "id_reseau": "tecnocasa-sscb6",
+   "site": "https://hammamsousse2.tecnocasa.tn/hammam-sousse/sahloul-ghrabi/",
+   "facebook": "https://www.facebook.com/TecnocasaSahloulGhrabi",
+   "adresse": "Avenue Imam Moslem, 4071 Hammam Sousse",
+   "tel": "+216 29 945 000",
+   "gouvernorat": "sousse",
+   "lu_le": "2026-11-07",
+   "annonces": 15
+  },
+  {
    "nom": "Tecnocasa Monastir El Agba",
    "reseau": "Tecnocasa",
    "id_reseau": "tecnocasa-moca2",
@@ -905,7 +917,7 @@
    "tel": "+216 31 303 905",
    "gouvernorat": "sousse",
    "lu_le": "2026-11-06",
-   "annonces": 20
+   "annonces": 15
   },
   {
    "nom": "Tecnocasa Sousse Jawhara",
@@ -917,7 +929,7 @@
    "tel": "+216 31 303 910",
    "gouvernorat": "sousse",
    "lu_le": "2026-11-06",
-   "annonces": 10
+   "annonces": 9
   },
   {
    "nom": "Tecnocasa Ksar Hellal",
@@ -965,7 +977,7 @@
    "tel": "+216 50 962 039",
    "gouvernorat": "sfax",
    "lu_le": "2026-11-06",
-   "annonces": 12
+   "annonces": 9
   },
   {
    "nom": "Tecnocasa Jemmal",
@@ -977,7 +989,7 @@
    "tel": "+216 51 411 414",
    "gouvernorat": "monastir",
    "lu_le": "2026-11-07",
-   "annonces": 8
+   "annonces": 7
   },
   {
    "nom": "Tecnocasa Aouina 2",
@@ -1208,18 +1220,6 @@
    "annonces": 3
   },
   {
-   "nom": "Tecnocasa Sahloul Ghrabi",
-   "reseau": "Tecnocasa",
-   "id_reseau": "tecnocasa-sscb6",
-   "site": "https://hammamsousse2.tecnocasa.tn/hammam-sousse/sahloul-ghrabi/",
-   "facebook": "https://www.facebook.com/TecnocasaSahloulGhrabi",
-   "adresse": "Avenue Imam Moslem, 4071 Hammam Sousse",
-   "tel": "+216 29 945 000",
-   "gouvernorat": "sousse",
-   "lu_le": "2026-11-07",
-   "annonces": 15
-  },
-  {
    "nom": "Tecnocasa Kalâa Esghira",
    "reseau": "Tecnocasa",
    "id_reseau": "tecnocasa-ssks1",
@@ -1300,7 +1300,7 @@
    "adresse": "Mutuelleville",
    "tel": "+216 29 221 222",
    "gouvernorat": "tunis",
-   "lu_le": "2026-11-07",
+   "lu_le": "2026-11-08",
    "annonces": 30
   },
   {
@@ -1312,7 +1312,7 @@
    "adresse": "Les berges du lac 2, Tunis, Tunisie.",
    "tel": "+216 23 024 000",
    "gouvernorat": "tunis",
-   "lu_le": "2026-11-07",
+   "lu_le": "2026-11-08",
    "annonces": 19
   },
   {
@@ -1324,7 +1324,7 @@
    "adresse": "Djerba Midoun",
    "tel": "+216 26 423 473",
    "gouvernorat": "medenine",
-   "lu_le": "2026-11-07",
+   "lu_le": "2026-11-08",
    "annonces": 7
   },
   {
@@ -1336,8 +1336,8 @@
    "adresse": "Centre urbain nord, Tunis, Tunisie.",
    "tel": "+216 23 221 222",
    "gouvernorat": "tunis",
-   "lu_le": "2026-11-07",
-   "annonces": 65
+   "lu_le": "2026-11-08",
+   "annonces": 62
   },
   {
    "nom": "Century 21 Challenge",
@@ -1348,7 +1348,7 @@
    "adresse": "Nabeul, Tunisie.",
    "tel": "+216 26 577 000",
    "gouvernorat": "nabeul",
-   "lu_le": "2026-11-07",
+   "lu_le": "2026-11-08",
    "annonces": 75
   },
   {
@@ -1360,8 +1360,8 @@
    "adresse": "Villa Jade - La Marsa",
    "tel": "+216 26 447 474",
    "gouvernorat": "tunis",
-   "lu_le": "2026-11-07",
-   "annonces": 41
+   "lu_le": "2026-11-08",
+   "annonces": 40
   },
   {
    "nom": "Century 21 Horizon",
@@ -1372,7 +1372,7 @@
    "adresse": "12 Bis Ave Mouaouia ibn abi Sofiene, Ariana 2037",
    "tel": "+216 99 483 349",
    "gouvernorat": "ariana",
-   "lu_le": "2026-11-07",
+   "lu_le": "2026-11-08",
    "annonces": 27
   },
   {
@@ -1384,8 +1384,8 @@
    "adresse": "Ain zaghouan, Tunis, Tunisie.",
    "tel": "+216 25 794 794",
    "gouvernorat": "tunis",
-   "lu_le": "2026-11-07",
-   "annonces": 105
+   "lu_le": "2026-11-08",
+   "annonces": 104
   },
   {
    "nom": "Century 21 Invest",
@@ -1396,8 +1396,8 @@
    "adresse": "Jardins de carthage, Tunis, Tunisie.",
    "tel": "+216 50 950 000",
    "gouvernorat": "tunis",
-   "lu_le": "2026-11-07",
-   "annonces": 124
+   "lu_le": "2026-11-08",
+   "annonces": 125
   },
   {
    "nom": "Century 21 Karaouli",
@@ -1408,7 +1408,7 @@
    "adresse": "Rue Pasteur, Ennasr 1",
    "tel": "+216 54 707 471",
    "gouvernorat": "ariana",
-   "lu_le": "2026-11-07",
+   "lu_le": "2026-11-08",
    "annonces": 50
   },
   {
@@ -1420,8 +1420,8 @@
    "adresse": "Menzah 9, Tunis, Tunisie.",
    "tel": "+216 25 333 290",
    "gouvernorat": "tunis",
-   "lu_le": "2026-11-07",
-   "annonces": 34
+   "lu_le": "2026-11-08",
+   "annonces": 33
   },
   {
    "nom": "Century 21 Prestige",
@@ -1432,7 +1432,7 @@
    "adresse": "Soukra, Ariana, Tunisie.",
    "tel": "+216 20 092 000",
    "gouvernorat": "ariana",
-   "lu_le": "2026-11-07",
+   "lu_le": "2026-11-08",
    "annonces": 61
   }
  ]

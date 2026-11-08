@@ -59,7 +59,7 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -qm "Liens vérifiés le $(date +'%d/%m/%Y %Hh%M') (avant les pages)"
           for essai in 1 2 3 4; do
-            if git pull --rebase --autostash -q; then git push -q && exit 0; fi
+            if git pull --rebase -X theirs --autostash -q; then git push -q && exit 0; fi
             # 08/11/2026 (règle § 55, robot depots rouge : conflit sur annonces.json avec un envoi fait pendant le passage, puis 3 essais
             # « fichiers non fusionnés ») : le commit du robot, le plus récent, l'emporte sur chaque fichier en conflit (pendant un rebase,
             # « --theirs » = le commit rejoué = celui du robot) ; jamais « à relancer à la main »

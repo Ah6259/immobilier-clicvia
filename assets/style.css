@@ -1682,3 +1682,6 @@ button.an-appel{font:inherit;cursor:pointer;width:100%}
    (avant : 6 px / 44 px, signalé par le visiteur simulé : publication bloquée au hasard des pages tirées) */
 .btn-paie+.aide-q{margin:14px 0 0}
 .btn-paie+.aide-q+.pass-code-form{margin-top:26px}
+/* 08/11/2026 : répartition de toutes les annonces sous le bouton de la recherche (à vendre · à louer · vacances) */
+.actions-recherche .repartition{margin:6px 0 0;font-size:.82rem;color:var(--encre,#1E2A30);opacity:.8;text-align:center;line-height:1.4}
+.actions-recherche .repartition:empty{display:none}

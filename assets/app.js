@@ -903,6 +903,16 @@
       if (motB) motB.innerHTML = v.du === "c" ? L(un ? "location de vacances" : "locations de vacances", "كراء العطل")
         : v.t === "l" ? L(un ? "location" : "locations", "إعلانات الكراء")
         : v.t === "v" ? L(un ? "bien à vendre" : "biens à vendre", "عقارات للبيع") : L(un ? "annonce" : "annonces", "الإعلانات");
+      // 08/11/2026 (Ahmed, 2e fois : « pourquoi 16 968 annonces ? où sont les autres ? ») : sous le bouton, la répartition de TOUTES les
+      // annonces de la page (à vendre · à louer · vacances) : rien n'est perdu, le bouton ne compte que le choix Acheter / Louer
+      var rep = form.querySelector(".repartition");
+      if (rep) {
+        var nv = 0, nl = 0, nc = 0;
+        tout.forEach(function (a) { if (a.lc) nc++; else if (a.t === "v") nv++; else if (a.t === "l") nl++; });
+        var tot = nv + nl + nc, fmt = function (x) { return String(x).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f"); };
+        rep.innerHTML = L("Sur " + fmt(tot) + " annonces : <b>" + fmt(nv) + "</b> à vendre · <b>" + fmt(nl) + "</b> à louer · <b>" + fmt(nc) + "</b> locations de vacances",
+                          "من أصل " + iso(tot) + " إعلان: <b>" + iso(nv) + "</b> للبيع · <b>" + iso(nl) + "</b> للكراء · <b>" + iso(nc) + "</b> كراء عطل");
+      }
       res.innerHTML = L(n + " annonce" + (n > 1 ? "s" : "") + (sansPrix ? " (" + sansPrix + " sans prix affiché, masquées par le prix maximum)" : ""),
                         iso(n) + " إعلان" + (sansPrix ? " (" + iso(sansPrix) + " دون سعر، أُخفيت بسبب السعر الأقصى)" : ""));
       if (v.z) res.innerHTML += L(" dans la zone dessinée" + (sansPos ? " (" + sansPos + " sans position connue, exclues)" : ""),

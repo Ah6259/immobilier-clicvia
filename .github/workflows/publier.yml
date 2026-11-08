@@ -118,8 +118,19 @@ jobs:
         if: steps.v.outputs.pub == 'oui'
         run: |
           # règle d'Ahmed (16/10/2026) : un audit de sécurité après CHAQUE publication, sans qu'il ait à le demander
-          code=$(curl -s -o /dev/null -w "%{http_code}" https://github.com/Ah6259/immobilier-tunis)
-          [ "$code" = "404" ] || { echo "ÉCHEC - le dépôt du code n'est plus privé (réponse $code)"; exit 1; }
+          # 08/11/2026 (§ 55.6) : GitHub a répondu 504 une fois -> faux rouge. Seule une page qui RÉPOND (200) prouve que le dépôt est public ;
+          # une panne de GitHub (5xx, 0) est réessayée 3 fois puis seulement notée.
+          code=0
+          for essai in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" https://github.com/Ah6259/immobilier-tunis)
+            case "$code" in 404|200|301|302) break;; esac
+            sleep 20
+          done
+          case "$code" in
+            404) echo "Dépôt du code toujours privé (404).";;
+            200|301|302) echo "ÉCHEC - le dépôt du code n'est plus privé (réponse $code)"; exit 1;;
+            *) echo "GitHub ne répond pas ($code) : vérification du dépôt privé impossible cette fois, revue à la prochaine publication.";;
+          esac
           python -c "import sys; sys.path.insert(0, 'moteur/tools'); import publier; f = publier.fuites('public'); print('ÉCHEC - fichiers interdits publiés : ' + ', '.join(f) if f else 'Partie publiée propre'); sys.exit(1 if f else 0)"
           for chemin in donnees/annonces.json robot/collecter.py tools/publier.py journaux/maj.log donnees-internes/modele-complet.json; do
             [ -e "public/$chemin" ] && { echo "ÉCHEC - $chemin est dans la partie publique"; exit 1; }

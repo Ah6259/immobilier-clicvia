@@ -29,7 +29,7 @@ env:
 jobs:
   maj:
     runs-on: ubuntu-latest
-    timeout-minutes: 200     # 15/10/2026 : Tayara et Tunisie-annonce lus plus loin (chaque source a sa propre limite de temps, reglages.py)
+    timeout-minutes: 300     # 13/11/2026 : 200 min dépassées (10/11 et 13/11 : collecte 150 min + pages 26 min -> annulé pendant les tests, pages non publiées) ; somme des limites des étapes ≈ 260 min, GitHub permet 360
     steps:
       - name: Jour de relevé ? (chaque jour jusqu'au 15/11/2026, puis un jour sur deux)
         id: jour

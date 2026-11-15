@@ -180,7 +180,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
     var etape = bia && bia.querySelector(".ia-etape");
     if (etape) {
       var etapes = [T("Lit les nouvelles annonces…", "يقرأ الإعلانات الجديدة…"), T("Compare les quartiers…", "يقارن الأحياء…"),
-                    T("Calcule les prix et les loyers…", "يحسب الأسعار والكراء…"), T("Repère les bonnes affaires…", "يكتشف الفرص الجيدة…")];
+                    T("Calcule les prix et les loyers…", "يحسب الأسعار والكراء…"), T("Repère les prix bas…", "يكتشف الأسعار المنخفضة…")];
       var ie = 0, barre = bia.querySelector(".ia-barre i"); etape.textContent = etapes[0];
       var calme = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       // 16/10/2026 (Ahmed) : la barre avance LENTEMENT, par petits bonds irréguliers avec des pauses, comme un calcul qui

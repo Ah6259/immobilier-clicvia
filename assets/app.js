@@ -83,7 +83,7 @@
     else if (x.x) t = L("Avis partagé", "رأي متباين") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(" : comparé à ", ": مقارنة بـ ") + sembl +
       L(", mais notre modèle d’IA l’estime à ≈ ", "، لكن نموذجنا يقدّره بـ ≈ ") + dt(x.e) + L(" : comparez avec soin", ": قارن بعناية");   // annonces semblables et modèle pas d'accord
     else if (x.v === "n") t = L(quoi[0] + " dans la norme", quoi[1] + " في المعدّل") + (m2 ? L(" : ", ": ") + dm2(m2[0]) : "") + L(", comparé à ", "، مقارنة بـ ") + sembl;
-    else if (x.v === "b") t = pre + L(Math.abs(x.p) + "\u00a0% sous ", iso(Math.abs(x.p)) + "\u00a0% أقل من ") + sembl + L(" : peut-être une bonne affaire, vérifiez l’état du bien", ": ربما صفقة جيدة، تحقّق من حالة العقار");
+    else if (x.v === "b") t = pre + L(Math.abs(x.p) + "\u00a0% sous ", iso(Math.abs(x.p)) + "\u00a0% أقل من ") + sembl + L(" : prix bas, à vérifier (état du bien, annonce encore disponible)", ": سعر منخفض، يجب التحقق (حالة العقار، وهل الإعلان ما زال متاحًا)");
     else t = pre + L(x.p + "\u00a0% au-dessus de ", iso(x.p) + "\u00a0% أعلى من ") + sembl + L(" : de la marge pour négocier, sauf vrais atouts", ": هامش للتفاوض، إلا إن كانت له مزايا حقيقية");
     // BARRE DE PRIX (22/10/2026, Ahmed) : zone foncée = la moitié des annonces semblables, point = cette annonce ; au moins 5
     // annonces semblables (pas de chiffre sans un minimum de données), jamais sur l'estimation du modèle seul

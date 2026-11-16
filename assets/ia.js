@@ -34,10 +34,13 @@
     var f = {}, st = plus && plus.st !== undefined ? plus.st : null, nv = plus && plus.niveaux;
     ((M && M.faits) || []).forEach(function (n) {
       if (n.indexOf("st_") === 0) f[n] = st === null ? null : (st === n.slice(3) ? 1 : 0);
-      else if (n !== "etage" && n !== "niveaux") f[n] = at === null || at === undefined || at.indexOf("?" + n) >= 0 ? null : (at.indexOf(n) >= 0 ? 1 : 0);
+      else if (n !== "etage" && n !== "niveaux" && n !== "terrain_m2") f[n] = at === null || at === undefined || at.indexOf("?" + n) >= 0 ? null : (at.indexOf(n) >= 0 ? 1 : 0);
     });
     f.etage = typeof et === "number" && et >= 0 && et <= 40 ? et : null;
     f.niveaux = typeof nv === "number" && nv >= 1 && nv <= 4 ? nv : null;
+    // 16/11/2026 (option B) : surface du terrain d'une maison (log m², 20 à 100 000 m²) ; inconnue = null. Même calcul : modele_ia.terrain_log
+    var tn = plus && plus.terrain;
+    f.terrain_m2 = typeof tn === "number" && tn >= 20 && tn <= 100000 ? Math.log(tn) : null;
     return f;
   }
   function arbre(a, x) {

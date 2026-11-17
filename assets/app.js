@@ -345,9 +345,68 @@
     return origine;   // 22/10/2026 (Ahmed) : plus de « Vendeur ? Ajoutez votre numéro (gratuit) »
   }
 
+  // ACCUEIL LÉGER (17/11/2026, Ahmed : « fais la 1 ») : sur l'accueil, donnees/annonces.js (50 000 annonces, ≈ 1,1 Mo compressé) n'est
+  // PAS dans la page (adresse dans <html data-annonces>). Les 12 annonces écrites dans la page se voient tout de suite ; la liste complète
+  // est téléchargée au PREMIER geste dans la recherche (toucher, taper, choisir, onglet), au tri, quand on arrive au bas de la liste, ou
+  // tout de suite si l'adresse porte une recherche (?…) ou #liste. Le geste qui a lancé le téléchargement est REJOUÉ une fois la recherche
+  // prête (clic sur un onglet, lettre tapée dans « Où ? », envoi). window.chargerAnnonces() : la même chose à la demande (tests).
+  var ANN = { lance: false, pret: null, clic: null, envoi: false, tri: false };
+  function chargerAnnonces() {
+    if (window.ANNONCES) return Promise.resolve();
+    if (ANN.pret) return ANN.pret;
+    var src = document.documentElement.getAttribute("data-annonces");      // adresse depuis la racine du site (page arabe : data-racine « ../ »)
+    if (!src) return Promise.resolve();
+    src = (document.documentElement.getAttribute("data-racine") || "") + src;
+    ANN.lance = true;
+    ANN.pret = new Promise(function (ok) {
+      var s = document.createElement("script");
+      s.src = src; s.async = true;
+      s.onload = function () { ok(); };
+      s.onerror = function () { ANN.pret = null; ok(); };        // réseau en panne : le prochain geste réessaie
+      document.head.appendChild(s);
+    }).then(function () {
+      demarrer();
+      var form = document.getElementById("recherche");
+      if (ANN.clic && ANN.clic.isConnected && ANN.clic.click) ANN.clic.click();       // onglet, case, bouton touché pendant le téléchargement
+      var el = document.activeElement;
+      if (form && el && form.contains(el) && /^(INPUT|TEXTAREA)$/.test(el.tagName) && el.value) el.dispatchEvent(new Event("input", { bubbles: true }));
+      if (ANN.tri) { var t = document.getElementById("f-tri"); if (t) t.dispatchEvent(new Event("change", { bubbles: true })); }
+      if (ANN.envoi && form) form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    });
+    return ANN.pret;
+  }
+  window.chargerAnnonces = chargerAnnonces;
+  function attendreUnGeste() {        // true = l'accueil attend (rien à démarrer maintenant)
+    var form = document.getElementById("recherche"), zone = document.getElementById("annonces");
+    if (window.ANNONCES || !document.documentElement.getAttribute("data-annonces") || !form || !zone) return false;
+    if (location.search || /^#liste/.test(location.hash)) { chargerAnnonces(); return true; }
+    var go = function () { chargerAnnonces(); };
+    ["focusin", "pointerdown", "keydown", "input", "change"].forEach(function (ev) { form.addEventListener(ev, go, { capture: true, once: true }); });
+    form.addEventListener("click", function (e) {
+      if (window.ANNONCES) return;
+      var c = e.target.closest && e.target.closest("button");
+      if (c && c.type !== "submit") ANN.clic = c;    // un bouton (onglet, « Plus de filtres ») : son action sera rejouée
+      go();
+    }, true);
+    form.addEventListener("submit", function (e) {
+      if (window.ANNONCES) return;
+      e.preventDefault(); e.stopImmediatePropagation(); ANN.envoi = true; go();
+    }, true);
+    var tri = document.getElementById("f-tri");
+    if (tri) tri.addEventListener("change", function () { if (!window.ANNONCES) { ANN.tri = true; go(); } }, true);
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (es) {
+        if (es.some(function (x) { return x.isIntersecting; })) { io.disconnect(); go(); }
+      }, { rootMargin: "400px 0px" });
+      io.observe(zone.lastElementChild || zone);
+    }
+    return true;
+  }
+
   function demarrer() {
     var form = document.getElementById("recherche");
     var zone = document.getElementById("annonces");
+    if (!window.ANNONCES && attendreUnGeste()) return;
     if (!form || !zone || !window.ANNONCES) return;
     var racine = document.documentElement.getAttribute("data-racine") || "";
     var gFixe = form.getAttribute("data-gouv") || "", lFixe = form.getAttribute("data-lieu") || "";

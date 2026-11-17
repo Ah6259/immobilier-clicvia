@@ -246,6 +246,9 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
           // 21/10/2026 (Ahmed, contrepartie des accords des agences) : la liste des agences immobilières de Tunisie, sur notre annuaire
           '<a href="https://pros.clicvia.com/metier/agence-immobiliere/" rel="noopener" target="_blank">' + T("Agences immobilières en Tunisie", "الوكالات العقارية في تونس") + '</a>' +
         '<a href="https://clicvia.com/" rel="noopener" target="_blank">' + T("Tous nos services", "كل خدماتنا") + '</a>' +
+          // 17/11/2026 (règle commune § 58) : pages communes de clicvia.com (aussi écrites dans la page : PIED_LEGAL de construire_site.py)
+          '<a href="' + T("https://clicvia.com/confidentialite/", "https://clicvia.com/ar/confidentialite/") + '" rel="noopener">' + T("Confidentialité", "الخصوصية") + '</a>' +
+          '<a href="' + T("https://clicvia.com/conditions/", "https://clicvia.com/ar/conditions/") + '" rel="noopener">' + T("Conditions d’utilisation", "شروط الاستعمال") + '</a>' +
         '</nav>' +
         '<p>' + T("Annonces publiques de réseaux d’agences immobilières et annonces déposées sur le site. Seuls des faits sont repris (type, lieu, prix, surface, pièces, date), jamais les textes ; la photo s’affiche depuis le site d’origine, sans être copiée ; chaque annonce mène au vendeur.",
                   "إعلانات عمومية لشبكات وكالات عقارية وإعلانات منشورة على الموقع. نأخذ المعطيات فقط (النوع، المكان، السعر، المساحة، الغرف، التاريخ) دون النصوص؛ تظهر الصورة من الموقع الأصلي دون نسخها؛ كل إعلان يوصلك إلى البائع.") + '</p>' +

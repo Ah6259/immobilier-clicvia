@@ -23,7 +23,7 @@ env:
 jobs:
   depots:
     runs-on: ubuntu-latest
-    timeout-minutes: 60     # 28/10/2026 : 30 min dépassées depuis le 27/10 (41 000 annonces avec Mubawab : pages ~10 min) -> robot annulé
+    timeout-minutes: 110    # 19/11/2026 : 60 min dépassées (pages 22 min, ~50 000 annonces) ; règle § 34 = 2 fois la durée (40-56 min). 28/10/2026 : 30 -> 60
     steps:
       - uses: actions/checkout@v4
         with:

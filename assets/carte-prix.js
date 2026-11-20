@@ -414,11 +414,24 @@
         if (window.CARTE_SUIT) { if (bt.getAttribute("data-mode")) CARTE_SUIT("mode", mode); if (bt.getAttribute("data-type")) CARTE_SUIT("type", type); }
       });
     });
-    var css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; css.integrity = SRI_LEAFLET_CSS; css.crossOrigin = "anonymous";
-    document.head.appendChild(css);
-    Promise.all([charger(racine + "prix/carte.js?v=" + ((document.body && (document.body.getAttribute("data-cv") || document.body.getAttribute("data-maj"))) || "")),
-                 window.L ? Promise.resolve() : charger("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js", SRI_LEAFLET_JS)])
-      .then(demarrer).catch(function () { /* pas de réseau : l'ancienne carte reste affichée */ });
+    // 19/11/2026 (Ahmed, CV.3d) : la carte interactive (Leaflet + carreaux OpenStreetMap) remplaçait la carte fixe dès l'ouverture : sur un
+    // téléphone moyen, son 1er carreau arrivait à 7,6 s (dessiné derrière l'affiche d'accueil) et c'est lui que Google mesurait. Elle se charge
+    // maintenant au 1er geste (toucher, défiler, clavier — fermer l'affiche en est un) ; tout de suite si l'adresse porte une recherche (?…) ou
+    // une ancre (#…). Jusque-là la carte fixe (.carte-secours) reste affichée, comme sans réseau.
+    var vivante = false, GESTES = ["pointerdown", "touchstart", "keydown", "scroll", "wheel"];
+    function chargerVivante() {
+      if (vivante) return;
+      vivante = true;
+      GESTES.forEach(function (g) { window.removeEventListener(g, chargerVivante, true); });
+      var css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; css.integrity = SRI_LEAFLET_CSS; css.crossOrigin = "anonymous";
+      document.head.appendChild(css);
+      Promise.all([charger(racine + "prix/carte.js?v=" + ((document.body && (document.body.getAttribute("data-cv") || document.body.getAttribute("data-maj"))) || "")),
+                   window.L ? Promise.resolve() : charger("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js", SRI_LEAFLET_JS)])
+        .then(demarrer).catch(function () { /* pas de réseau : l'ancienne carte reste affichée */ });
+    }
+    window.chargerCarteVivante = chargerVivante;
+    if (location.search || location.hash) chargerVivante();
+    else GESTES.forEach(function (g) { window.addEventListener(g, chargerVivante, { capture: true, passive: true }); });
     document.addEventListener("langue", function () { if (carte) dessiner(); });
     // la recherche et la carte vont ensemble (15/10/2026, Ahmed : « si l'un est sélectionné, l'autre doit suivre »)
     var form = document.getElementById("recherche"), lien = false;

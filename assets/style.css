@@ -1686,3 +1686,10 @@ button.an-appel{font:inherit;cursor:pointer;width:100%}
 /* 08/11/2026 : répartition de toutes les annonces sous le bouton de la recherche (à vendre · à louer · vacances) */
 .actions-recherche .repartition{margin:6px 0 0;font-size:.82rem;color:var(--encre,#1E2A30);opacity:.8;text-align:center;line-height:1.4}
 .actions-recherche .repartition:empty{display:none}
+/* 21/11/2026 (« plus de vues ») : « Le marché immobilier … en bref » (texte original pour Google) + quartiers de l'accueil */
+.marche-liste{margin:0;padding-inline-start:20px;display:grid;gap:8px;font-size:15px;line-height:1.5}
+.marche-liste a{color:var(--encre);text-decoration:underline dotted var(--terre-f)}
+.marche-note{margin:10px 0 0;font-size:13px;color:var(--doux)}
+.liste-quartiers li{display:flex}.liste-quartiers li>a{flex:1}
+.liste-quartiers .q-nom{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.liste-quartiers .q-nom small{font-size:12px;font-weight:500;color:var(--doux)}

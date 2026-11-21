@@ -1,58 +1,94 @@
-# Immobilier Tunisie — annonces gratuites, 24 gouvernorats
+# Immobilier Tunisie — annonces immobilières gratuites, 24 gouvernorats
 
-> 10207 annonces immobilières en Tunisie : appartements, villas, terrains à vendre ou à louer, par gouvernorat et par quartier. Gratuit, sans inscription. عقارات تونس.
+> 49 517 annonces immobilières en Tunisie au 21 novembre 2026 (28 217 à vendre, 21 300 à louer au mois) : appartements, maisons, villas, terrains, bureaux et locaux, par gouvernorat et par quartier, avec les prix médians calculés chaque jour. Gratuit, sans inscription. عقارات تونس.
 
 Site gratuit et indépendant, publié par Clicvia (https://clicvia.com/), le portail de services pratiques pour la Tunisie. Adresse : https://immobilier.clicvia.com/
-Langues : français, arabe.
+Langues : français (https://immobilier.clicvia.com/) et arabe (https://immobilier.clicvia.com/ar/). Mise à jour : chaque jour.
 
-## Pages principales
+## Prix de l'immobilier en Tunisie (médianes au 21 novembre 2026)
 
-- [Immobilier Tunis : 3829 annonces vente et location](https://immobilier.clicvia.com/tunis/) : Annonces immobilières à Tunis : 2037 à vendre, 1792 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات تونس.
-- [Immobilier Ariana : 1626 annonces vente et location](https://immobilier.clicvia.com/ariana/) : Annonces immobilières à Ariana : 1090 à vendre, 536 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات أريانة.
-- [Immobilier Ben Arous : 726 annonces vente et location](https://immobilier.clicvia.com/ben-arous/) : Annonces immobilières à Ben Arous : 595 à vendre, 131 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات بن عروس.
-- [Immobilier La Manouba : 162 annonces vente et location](https://immobilier.clicvia.com/manouba/) : Annonces immobilières à La Manouba : 147 à vendre, 15 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات منوبة.
-- [Immobilier Nabeul : 1104 annonces vente et location](https://immobilier.clicvia.com/nabeul/) : Annonces immobilières à Nabeul : 911 à vendre, 193 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات نابل.
-- [Immobilier Zaghouan : 20 annonces vente et location](https://immobilier.clicvia.com/zaghouan/) : Annonces immobilières à Zaghouan : 19 à vendre, 1 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات زغوان.
-- [Immobilier Bizerte : 156 annonces vente et location](https://immobilier.clicvia.com/bizerte/) : Annonces immobilières à Bizerte : 126 à vendre, 30 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات بنزرت.
-- [Immobilier Béja : 7 annonces vente et location](https://immobilier.clicvia.com/beja/) : Annonces immobilières à Béja : 6 à vendre, 1 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات باجة.
-- [Immobilier Jendouba : 23 annonces vente et location](https://immobilier.clicvia.com/jendouba/) : Annonces immobilières à Jendouba : 20 à vendre, 3 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات جندوبة.
-- [Immobilier Le Kef : 6 annonces vente et location](https://immobilier.clicvia.com/le-kef/) : Annonces immobilières à Le Kef : 6 à vendre, 0 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات الكاف.
-- [Immobilier Siliana : 3 annonces vente et location](https://immobilier.clicvia.com/siliana/) : Annonces immobilières à Siliana : 3 à vendre, 0 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات سليانة.
-- [Immobilier Sousse : 1136 annonces vente et location](https://immobilier.clicvia.com/sousse/) : Annonces immobilières à Sousse : 918 à vendre, 218 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات سوسة.
-- [Immobilier Monastir : 465 annonces vente et location](https://immobilier.clicvia.com/monastir/) : Annonces immobilières à Monastir : 393 à vendre, 72 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات المنستير.
-- [Immobilier Mahdia : 326 annonces vente et location](https://immobilier.clicvia.com/mahdia/) : Annonces immobilières à Mahdia : 226 à vendre, 100 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات المهدية.
-- [Immobilier Sfax : 319 annonces vente et location](https://immobilier.clicvia.com/sfax/) : Annonces immobilières à Sfax : 275 à vendre, 44 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات صفاقس.
-- [Immobilier Kairouan : 75 annonces vente et location](https://immobilier.clicvia.com/kairouan/) : Annonces immobilières à Kairouan : 64 à vendre, 11 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات القيروان.
-- [Immobilier Kasserine : 4 annonces vente et location](https://immobilier.clicvia.com/kasserine/) : Annonces immobilières à Kasserine : 4 à vendre, 0 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات القصرين.
-- [Immobilier Sidi Bouzid : 5 annonces vente et location](https://immobilier.clicvia.com/sidi-bouzid/) : Annonces immobilières à Sidi Bouzid : 5 à vendre, 0 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات سيدي بوزيد.
-- [Immobilier Gabès : 26 annonces vente et location](https://immobilier.clicvia.com/gabes/) : Annonces immobilières à Gabès : 20 à vendre, 6 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات قابس.
-- [Immobilier Médenine : 162 annonces vente et location](https://immobilier.clicvia.com/medenine/) : Annonces immobilières à Médenine : 117 à vendre, 45 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات مدنين.
-- [Immobilier Tataouine : 4 annonces vente et location](https://immobilier.clicvia.com/tataouine/) : Annonces immobilières à Tataouine : 4 à vendre, 0 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات تطاوين.
-- [Immobilier Gafsa : 16 annonces vente et location](https://immobilier.clicvia.com/gafsa/) : Annonces immobilières à Gafsa : 14 à vendre, 2 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات قفصة.
-- [Immobilier Tozeur : 6 annonces vente et location](https://immobilier.clicvia.com/tozeur/) : Annonces immobilières à Tozeur : 4 à vendre, 2 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات توزر.
-- [Immobilier Kébili : 1 annonces vente et location](https://immobilier.clicvia.com/kebili/) : Annonces immobilières à Kébili : 1 à vendre, 0 à louer (appartements, villas, terrains). Gratuit, mis à jour chaque semaine. عقارات قبلي.
-- [Déposer une annonce immobilière gratuite en Tunisie](https://immobilier.clicvia.com/deposer/) : Déposez gratuitement votre annonce de vente ou de location, sans créer de compte : en ligne en 2 heures environ, de 15 à 60 jours, téléphone affiché seulement si vous l'acceptez.
-- [À propos et méthode](https://immobilier.clicvia.com/a-propos/) : Qui sommes-nous, d’où viennent les annonces, comment elles sont mises à jour, vos données personnelles et vos droits.
-- [Immobilier Tunis centre-ville (Tunis) : 692 annonces](https://immobilier.clicvia.com/tunis/lafayette-centre-ville/) : Annonces immobilières à Tunis centre-ville, gouvernorat de Tunis : 507 à vendre, 185 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Les Berges du Lac (Tunis) : 479 annonces](https://immobilier.clicvia.com/tunis/les-berges-du-lac/) : Annonces immobilières à Les Berges du Lac, gouvernorat de Tunis : 141 à vendre, 338 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier L'Aouina (Tunis) : 392 annonces](https://immobilier.clicvia.com/tunis/aouina/) : Annonces immobilières à L'Aouina, gouvernorat de Tunis : 226 à vendre, 166 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Jardins de Carthage (Tunis) : 389 annonces](https://immobilier.clicvia.com/tunis/jardins-de-carthage/) : Annonces immobilières à Jardins de Carthage, gouvernorat de Tunis : 172 à vendre, 217 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier La Marsa (Tunis) : 324 annonces](https://immobilier.clicvia.com/tunis/la-marsa/) : Annonces immobilières à La Marsa, gouvernorat de Tunis : 126 à vendre, 198 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Aïn Zaghouan (Tunis) : 209 annonces](https://immobilier.clicvia.com/tunis/ain-zaghouan/) : Annonces immobilières à Aïn Zaghouan, gouvernorat de Tunis : 108 à vendre, 101 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier El Menzah (Tunis) : 201 annonces](https://immobilier.clicvia.com/tunis/el-menzah/) : Annonces immobilières à El Menzah, gouvernorat de Tunis : 127 à vendre, 74 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Gammarth (Tunis) : 154 annonces](https://immobilier.clicvia.com/tunis/gammarth/) : Annonces immobilières à Gammarth, gouvernorat de Tunis : 73 à vendre, 81 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Ezzahra (Ben Arous) : 112 annonces](https://immobilier.clicvia.com/ben-arous/ezzahra/) : Annonces immobilières à Ezzahra, gouvernorat de Ben Arous : 89 à vendre, 23 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Radès (Ben Arous) : 104 annonces](https://immobilier.clicvia.com/ben-arous/rades/) : Annonces immobilières à Radès, gouvernorat de Ben Arous : 84 à vendre, 20 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier El Mourouj (Ben Arous) : 100 annonces](https://immobilier.clicvia.com/ben-arous/el-mourouj/) : Annonces immobilières à El Mourouj, gouvernorat de Ben Arous : 76 à vendre, 24 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Borj Cédria (Ben Arous) : 68 annonces](https://immobilier.clicvia.com/ben-arous/borj-cedria/) : Annonces immobilières à Borj Cédria, gouvernorat de Ben Arous : 65 à vendre, 3 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Medina Jedida (Ben Arous) : 56 annonces](https://immobilier.clicvia.com/ben-arous/medina-jedida/) : Annonces immobilières à Medina Jedida, gouvernorat de Ben Arous : 44 à vendre, 12 à louer. Gratuit, mis à jour chaque semaine.
-- [Immobilier Mégrine (Ben Arous) : 56 annonces](https://immobilier.clicvia.com/ben-arous/megrine/) : Annonces immobilières à Mégrine, gouvernorat de Ben Arous : 40 à vendre, 16 à louer. Gratuit, mis à jour chaque semaine.
+- Toute la Tunisie, appartement S+2 (prix médian) : 330 000 DT à l'achat, 1 200 DT par mois en location (non meublé).
+- Terrain à bâtir : 550 DT le m² (médiane).
+- Rapport du mois (prix par gouvernorat et par quartier) : https://immobilier.clicvia.com/rapports/2026-11/
+- Carte des prix par quartier : https://immobilier.clicvia.com/prix/
 
-Le site compte 120 pages au total ; la liste complète est dans le plan du site : https://immobilier.clicvia.com/sitemap.xml
+## Gouvernorats
+
+- [Immobilier Tunis](https://immobilier.clicvia.com/tunis/) : 17 629 annonces (6 637 à vendre, 10 992 à louer) ; appartement S+2 (prix médian) : 340 000 DT à l'achat, 1 400 DT par mois en location (non meublé). عقارات تونس.
+- [Immobilier Ariana](https://immobilier.clicvia.com/ariana/) : 8 198 annonces (4 459 à vendre, 3 739 à louer) ; appartement S+2 (prix médian) : 376 000 DT à l'achat, 1 200 DT par mois en location (non meublé). عقارات أريانة.
+- [Immobilier Nabeul](https://immobilier.clicvia.com/nabeul/) : 7 883 annonces (6 205 à vendre, 1 678 à louer) ; appartement S+2 (prix médian) : 358 000 DT à l'achat, 1 300 DT par mois en location (non meublé). عقارات نابل.
+- [Immobilier Sousse](https://immobilier.clicvia.com/sousse/) : 5 318 annonces (3 692 à vendre, 1 626 à louer) ; appartement S+2 (prix médian) : 325 000 DT à l'achat, 1 050 DT par mois en location (non meublé). عقارات سوسة.
+- [Immobilier Ben Arous](https://immobilier.clicvia.com/ben-arous/) : 3 931 annonces (2 302 à vendre, 1 629 à louer) ; appartement S+2 (prix médian) : 208 000 DT à l'achat, 1 000 DT par mois en location (non meublé). عقارات بن عروس.
+- [Immobilier Bizerte](https://immobilier.clicvia.com/bizerte/) : 1 388 annonces (1 039 à vendre, 349 à louer) ; appartement S+2 (prix médian) : 200 000 DT à l'achat, 750 DT par mois en location (non meublé). عقارات بنزرت.
+- [Immobilier Sfax](https://immobilier.clicvia.com/sfax/) : 1 348 annonces (1 011 à vendre, 337 à louer) ; appartement S+2 (prix médian) : 159 000 DT à l'achat, 700 DT par mois en location (non meublé). عقارات صفاقس.
+- [Immobilier Médenine](https://immobilier.clicvia.com/medenine/) : 701 annonces (569 à vendre, 132 à louer). عقارات مدنين.
+- [Immobilier La Manouba](https://immobilier.clicvia.com/manouba/) : 681 annonces (537 à vendre, 144 à louer) ; appartement S+2 (prix médian) : 180 000 DT à l'achat, 850 DT par mois en location (non meublé). عقارات منوبة.
+- [Immobilier Monastir](https://immobilier.clicvia.com/monastir/) : 660 annonces (430 à vendre, 230 à louer) ; appartement S+2 (prix médian) : 222 000 DT à l'achat, 750 DT par mois en location (non meublé). عقارات المنستير.
+- [Immobilier Mahdia](https://immobilier.clicvia.com/mahdia/) : 538 annonces (288 à vendre, 250 à louer) ; appartement S+2 (prix médian) : 369 000 DT à l'achat. عقارات المهدية.
+- [Immobilier Béja](https://immobilier.clicvia.com/beja/) : 229 annonces (210 à vendre, 19 à louer). عقارات باجة.
+- [Immobilier Zaghouan](https://immobilier.clicvia.com/zaghouan/) : 172 annonces (133 à vendre, 39 à louer). عقارات زغوان.
+- [Immobilier Gabès](https://immobilier.clicvia.com/gabes/) : 117 annonces (80 à vendre, 37 à louer). عقارات قابس.
+- [Immobilier Kairouan](https://immobilier.clicvia.com/kairouan/) : 114 annonces (94 à vendre, 20 à louer) ; appartement S+2 (prix médian) : 227 000 DT à l'achat. عقارات القيروان.
+- [Immobilier Gafsa](https://immobilier.clicvia.com/gafsa/) : 112 annonces (96 à vendre, 16 à louer). عقارات قفصة.
+- [Immobilier Jendouba](https://immobilier.clicvia.com/jendouba/) : 108 annonces (96 à vendre, 12 à louer). عقارات جندوبة.
+- [Immobilier Le Kef](https://immobilier.clicvia.com/le-kef/) : 107 annonces (92 à vendre, 15 à louer). عقارات الكاف.
+- [Immobilier Kasserine](https://immobilier.clicvia.com/kasserine/) : 72 annonces (65 à vendre, 7 à louer). عقارات القصرين.
+- [Immobilier Siliana](https://immobilier.clicvia.com/siliana/) : 65 annonces (61 à vendre, 4 à louer). عقارات سليانة.
+- [Immobilier Sidi Bouzid](https://immobilier.clicvia.com/sidi-bouzid/) : 60 annonces (53 à vendre, 7 à louer). عقارات سيدي بوزيد.
+- [Immobilier Tozeur](https://immobilier.clicvia.com/tozeur/) : 42 annonces (29 à vendre, 13 à louer). عقارات توزر.
+- [Immobilier Tataouine](https://immobilier.clicvia.com/tataouine/) : 26 annonces (24 à vendre, 2 à louer). عقارات تطاوين.
+- [Immobilier Kébili](https://immobilier.clicvia.com/kebili/) : 18 annonces (15 à vendre, 3 à louer). عقارات قبلي.
+
+## Quartiers et villes (les plus fournis)
+
+- [Immobilier Hammamet (Nabeul)](https://immobilier.clicvia.com/nabeul/hammamet/) : 4 275 annonces, prix du quartier et quartiers voisins.
+- [Immobilier La Marsa (Tunis)](https://immobilier.clicvia.com/tunis/la-marsa/) : 2 689 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Les Berges du Lac (Tunis)](https://immobilier.clicvia.com/tunis/les-berges-du-lac/) : 2 093 annonces, prix du quartier et quartiers voisins.
+- [Immobilier La Soukra (Ariana)](https://immobilier.clicvia.com/ariana/la-soukra/) : 1 973 annonces, prix du quartier et quartiers voisins.
+- [Immobilier L'Aouina (Tunis)](https://immobilier.clicvia.com/tunis/aouina/) : 1 595 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Aïn Zaghouan (Tunis)](https://immobilier.clicvia.com/tunis/ain-zaghouan/) : 1 429 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Jardins de Carthage (Tunis)](https://immobilier.clicvia.com/tunis/jardins-de-carthage/) : 1 241 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Nabeul (Nabeul)](https://immobilier.clicvia.com/nabeul/nabeul/) : 1 156 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Gammarth (Tunis)](https://immobilier.clicvia.com/tunis/gammarth/) : 959 annonces, prix du quartier et quartiers voisins.
+- [Immobilier El Menzah (Tunis)](https://immobilier.clicvia.com/tunis/el-menzah/) : 932 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Kélibia (Nabeul)](https://immobilier.clicvia.com/nabeul/kelibia/) : 843 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Cité Ennasr 2 (Ariana)](https://immobilier.clicvia.com/ariana/cite-ennasr-2/) : 832 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Sousse centre-ville (Sousse)](https://immobilier.clicvia.com/sousse/sousse-centre-ville/) : 795 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Chott Meriem (Sousse)](https://immobilier.clicvia.com/sousse/chott-meriam/) : 772 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Hammam Sousse (Sousse)](https://immobilier.clicvia.com/sousse/hammam-sousse/) : 770 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Ariana Ville (Ariana)](https://immobilier.clicvia.com/ariana/ariana/) : 737 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Sahloul (Sousse)](https://immobilier.clicvia.com/sousse/sahloul/) : 669 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Bizerte Nord (Bizerte)](https://immobilier.clicvia.com/bizerte/bizerte-nord/) : 614 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Chotrana (Ariana)](https://immobilier.clicvia.com/ariana/chotrana/) : 605 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Carthage (Tunis)](https://immobilier.clicvia.com/tunis/carthage/) : 605 annonces, prix du quartier et quartiers voisins.
+- [Immobilier El Mourouj (Ben Arous)](https://immobilier.clicvia.com/ben-arous/el-mourouj/) : 550 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Le Bardo (Tunis)](https://immobilier.clicvia.com/tunis/le-bardo/) : 522 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Ennasr (Ariana)](https://immobilier.clicvia.com/ariana/ennasr/) : 501 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Sousse Jawhara (Sousse)](https://immobilier.clicvia.com/sousse/sousse-jaouhara/) : 486 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Jardins d'El Menzah (Ariana)](https://immobilier.clicvia.com/ariana/jardins-d-el-menzah/) : 462 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Raoued (Ariana)](https://immobilier.clicvia.com/ariana/raoued/) : 445 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Ezzahra (Ben Arous)](https://immobilier.clicvia.com/ben-arous/ezzahra/) : 431 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Mahdia (Mahdia)](https://immobilier.clicvia.com/mahdia/mahdia/) : 429 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Sfax Ville (Sfax)](https://immobilier.clicvia.com/sfax/sfax/) : 423 annonces, prix du quartier et quartiers voisins.
+- [Immobilier El Manar (Tunis)](https://immobilier.clicvia.com/tunis/manar/) : 415 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Monastir (Monastir)](https://immobilier.clicvia.com/monastir/monastir/) : 380 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Cité El Ghazala (Ariana)](https://immobilier.clicvia.com/ariana/cite-el-ghazala/) : 371 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Medina Jedida (Ben Arous)](https://immobilier.clicvia.com/ben-arous/medina-jedida/) : 355 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Gammarth Village (Tunis)](https://immobilier.clicvia.com/tunis/gammarth-village/) : 354 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Radès (Ben Arous)](https://immobilier.clicvia.com/ben-arous/rades/) : 351 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Port El Kantaoui (Sousse)](https://immobilier.clicvia.com/sousse/el-kantaoui/) : 344 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Djerba Midoun (Médenine)](https://immobilier.clicvia.com/medenine/djerba-midoun/) : 339 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Yasmine Hammamet (Nabeul)](https://immobilier.clicvia.com/nabeul/yasmine-hammamet/) : 331 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Khezama (Sousse)](https://immobilier.clicvia.com/sousse/khezama/) : 320 annonces, prix du quartier et quartiers voisins.
+- [Immobilier Le Kram (Tunis)](https://immobilier.clicvia.com/tunis/le-kram/) : 307 annonces, prix du quartier et quartiers voisins.
+
+## Outils gratuits
+
+- [Estimer le prix de vente d'un bien](https://immobilier.clicvia.com/vendre/) et [estimer un loyer](https://immobilier.clicvia.com/louer/) : estimation par notre modèle, comparée aux annonces semblables du quartier.
+- [Où investir ?](https://immobilier.clicvia.com/investir/) : prix, loyers et rendement brut par quartier.
+- [Déposer une annonce gratuite](https://immobilier.clicvia.com/deposer/), [alertes des nouvelles annonces](https://immobilier.clicvia.com/alertes/), [comment fonctionne le site](https://immobilier.clicvia.com/a-propos/).
 
 ## À savoir
 
-- Annonces immobilières en Tunisie, mises à jour par un robot ; chaque annonce renvoie à sa source.
-- Site non officiel : en cas de doute, la source officielle indiquée sur la page fait foi.
-- Pour citer : « Immobilier Tunisie — annonces gratuites, 24 gouvernorats » avec le lien de la page utilisée.
-- Les assistants IA qui répondent à une question en citant leur source sont les bienvenus ; l'aspiration du contenu pour entraîner un modèle n'est pas autorisée (voir robots.txt).
+- Les prix sont des médianes de prix DEMANDÉS dans les annonces (pas des prix de vente signés) ; prix douteux, locations de vacances et annonces de plus de 6 mois exclus.
+- Pour citer : « Immobilier Tunisie (immobilier.clicvia.com) » et le lien de la page utilisée.

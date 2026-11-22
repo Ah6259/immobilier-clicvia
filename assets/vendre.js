@@ -735,4 +735,13 @@
   window.VENDRE_IMMO.pret = Promise.all(chargements).then(verifierCode);   // « prêt » : attendu par les tests
   // les annonces (donnees/annonces.js, « defer ») peuvent arriver après ce script
   if (!window.ANNONCES) window.addEventListener("load", tout);
+  // 22/11/2026 (téléphone moyen : page prête en 10,1 s, 1,9 Mo) : donnees/annonces.js n'est plus dans la page (adresse dans <html
+  // data-annonces>) ; il arrive au 1er geste (toucher, taper, choisir), tout de suite si l'adresse porte un code ou un choix ; le calcul
+  // est refait quand il est là (événement « annonces » d'app.js)
+  document.addEventListener("annonces", tout);
+  if (!window.ANNONCES && window.chargerAnnonces && document.documentElement.getAttribute("data-annonces")) {
+    var annoncesGo = function () { window.chargerAnnonces(); };
+    if (location.search || location.hash) annoncesGo();
+    else ["focusin", "pointerdown", "keydown", "input", "change"].forEach(function (ev) { document.addEventListener(ev, annoncesGo, { capture: true, once: true }); });
+  }
 })();

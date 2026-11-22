@@ -365,6 +365,7 @@
       s.onerror = function () { ANN.pret = null; ok(); };        // réseau en panne : le prochain geste réessaie
       document.head.appendChild(s);
     }).then(function () {
+      try { document.dispatchEvent(new Event("annonces")); } catch (e) {}   // vendre/ et louer/ : annonces de référence (22/11/2026)
       demarrer();
       var form = document.getElementById("recherche");
       if (ANN.clic && ANN.clic.isConnected && ANN.clic.click) ANN.clic.click();       // onglet, case, bouton touché pendant le téléchargement
@@ -423,6 +424,18 @@
     var LX = window.LIEUX || { g: {}, l: {}, o: {} }, DEC = window.DECOUPAGE || {}, OF = LX.o || {};
     var selD = form.querySelector('[name="d"]'), selL = form.querySelector('[name="l"]'), selG = form.querySelector('[name="g"]');
     function slug(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+    // 22/11/2026 (IM.23) : deux localités d'une même délégation qui ne diffèrent que par leur parenthèse (« Résidence Ennour ( Naser 1) » /
+    // « ( Naser 2) ») avaient le même identifiant : la 2e disparaissait de la liste. Pour CES noms seulement, la parenthèse fait partie de l'identifiant.
+    var DOUBLES = (function () {
+      var r = {};
+      Object.keys(DEC).forEach(function (g) { (DEC[g] || []).forEach(function (d) {
+        var vu = {};
+        (d[2] || []).forEach(function (l) { var s = slug(l[0]); if (/\(/.test(l[0])) { if (vu[s]) r[s] = 1; vu[s] = 1; } });
+      }); });
+      return r;
+    })();
+    function idLoc(t) { var s = slug(t); return DOUBLES[s] ? slug(String(t || "").replace(/[()]/g, " ")) : s; }
+    window.idLoc = idLoc;
     function delegDe(a) { if (a.dl) return a.dl; var o = a.l && OF[a.g + "/" + a.l]; return o ? o[0] : ""; }   // a.dl / a.lo : annonces déposées
     // 18/10/2026 (Ahmed : « Djerba, ce sont les délégations Midoun, Houmet Essouk… ») : un nom qui couvre plusieurs délégations
     // officielles (LIEUX.grp) contient leurs annonces + celles qui disent seulement « Djerba »
@@ -441,7 +454,7 @@
     // 18/10/2026 (retour d'un visiteur : « Ennasr 2, S+5 : aucune annonce, alors que la carte en montre à Ennasr ») : beaucoup d'annonces
     // disent seulement « Ennasr » (sans 1 ou 2). Elles comptent pour « Cité Ennasr 1 » ET « Cité Ennasr 2 » : on ne devine pas lequel,
     // on ne les cache pas non plus (même délégation exigée par le filtre de délégation)
-    function dansLoc(a, v) { return a.l === v || (locDe(a) && slug(locDe(a)) === v) || (!locDe(a) && memeNom(a.l, v)); }
+    function dansLoc(a, v) { return a.l === v || (locDe(a) && idLoc(locDe(a)) === v) || (!locDe(a) && memeNom(a.l, v)); }
     // « ennasr » et « cite-ennasr-2 » : même nom, seuls « cité / résidence » et le numéro changent (jamais « ariana » / « ariana-essoughra »)
     function memeNom(l, v) { if (!l) return false; var w = "-" + v + "-", k = "-" + l + "-"; return w.indexOf(k) >= 0 && /^-(cite-|residence-|hay-)?(\d+-)?$/.test(w.replace(k, "-")); }
     function gCourant() { return gFixe || (selG ? selG.value : ""); }
@@ -492,13 +505,13 @@
         if (a.g !== g) return;
         var vus = {};
         if (a.l) { n[a.l] = (n[a.l] || 0) + 1; vus[a.l] = 1; }
-        var lo = locDe(a) && slug(locDe(a)); if (lo && !vus[lo]) n[lo] = (n[lo] || 0) + 1;
+        var lo = locDe(a) && idLoc(locDe(a)); if (lo && !vus[lo]) n[lo] = (n[lo] || 0) + 1;
       });
       if (d) {
         var exact = {};          // localité officielle -> notre quartier du même nom
         ds.forEach(function (d) {     // une délégation, ou toutes celles d'un groupe (Djerba)
           Object.keys(OF).forEach(function (k) { if (k.split("/")[0] === g && OF[k][0] === d[0] && OF[k][1]) exact[OF[k][1]] = k.split("/")[1]; });
-          d[2].forEach(function (l) { var v = exact[l[0]] || slug(l[0]); if (!pris[v]) { pris[v] = 1; items.push([v, l[0], l[1]]); } });
+          d[2].forEach(function (l) { var v = exact[l[0]] || idLoc(l[0]); if (!pris[v]) { pris[v] = 1; items.push([v, l[0], l[1]]); } });
           Object.keys(OF).forEach(function (k) {          // nos quartiers de cette délégation qui ne sont pas une localité officielle
             var s = k.split("/")[1], nom = LX.l[k] || [s, s];
             if (k.split("/")[0] === g && OF[k][0] === d[0] && !pris[s] && slug(nom[0]) !== dv) { pris[s] = 1; items.push([s, nom[0], nom[1]]); }
@@ -543,11 +556,11 @@
           INDEX.push(ng ? { g: g, d: sd, l: "", fr: ng.fr, ar: ng.ar, sous: [groupe(g, sd).join(" + ") + " · " + G[0], groupe(g, sd).join(" + ") + " · " + G[1]], k: cle(d[0] + " " + d[1]), r: 0.5 }
             : { g: g, d: sd, l: "", fr: d[0], ar: d[1], sous: ["Délégation entière · " + G[0], "كامل المعتمدية · " + G[1]], k: cle(d[0] + " " + d[1]), r: 1 });
           // code postal de La Poste (18/10/2026, idée d'Ahmed) : taper « 1000 » ou « 2045 » trouve aussi la localité
-          d[2].forEach(function (l) { var cp = l[2] ? " · " + l[2] : ""; INDEX.push({ g: g, d: sd, l: slug(l[0]), fr: l[0], ar: l[1], sous: ["Localité · " + d[0] + " · " + G[0] + cp, "منطقة · " + d[1] + " · " + G[1] + cp], k: cle(l[0] + " " + l[1] + " " + (l[2] || "")), r: 2 }); });
+          d[2].forEach(function (l) { var cp = l[2] ? " · " + l[2] : ""; INDEX.push({ g: g, d: sd, l: idLoc(l[0]), fr: l[0], ar: l[1], sous: ["Localité · " + d[0] + " · " + G[0] + cp, "منطقة · " + d[1] + " · " + G[1] + cp], k: cle(l[0] + " " + l[1] + " " + (l[2] || "")), r: 2 }); });
         });
         ((LX.al || {})[g] || []).forEach(function (a) {     // autres écritures connues (« Bab Jdid » = Bab Djedid), 18/10/2026
           var sd = a[1] === "quartier" ? slug((OF[g + "/" + a[3]] || [""])[0]) : slug(a[3]);
-          INDEX.push({ g: g, d: sd, l: a[1] === "quartier" ? a[3] : (a[1] === "localité" ? slug(a[2]) : ""), fr: a[0], ar: a[0],
+          INDEX.push({ g: g, d: sd, l: a[1] === "quartier" ? a[3] : (a[1] === "localité" ? idLoc(a[2]) : ""), fr: a[0], ar: a[0],
                        sous: ["= " + a[2] + " · " + G[0], "= " + a[2] + " · " + G[1]], k: cle(a[0]), r: 2, al: 1 });
         });
         Object.keys(LX.l).forEach(function (k) {            // nos quartiers (ex. Chotrana, Ennasr), avec leur délégation

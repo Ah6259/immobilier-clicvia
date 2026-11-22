@@ -742,6 +742,9 @@
   if (!window.ANNONCES && window.chargerAnnonces && document.documentElement.getAttribute("data-annonces")) {
     var annoncesGo = function () { window.chargerAnnonces(); };
     if (location.search || location.hash) annoncesGo();
-    else ["focusin", "pointerdown", "keydown", "input", "change"].forEach(function (ev) { document.addEventListener(ev, annoncesGo, { capture: true, once: true }); });
+    else {   // 22/11/2026 (« fais 2 » d'Ahmed) : aussi au 1er défilement / toucher n'importe où, pour que la liste soit prête plus tôt
+      ["focusin", "pointerdown", "keydown", "input", "change"].forEach(function (ev) { document.addEventListener(ev, annoncesGo, { capture: true, once: true }); });
+      ["touchstart", "scroll", "wheel"].forEach(function (ev) { window.addEventListener(ev, annoncesGo, { capture: true, once: true, passive: true }); });
+    }
   }
 })();

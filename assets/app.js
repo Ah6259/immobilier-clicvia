@@ -393,6 +393,14 @@
       if (window.ANNONCES) return;
       e.preventDefault(); e.stopImmediatePropagation(); ANN.envoi = true; go();
     }, true);
+    // TÉLÉCHARGEMENT EN AVANCE (22/11/2026, « fais 2 » d'Ahmed : le 1er clic de recherche attendait la liste) : le PREMIER geste
+    // n'importe où dans la page (toucher, défiler, molette, clavier, fermer l'affiche) lance déjà le téléchargement, comme la carte
+    // vivante : la liste est en général prête quand le visiteur arrive à la recherche. Jamais avant un geste (règle « accueil léger »).
+    var avance = function () {
+      ["pointerdown", "touchstart", "keydown", "scroll", "wheel"].forEach(function (g) { window.removeEventListener(g, avance, true); });
+      go();
+    };
+    ["pointerdown", "touchstart", "keydown", "scroll", "wheel"].forEach(function (g) { window.addEventListener(g, avance, { capture: true, passive: true }); });
     var tri = document.getElementById("f-tri");
     if (tri) tri.addEventListener("change", function () { if (!window.ANNONCES) { ANN.tri = true; go(); } }, true);
     if ("IntersectionObserver" in window) {

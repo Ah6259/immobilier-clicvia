@@ -16,6 +16,7 @@ concurrency:
   cancel-in-progress: false
 permissions:
   contents: write
+  actions: write            # 24/11/2026 : pour relancer « depots » (pages refaites) quand les pages sont en retard
 env:
   TZ: Africa/Tunis
   PYTHONIOENCODING: utf-8
@@ -34,6 +35,8 @@ jobs:
           ssh-key: ${{ secrets.CLE_MOTEUR }}
       - name: Nouvelle version du code ?
         id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           a=$(cat public/.moteur 2>/dev/null || true); b=$(git -C moteur rev-parse HEAD)
           if [ "$a" = "$b" ] && [ "${{ github.event.inputs.force }}" != "oui" ]; then
@@ -41,8 +44,17 @@ jobs:
           else
             # 20/10/2026 (règle commune § 34) : les pages vont-elles avec les données ? Relevé enregistré mais pages pas encore
             # refaites -> on attend la publication suivante (pas d'erreur) ; écart de plus de 3 h -> rouge
+            # 24/11/2026 (règle § 55.6) : écart de plus de 3 h (données corrigées par une tâche Claude sans refaire les pages,
+            # ou passage de « depots » sauté par GitHub) -> « depots » est relancé (il refait et publie les pages) et le journal
+            # le dit, sans rouge ; s'il ne peut pas être relancé -> rouge comme avant. « depots » sonne rouge lui-même s'il échoue.
             set +e; python3 moteur/tools/pages_a_jour.py; c=$?; set -e
             if [ "$c" = "3" ]; then echo "pub=non" >> "$GITHUB_OUTPUT"
+            elif [ "$c" = "1" ]; then
+              echo "pub=non" >> "$GITHUB_OUTPUT"
+              en_cours=$(gh run list -R "${{ github.repository }}" -w depots.yml --limit 5 --json status -q '[.[] | select(.status != "completed")] | length' || echo 0)
+              if [ "$en_cours" != "0" ]; then echo "Pages en retard : « depots » déjà en route, il les refera"
+              else gh workflow run depots.yml -R "${{ github.repository }}" || exit 1
+                echo "Pages en retard de plus de 3 h : « depots » relancé (il refait et publie les pages) — réglé automatiquement"; fi
             elif [ "$c" != "0" ]; then exit 1
             else echo "pub=oui" >> "$GITHUB_OUTPUT"; fi
           fi

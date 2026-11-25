@@ -9,6 +9,9 @@
   var zone = document.getElementById("pass-web");
   var CLE = "pass-immobilier", ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
   var R = null, ACCES = null, etat = null;
+  // 25/11/2026 : fichiers du Pass pris à la racine du site (data-racine) : sur les pages ARABES (ar/investir/, ar/investir/pass/), les
+  // adresses relatives cherchaient ar/investir/pass/rapport.dat et acces.json (404) : un code payé ne s'ouvrait pas en arabe
+  var DOSSIER_PASS = (document.documentElement.getAttribute("data-racine") || "") + "investir/pass/";
   function el(id) { return document.getElementById(id); }
   function ar() { return document.documentElement.lang === "ar"; }
   function T2(fr, a) { return ar() ? a : fr; }
@@ -51,8 +54,8 @@
     if (!code || !(window.crypto && crypto.subtle)) return Promise.resolve(null);
     var A, C2;
     return Promise.all([
-      fetch(dossier + "rapport.dat", {cache: "no-cache"}).then(function (r) { return r.text(); }).then(function (t) { var l = t.split("\n"); C2 = l[0].trim() === "v2" ? (l[1] || "").trim() : null; }),
-      fetch(dossier + "acces.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (a) { A = a; })
+      fetch(DOSSIER_PASS + "rapport.dat", {cache: "no-cache"}).then(function (r) { return r.text(); }).then(function (t) { var l = t.split("\n"); C2 = l[0].trim() === "v2" ? (l[1] || "").trim() : null; }),
+      fetch(DOSSIER_PASS + "acces.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (a) { A = a; })
     ]).then(function () {
       if (!C2 || !A) return null;
       return deriver(code).then(function (d) {
@@ -304,10 +307,10 @@
   document.addEventListener("langue", tout);
   tout();
   window.PASS_IMMO.pret = Promise.all([   // « prêt » : attendu par les tests
-    fetch("rapport.dat", {cache: "no-cache"}).then(function (r) { return r.text(); }).then(function (t) {
+    fetch(DOSSIER_PASS + "rapport.dat", {cache: "no-cache"}).then(function (r) { return r.text(); }).then(function (t) {
       var l = t.split("\n"); if (l[0].trim() === "v2") RAPPORT_CHIFFRE = (l[1] || "").trim();   // tableau chiffré (17/10/2026)
     }),
-    fetch("acces.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (a) { ACCES = a; }).catch(function () { ACCES = {codes: {}}; })
+    fetch(DOSSIER_PASS + "acces.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (a) { ACCES = a; }).catch(function () { ACCES = {codes: {}}; })
   ]).then(ouvrir).catch(function () {
     el("pass-etat").insertAdjacentHTML("beforeend", "<p>" + T2("Le tableau n’a pas pu être chargé. Réessayez dans un instant.", "تعذّر تحميل الجدول. أعد المحاولة بعد لحظة.") + "</p>");
   });

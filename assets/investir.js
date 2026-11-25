@@ -240,7 +240,9 @@
     if (b && +b > 0) { el("inv-b").value = String(Math.round(+b)); mis = true; }
     return mis;
   }
-  fetch("zones.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (z) {
+  // 25/11/2026 : adresse depuis la racine du site (data-racine) : la page arabe ar/investir/ cherchait ar/investir/zones.json (404) et
+  // restait sans chiffres ; zones.json n'existe qu'à investir/
+  fetch((document.documentElement.getAttribute("data-racine") || "../") + "investir/zones.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (z) {
     Z = z; remplirTypes();
     var mis = choixAdresse(); calculer();
     var r2 = el("inv-resultat");

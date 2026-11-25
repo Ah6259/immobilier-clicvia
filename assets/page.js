@@ -873,75 +873,11 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.DETAILS_IMMO = { paquet: paquetDe, prets: prets, charger: charger, NB: NB };
 })();
 
-/* Achat d'un Pass (24/11/2026, règles communes § 69 et § 70 d'Ahmed : le MÊME formulaire et le même parcours sur tous les sites) :
-   nom, téléphone (8 chiffres), e-mail, formule, conditions — tous obligatoires ; envoi à Formspree (avec le code), PUIS le code Pass
-   et la dernière étape (paiement D17 / IZI, preuve WhatsApp). Le code est créé par la page (assets/pass.js : INV-…, assets/vendre.js :
-   VEN-…), même format et même calcul qu'avant. o = { code: function () -> code, fini: function (code) }. Modèle : assets/pass.js de
-   Ma voiture (mêmes messages). Champ piège _gotcha rempli = robot : rien n'est envoyé. */
-window.achatPass = function (form, o) {
-  if (!form || form.getAttribute("data-branche")) return;
-  form.setAttribute("data-branche", "1");
-  var T2 = function (fr, ar) { return document.documentElement.lang === "ar" ? ar : fr; }, iso = function (t) { return "⁦" + t + "⁩"; };
-  var statut = form.querySelector(".achat-statut"), bouton = form.querySelector("button[type=submit]");
-  function dire(c, fr, ar) { statut.className = "achat-statut" + (c ? " " + c : ""); statut.textContent = T2(fr, ar); }
-  function champ(n) { return form.querySelector('[name="' + n + '"]'); }
-  function val(n) { var x = champ(n); return x ? String(x.value || "").trim() : ""; }
-  function emailAuto() { return !!(window.commandePass && window.commandePass.EMAIL_AUTO); }
-  // e-mail automatique en service : l'étiquette dit ce qu'on y reçoit (jamais avant : la promesse serait fausse)
-  var etqMail = form.querySelector('label[for="' + (champ("email") || {}).id + '"]');
-  if (emailAuto() && etqMail) etqMail.appendChild(document.createTextNode(T2(" (vous y recevez votre code et les étapes du paiement)", " (يصلك عليه رمزك وخطوات الدفع)")));
-  // envoi au service d'e-mail : sans attendre la réponse, jamais bloquant (Formspree et le code restent la voie principale)
-  function envoyerEmail(dd) {
-    if (!emailAuto() || !window.fetch) return;
-    try {
-      fetch(window.commandePass.EMAIL_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dd), keepalive: true })
-        .catch(function () {});
-    } catch (e) { /* jamais bloquant */ }
-  }
-  function tel8(v) { var n = String(v || "").replace(/\D/g, ""); if (n.length === 11 && n.indexOf("216") === 0) n = n.slice(3); return n.length === 8 ? n : ""; }
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    if (bouton.disabled) return;
-    var tel = tel8(val("telephone")), email = val("email");
-    if (!val("nom")) { dire("err", "Indiquez votre nom.", "اكتب اسمك."); champ("nom").focus(); return; }
-    if (!tel) { dire("err", "Téléphone : 8 chiffres, par exemple 24 321 390.", "الهاتف: " + iso("8") + " أرقام، مثال " + iso("24321390") + "."); champ("telephone").focus(); return; }
-    // promesse d'e-mail seulement si l'e-mail automatique est en service (commandePass.EMAIL_AUTO, true depuis le 25/11/2026)
-    if (!email) { if (emailAuto()) dire("err", "Indiquez votre e-mail : vous y recevez votre code et les étapes du paiement.", "اكتب بريدك الإلكتروني: يصلك عليه رمزك وخطوات الدفع.");
-      else dire("err", "Indiquez votre e-mail.", "اكتب بريدك الإلكتروني."); champ("email").focus(); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { dire("err", "E-mail invalide, par exemple nom@exemple.com.", "البريد الإلكتروني غير صحيح، مثال " + iso("nom@exemple.com") + "."); champ("email").focus(); return; }
-    if (!val("formule")) { dire("err", "Choisissez une formule.", "اختر صيغة."); champ("formule").focus(); return; }
-    if (!champ("conditions").checked) { dire("err", "Cochez « J’accepte les conditions du Pass ».", "يجب الموافقة على شروط الباس."); return; }
-    var code = o.code();
-    if (val("_gotcha")) { o.fini(code, val("formule"), val("nom")); return; }          // robot : rien n'est envoyé
-    champ("page").value = location.href.split("#")[0];
-    champ("code").value = code;
-    var d = new FormData(form);
-    d.set("telephone", tel); d.set("email", email);
-    // ligne prête à recopier pour activer le Pass (bouton « activer-investisseur » du dépôt privé : le code suffit)
-    d.set("pour_activer", "code: " + code + " ; formule: " + val("formule") + " ; nom: " + val("nom") + " ; telephone: " + tel + " ; email: " + email);
-    // e-mail automatique au client (A.17) : code, prix, paiement, WhatsApp, lien de la page du Pass ; langue de la page ; Ahmed en copie.
-    // Champs EXACTS attendus par verifier() du service (outils communs/email-clients/worker.js, clé « immobilier » de sites.json) :
-    // la formule (valeur du formulaire) dit quel Pass (INV- Investisseur, VEN- Propriétaire vente / location).
-    envoyerEmail({ site: "immobilier", langue: document.documentElement.lang === "ar" ? "ar" : "fr", nom: val("nom"), email: email,
-      code: code, formule: val("formule") });
-    bouton.disabled = true;
-    dire("", "Envoi…", "جارٍ الإرسال…");
-    fetch(form.getAttribute("action"), { method: "POST", body: d, headers: { "Accept": "application/json" } })
-      .then(function (r) { if (!r || !r.ok) throw new Error("HTTP " + (r && r.status)); })
-      .then(function () {
-        bouton.disabled = false;
-        dire("ok", "Merci ! Votre demande est envoyée. Dernière étape : le paiement.", "شكرًا! تم إرسال طلبك. الخطوة الأخيرة: الدفع.");
-        o.fini(code, val("formule"), val("nom"));
-      }, function () {
-        bouton.disabled = false;
-        dire("err", "Échec de l'envoi — vérifiez votre connexion et réessayez, ou écrivez-nous sur WhatsApp au 24 321 390.",
-          "تعذّر الإرسال — تحقّق من الاتصال وأعد المحاولة، أو راسلنا عبر واتساب على " + iso("24321390") + ".");
-      });
-  });
-};
-
+/* Achat d'un Pass (24/11/2026, règles communes § 69 et § 70) : depuis le 25/11/2026 (PASS.1, règle commune § 70.8), le formulaire
+   (vérifications, code, Formspree, e-mail automatique, mémoire « pass-commande ») est le MODULE COMMUN assets/pass-commun.js, réglé
+   par assets/pass-reglages.js (window.achatPass), chargés seulement sur les pages des 2 Pass. Ici : la « Dernière étape » du site. */
 /* Parcours d'achat commun (25/11/2026, `outils communs/pass-commun/CONSIGNES.md`, points 2 et 3) :
-   - le téléphone se souvient de la commande : localStorage « pass-commande » = {code, formule, date} SEULEMENT (ni nom, ni téléphone, ni
+   - le téléphone se souvient de la commande (écrite par le module commun) : localStorage « pass-commande » = {code, formule, date} SEULEMENT (ni nom, ni téléphone, ni
      e-mail), 60 jours ; effacée quand le Pass est activé ou par « Nouvelle commande » ;
    - bloc « Dernière étape » : code en gros, « C'est votre numéro de commande… », motif = le code, bouton WhatsApp pré-rempli avec le code,
      filet « oublié le code ? ». Utilisé par assets/pass.js (INV-…) et assets/vendre.js (VEN-…). */
@@ -949,9 +885,8 @@ window.commandePass = {
   CLE: "pass-commande", JOURS: 60,
   // E-mail automatique au client (outils communs/email-clients, A.17) : EN SERVICE depuis le 25/11/2026 (Worker « email-clients » + Resend,
   // copie à Ahmed). true : promesses « vous y recevez votre code… » / « Vous le recevez aussi par e-mail » affichées et demande envoyée au
-  // service par achatPass ; false = tout caché, rien envoyé (retour en arrière en un mot si le service tombe).
+  // service par le module commun ; false = tout caché, rien envoyé (retour en arrière en un mot si le service tombe).
   EMAIL_AUTO: true,
-  EMAIL_API: "https://api-email.clicvia.com/inscription",
   lire: function (prefixe) {
     try {
       var c = JSON.parse(localStorage.getItem(this.CLE) || "null");
@@ -960,10 +895,7 @@ window.commandePass = {
       return !prefixe || c.code.indexOf(prefixe) === 0 ? { code: c.code, formule: String(c.formule || ""), date: c.date } : null;
     } catch (e) { return null; }
   },
-  ecrire: function (code, formule) {
-    var d = new Date(), j = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-    try { localStorage.setItem(this.CLE, JSON.stringify({ code: code, formule: formule || "", date: j })); } catch (e) { /* navigation privée */ }
-  },
+  // écriture : par le module commun (assets/pass-commun.js), seulement après un envoi réussi (jamais pour un robot)
   effacer: function () { try { localStorage.removeItem(this.CLE); } catch (e) { /* navigation privée */ } },
   // lien WhatsApp de la preuve de paiement, pré-rempli avec le code (le client n'a rien à recopier)
   // nom : celui tapé dans le formulaire (gardé seulement pendant la visite, JAMAIS dans « pass-commande ») ; absent au retour sur la page

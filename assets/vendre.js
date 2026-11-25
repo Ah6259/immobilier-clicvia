@@ -720,14 +720,14 @@
     tout();
   });
   form.addEventListener("input", function () { tout(); });
-  // 24/11/2026 (règles communes § 69-70) : formulaire commun d'achat (assets/page.js achatPass : nom, téléphone, e-mail, formule,
+  // 24/11/2026 (règles communes § 69-70) : formulaire commun d'achat (module commun assets/pass-commun.js + assets/pass-reglages.js : nom, téléphone, e-mail, formule,
   // conditions -> Formspree), PUIS le code VEN-XXXXXX (même format, même calcul qu'avant) et la dernière étape (paiement ouvert)
   if (window.achatPass) window.achatPass(el("v-achat-form"), {
     code: function () { return etat ? etat.code : (codeDemande = codeDemande || nouveauCode()); },
     fini: function (code, formule, nom) {
       nomDemande = nom || "";
       if (!etat) { etat = { code: code, debut: null }; garder(); verifierCode(); }
-      if (window.commandePass) window.commandePass.ecrire(code, formule);
+      // commande gardée dans le téléphone par le module commun (assets/pass-commun.js), juste avant
       vientDEnvoyer = true;
       tout();
       var d = document.querySelector("#pass-vendeur details.paiement"); if (d) ouvrir(d);

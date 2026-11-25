@@ -279,14 +279,14 @@
   });
   el("p-filtre").addEventListener("change", classement);
   ["p-c1", "p-c2", "p-c3"].forEach(function (id) { el(id).addEventListener("change", comparer); });
-  // 24/11/2026 (règles communes § 69-70) : formulaire commun d'achat (assets/page.js achatPass) -> Formspree, PUIS le code INV-XXXXXX
+  // 24/11/2026 (règles communes § 69-70) : formulaire commun d'achat (module commun assets/pass-commun.js, réglé par assets/pass-reglages.js : window.achatPass) -> Formspree, PUIS le code INV-XXXXXX
   // (même format, même calcul qu'avant) et la dernière étape (paiement ouvert, preuve WhatsApp avec le code)
   if (window.achatPass) window.achatPass(el("pass-achat"), {
     code: function () { return etat ? etat.code : (codeDemande = codeDemande || nouveauCode()); },
     fini: function (code, formule, nom) {
       nomDemande = nom || "";
       if (!etat) { etat = {code: code, debut: null}; garder(); }
-      if (window.commandePass) window.commandePass.ecrire(code, formule);
+      // commande gardée dans le téléphone par le module commun (assets/pass-commun.js), juste avant
       vientDEnvoyer = true;
       tout();
       var p = el("pass-payer"); if (p && !p.hidden) { var d = p.querySelector("details.paiement"); if (d) d.open = true; try { el("pass-etat").scrollIntoView({behavior: "smooth", block: "start"}); } catch (x) { /* ancien navigateur */ } }

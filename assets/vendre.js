@@ -751,6 +751,23 @@
   });
   document.addEventListener("langue", function () { quartiers(); tout(); });
   quartiers();                                   // délégations et localités tout de suite (listes officielles, sans attendre l'IA)
+  // 25/11/2026 (IM.1, décision d'Ahmed) : venu de la page d'un quartier (encadré « Vous vendez ou louez à … ? ») : ?g=<gouvernorat>&q=<quartier>
+  // -> gouvernorat, délégation et localité déjà choisis (mêmes listes officielles, LIEUX.o : quartier -> [délégation, localité]) ;
+  // une valeur inconnue est ignorée sans erreur ; tout reste modifiable
+  (function choixAdresse() {
+    var p; try { p = new URLSearchParams(location.search); } catch (e) { return; }
+    var g = (p.get("g") || "").toLowerCase(), q = (p.get("q") || "").toLowerCase(), sg = el("v-g"), sd = el("v-d"), sl = el("v-l");
+    var a = function (s, v) { return [].some.call(s.options, function (x) { return x.value === v; }); };
+    if (!/^[a-z0-9-]{2,60}$/.test(g) || !a(sg, g)) return;
+    sg.value = g; quartiers();
+    var o = /^[a-z0-9-]{2,80}$/.test(q) && ((window.LIEUX && LIEUX.o) || {})[g + "/" + q];
+    if (!o || !o[0] || !a(sd, o[0])) return;
+    sd.value = o[0]; localites();
+    var vals = [].map.call(sl.options, function (x) { return x.value; });
+    var lv = o[1] && vals.indexOf(o[1]) >= 0 ? o[1] : vals.indexOf("q:" + q) >= 0 ? "q:" + q
+      : vals.filter(function (v) { return v && slugV(v.replace(/^q:/, "")) === q; })[0] || "";
+    if (lv) { sl.value = lv; memeNom(); choisirQuartier(); }
+  })();
   tout();
   var chargements = [window.IA_IMMO ? IA_IMMO.charger().then(quartiers).catch(function () {}) : Promise.resolve(),
     (typeof fetch === "function" ? fetch(racine + "investir/pass/acces.json", { cache: "no-cache" }).then(function (r) { return r.json(); }) : Promise.reject())

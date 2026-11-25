@@ -245,7 +245,7 @@
   window.CREDIT_IMMO = { hyp: CREDIT, mensualite: mensualite, avec: avecCredit };   // utilisé par les tests
   function lienEstimer(a, racine) {
     var loc = a.t === "l";
-    return '<a class="an-estimer" href="' + (racine || "") + (loc ? "louer/" : "vendre/") + '">' + L(loc ? "Estimer le loyer d’un bien avec notre IA" : "Estimer le prix d’un bien avec notre IA", loc ? "قدّر كراء عقار بذكائنا الاصطناعي" : "قدّر سعر عقار بذكائنا الاصطناعي") + "</a>";
+    return '<a class="an-estimer" href="' + (racine || "") + (loc ? "louer/" : "vendre/") + '" data-clic="estimer-annonce">' + L(loc ? "Estimer le loyer d’un bien avec notre IA" : "Estimer le prix d’un bien avec notre IA", loc ? "قدّر كراء عقار بذكائنا الاصطناعي" : "قدّر سعر عقار بذكائنا الاصطناعي") + "</a>";
   }
   function carte(a, racine) {
     var LX = window.LIEUX || { g: {}, l: {} };

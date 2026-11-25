@@ -228,6 +228,11 @@
   function choixAdresse() {
     var p = new URLSearchParams(location.search), mis = false;
     var t = p.get("t"), g = p.get("g"), q = p.get("q"), b = p.get("b");
+    // 25/11/2026 (encadré des pages de quartier) : quartier demandé sans type, ou absent pour ce type -> la 1re taille d'appartement où il est proposé
+    if (q && g && !(t && Z.q.some(function (x) { return x[0] === g && x[1] === q && "a" + x[4] === t && !x[10]; }))) {
+      var tq = Z.q.filter(function (x) { return x[0] === g && x[1] === q && !x[10]; }).map(function (x) { return "a" + x[4]; }).sort();
+      if (tq.length) t = tq.indexOf("a2") >= 0 ? "a2" : tq[0];
+    }
     if (t && el("inv-t").querySelector('option[value="' + esc(t) + '"]')) { el("inv-t").value = t; mis = true; }
     remplirLieux();
     if (g && el("inv-g").querySelector('option[value="' + esc(g) + '"]')) { el("inv-g").value = g; mis = true; remplirLieux(); }

@@ -155,7 +155,7 @@ window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/immobilier
       var nb = +(document.body && document.body.getAttribute("data-nb")) || 0;
       var milliers = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " "); };   // 15 630
       var tuile = function (lien, fr, ar, sfr, sar) {
-        return '<a class="ia-tuile" href="' + racine + lien + '"><b>' + T(fr, ar) + '</b><small>' + T(sfr, sar) + "</small></a>";
+        return '<a class="ia-tuile" href="' + racine + lien + '" data-clic="menu-' + lien.replace(/\/$/, "") + '"><b>' + T(fr, ar) + '</b><small>' + T(sfr, sar) + "</small></a>";
       };
       // « IA » dans le texte, en blanc dans un carré, comme dans les autres titres du site (demande d'Ahmed, 15/10/2026)
       bia.innerHTML = '<a class="ia-tete" href="' + racine + 'ia/"><span>' +
@@ -924,3 +924,34 @@ window.commandePass = {
       '<p class="pass-nouvelle"><button type="button" class="pass-nouvelle-btn" id="' + idNouvelle + '">' + T2("Nouvelle commande", "طلب جديد") + "</button></p>";
   }
 };
+
+/* Clics vers les Pass (25/11/2026, décision d'Ahmed : amener les visiteurs vers les pages d'achat des Pass, PAS de gratuité) :
+   tout lien data-clic="<nom>" (encadrés des pages de quartier, boutons « Prix de vente / Loyer / Voir le résultat » de la recherche,
+   « Estimer » sous les annonces, rapports du mois, tuiles, « Prendre le Pass ») est compté dans GoatCounter comme un ÉVÉNEMENT
+   « /immobilier-tunis/clic/<nom> » (préfixe du site, comme ses pages). Un autre lien vers investir/, investir/pass/, vendre/ ou louer/
+   (sans data-clic) est compté « clic/vers-<page> ». Rien si GoatCounter est absent ou bloqué ; le lien s'ouvre toujours ; les autres
+   événements (alerte, partage, appel, fiche) ne changent pas. */
+(function () {
+  var TITRES = { "pass-investisseur-quartier": "Clic vers le Pass Investisseur (page d'un quartier)",
+    "pass-proprietaire-quartier": "Clic vers le Pass Propriétaire (page d'un quartier)", "pass-accueil": "Clic « Où investir ? » (accueil)",
+    "estimer-annonce": "Clic « Estimer » sous une annonce", "achat-pass-investisseur": "Clic « Prendre le Pass Investisseur »" };
+  function nomClic(a) {
+    var n = (a.getAttribute("data-clic") || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+    if (n) return n;
+    var u; try { u = new URL(a.getAttribute("href") || "", location.href); } catch (e) { return ""; }
+    if (u.origin !== location.origin || u.pathname === location.pathname) return "";
+    var base; try { base = new URL(document.documentElement.getAttribute("data-racine") || "./", location.href).pathname; } catch (e) { base = BASE_SITE; }
+    if (u.pathname.indexOf(base) !== 0) return "";
+    var m = u.pathname.slice(base.length).replace(/^ar\//, "").match(/^(investir\/pass|investir|vendre|louer)\/$/);
+    return m ? "vers-" + (m[1] === "investir/pass" ? "pass-investisseur" : m[1]) : "";
+  }
+  window.nomClicPass = nomClic;                 // crochet des tests
+  document.addEventListener("click", function (e) {
+    var a = e.target && e.target.closest && e.target.closest("a[href]");
+    if (!a) return;
+    var nom = nomClic(a);
+    if (!nom) return;
+    try { if (window.goatcounter && typeof window.goatcounter.count === "function")
+      window.goatcounter.count({ path: "/immobilier-tunis/clic/" + nom, title: TITRES[nom] || "Clic " + nom, event: true }); } catch (x) {}
+  }, true);
+})();

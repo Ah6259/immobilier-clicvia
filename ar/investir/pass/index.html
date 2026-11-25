@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>باس المستثمر الخاص بي | عقارات تونس</title>
-<meta name="description" content="هنا، دون تطبيق أو تسجيل: تحصل فورًا على رمز الباس (سبب الدفع) و رابطك الشخصي . يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.">
+<meta name="description" content="هنا، دون تطبيق: املأ هذه الاستمارة القصيرة، تحصل فورًا على رمز الباس (سبب الدفع) و رابطك الشخصي . يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.">
 <link rel="alternate" hreflang="fr" href="https://immobilier.clicvia.com/investir/pass/">
 <link rel="alternate" hreflang="ar" href="https://immobilier.clicvia.com/ar/investir/pass/">
 <link rel="alternate" hreflang="x-default" href="https://immobilier.clicvia.com/investir/pass/">
@@ -18,7 +18,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Immobilier Tunisie">
 <meta property="og:title" content="باس المستثمر الخاص بي">
-<meta property="og:description" content="هنا، دون تطبيق أو تسجيل: تحصل فورًا على رمز الباس (سبب الدفع) و رابطك الشخصي . يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.">
+<meta property="og:description" content="هنا، دون تطبيق: املأ هذه الاستمارة القصيرة، تحصل فورًا على رمز الباس (سبب الدفع) و رابطك الشخصي . يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.">
 <meta property="og:url" content="https://immobilier.clicvia.com/ar/investir/pass/">
 <meta property="og:image" content="https://immobilier.clicvia.com/assets/apercu-site-51000.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -35,8 +35,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../../assets/style.css?v=6e4bbfac60">
-<script src="../../../assets/page.js?v=6e4bbfac60"></script>
+<link rel="stylesheet" href="../../../assets/style.css?v=0028a7c571">
+<script src="../../../assets/page.js?v=0028a7c571"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body data-maj="2026-11-24" data-cv="1d86f99cbf" data-nb="51793" data-page="investir">
@@ -60,9 +60,25 @@
 <section class="bloc pass" id="pass-accueil">
   <h2><span data-l="ar">خذ باس المستثمر</span></h2>
   <p class="pass-prix"><span data-l="ar"><b>⁦49⁩ دينار</b> / شهر <small>أو ⁦390⁩ دينار / سنة</small></span></p>
-  <p><span data-l="ar">هنا، دون تطبيق أو تسجيل: تحصل فورًا على <b>رمز الباس</b> (سبب الدفع) و<b>رابطك الشخصي</b>. يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.</span></p>
+  <p><span data-l="ar">هنا، دون تطبيق: املأ هذه الاستمارة القصيرة، تحصل فورًا على <b>رمز الباس</b> (سبب الدفع) و<b>رابطك الشخصي</b>. يُفتح الباس في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.</span></p>
   <a class="btn-exemple" href="../exemple/"><span data-l="ar">👀 شاهد أولًا المثال الكامل: كل ما يصلك</span></a>
-  <button type="button" class="btn-paie" id="pass-commencer"><span data-l="ar">احصل على رمز الباس وادفع</span></button>
+  <form class="achat-pass" id="pass-achat" action="https://formspree.io/f/mwlpakqj" method="POST" novalidate>
+  <label class="achat-etiquette" for="pass-achat-nom"><span data-l="ar">اسمك</span></label>
+  <input id="pass-achat-nom" name="nom" required maxlength="100" autocomplete="name">
+  <label class="achat-etiquette" for="pass-achat-tel"><span data-l="ar">هاتف واتساب (⁦8⁩ أرقام)</span></label>
+  <input id="pass-achat-tel" name="telephone" type="tel" required inputmode="tel" pattern="[0-9 +]{8,16}" maxlength="16" autocomplete="tel" dir="ltr">
+  <label class="achat-etiquette" for="pass-achat-email"><span data-l="ar">البريد الإلكتروني</span></label>
+  <input id="pass-achat-email" name="email" type="email" required maxlength="200" autocomplete="email" inputmode="email" dir="ltr">
+  <label class="achat-etiquette" for="pass-achat-formule"><span data-l="ar">الصيغة</span></label>
+  <select id="pass-achat-formule" name="formule" required><option value="Pass Investisseur - 49 DT - 1 mois" selected data-fr="1 mois : 49 DT" data-ar="شهر واحد: 49 دينار">شهر واحد: 49 دينار</option><option value="Pass Investisseur - 390 DT - 1 an" data-fr="1 an : 390 DT" data-ar="سنة: 390 دينار">سنة: 390 دينار</option></select>
+  <label class="case"><input type="checkbox" name="conditions" value="oui" required> <span><span data-l="ar">أوافق على شروط الباس: السعر أعلاه، دون تجديد تلقائي، و<a href="https://clicvia.com/ar/conditions/" rel="noopener">شروط الاستعمال</a>.</span></span></label>
+  <input type="hidden" name="site" value="Immobilier Tunisie"><input type="hidden" name="page" value=""><input type="hidden" name="code" value="">
+  <input type="hidden" name="_subject" value="Pass Investisseur — Immobilier Tunisie">
+  <input type="text" name="_gotcha" class="piege" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <button type="submit" class="btn-paie"><span data-l="ar">احصل على رمز الباس وادفع</span></button>
+  <p class="achat-statut" role="status" aria-live="polite"></p>
+  <p class="petit"><span data-l="ar">يُستعمل اسمك وهاتفك وبريدك الإلكتروني فقط لمعالجة طلبك وتفعيل باسك: لا تُنشر ولا تُباع أبدًا (إرسال عبر خدمة Formspree). لا يُرسل أي شيء دون الضغط على الزر.</span></p>
+</form>
 </section>
 <div id="pass-contenu" hidden>
 <section class="bloc res-payant pass-analyse" id="p-analyse">
@@ -97,18 +113,19 @@
   <details class="paiement"><summary class="btn-paie"><span data-l="ar">الدفع</span></summary>
   <div class="paie"><ol class="paie-etapes">
     <li><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../../../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../../../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li>
-    <li><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم</span> <strong><bdi dir="ltr">24 321 390</bdi></strong>.<br>
+    <li><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم <strong><bdi dir="ltr">24321390</bdi></strong>.</span><br>
       <span data-l="ar">المبلغ:</span> <strong><span data-l="ar">⁦49⁩ دينار لشهر أو ⁦390⁩ دينار لسنة</span></strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><span class="tg-tampon" aria-hidden="true"><span data-l="ar">مثال</span></span><img src="../../../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><span class="tg-tampon" aria-hidden="true"><span data-l="ar">مثال</span></span><img src="../../../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li>
-    <li><span data-l="ar">سبب الدفع: <strong>رمز الباس</strong> (يظهر في صفحة الباس بمجرد لمس « خذ الباس »، أو يعطيك إياه روبوت تيليغرام). ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li>
+    <li><span data-l="ar">سبب الدفع: <strong>رقم طلبك</strong> (رمز الباس الذي يظهر في الصفحة بمجرد إرسال الاستمارة، أو يعطيك إياه روبوت تيليغرام). ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li>
   </ol>
+  <p class="petit pass-filet"><span data-l="ar">نسيت الرمز في سبب الدفع؟ لا بأس: أرسل الوصل على واتساب وسنجد طلبك.</span></p>
   <p class="paie-confiance"><span data-l="ar">تدفع مباشرة في التطبيق الرسمي للبريد التونسي (D17) أو لزيتونة للدفع (IZI): لا نطّلع أبدًا على رموزك.</span></p>
-  <a class="btn-wa" id="pass-preuve" href="https://wa.me/21624321390?text=Bonjour%2C%20voici%20la%20preuve%20de%20paiement%20de%20mon%20Pass%20Investisseur%20%28Immobilier%20Tunisie%29.%20Mon%20code%20Pass%20%3A%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 8.6c0 3.4 2.9 6.4 6.4 6.4l1-1.4-2-1-1 .9c-1-.4-2.1-1.5-2.5-2.5l.9-1-1-2z"/></svg><span data-l="ar">أرسل إثبات الدفع عبر واتساب</span></a>
+  <a class="btn-wa" id="pass-preuve" href="https://wa.me/21624321390?text=Voici%20ma%20preuve%20de%20paiement%20%E2%80%94%20Immobilier%20Tunisie%20%E2%80%94%20Pass%20Investisseur%20%E2%80%94%20code%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 8.6c0 3.4 2.9 6.4 6.4 6.4l1-1.4-2-1-1 .9c-1-.4-2.1-1.5-2.5-2.5l.9-1-1-2z"/></svg><span data-l="ar">أرسل إثبات الدفع عبر واتساب</span></a>
   <p class="petit"><span data-l="ar">لا تجديد تلقائي: يصلك تذكير قبل النهاية؛ دون دفع تحتفظ بالتنبيهات المجانية.</span></p></div>
 </details>
 </section>
 </main>
 <footer id="pied" class="pied"><div class="wrap"><p class="pied-legal"><span data-l="ar"><a href="https://clicvia.com/ar/confidentialite/" rel="noopener">الخصوصية</a> · <a href="https://clicvia.com/ar/conditions/" rel="noopener">شروط الاستعمال</a></span></p></div></footer>
 
-<script src="../../../assets/pass.js?v=6e4bbfac60" defer></script>
+<script src="../../../assets/pass.js?v=0028a7c571" defer></script>
 </body>
 </html>

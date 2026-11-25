@@ -1693,3 +1693,23 @@ button.an-appel{font:inherit;cursor:pointer;width:100%}
 .liste-quartiers li{display:flex}.liste-quartiers li>a{flex:1}
 .liste-quartiers .q-nom{display:flex;flex-direction:column;min-width:0;line-height:1.25}
 .liste-quartiers .q-nom small{font-size:12px;font-weight:500;color:var(--doux)}
+
+/* ---------------------------------------------------------------- achat d'un Pass (24/11/2026, règles communes § 69-70 : même formulaire partout) */
+.achat-pass{display:flex;flex-direction:column;gap:8px;max-width:520px;margin:14px 0 0}
+.achat-pass .achat-etiquette{font-weight:700;font-size:14px;margin:4px 0 0}
+.achat-pass input:not([type=checkbox]):not(.piege),.achat-pass select{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:11px 13px;border:1.5px solid var(--ligne);border-radius:12px;background:var(--carte);color:var(--encre);-webkit-user-select:text;user-select:text}
+.achat-pass input:focus,.achat-pass select:focus{outline:0;border-color:var(--terre);box-shadow:0 0 0 4px var(--terre-clair)}
+.achat-pass .case{margin:6px 0 2px}
+.achat-pass .btn-paie{align-self:flex-start;margin-top:6px}
+.achat-statut{margin:0;font-weight:600;min-height:0}
+.achat-statut.err{color:#A3271B}
+.achat-statut.ok{color:#1A6B3A}
+.v-achat h3{margin:16px 0 4px}
+.pass-derniere{margin:0 0 4px;font-weight:700;color:var(--terre)}
+/* « Dernière étape » commune (25/11/2026, pass-commun/CONSIGNES.md) : code de commande en gros, filet, « Nouvelle commande » */
+.pass-code-gros{margin:4px 0;font-size:30px;font-weight:800;letter-spacing:.06em;color:var(--encre);font-family:ui-monospace,Menlo,Consolas,monospace}
+.pass-code-phrase{margin:0 0 8px;font-size:14.5px}
+.pass-filet{margin:8px 0 0;font-size:13.5px;color:var(--doux)}
+.pass-attente{margin:0 0 4px}
+.pass-nouvelle{margin:8px 0 0}
+.pass-nouvelle-btn{border:1.5px solid var(--ligne);background:var(--carte);color:var(--encre);border-radius:10px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}

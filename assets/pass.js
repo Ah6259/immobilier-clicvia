@@ -1,10 +1,10 @@
 /* Pass Investisseur sur la page web investir/pass/ (14/10/2026, demande d'Ahmed : sans Telegram, un lien mis à jour chaque semaine).
-   - PAS D'ESSAI GRATUIT depuis le 15/10/2026 (décision d'Ahmed) : « Prendre le Pass » crée tout de suite le code Pass INV-XXXXXX
-     (motif du paiement, gardé dans ce navigateur) ; le contenu s'ouvre quand le code est payé (essais commencés avant : honorés).
+   - PAS D'ESSAI GRATUIT depuis le 15/10/2026 (décision d'Ahmed) : le formulaire commun d'achat (24/11/2026, nom, téléphone, e-mail,
+     formule, conditions -> Formspree) puis le code Pass INV-XXXXXX (motif du paiement, gardé dans ce navigateur) ; le contenu s'ouvre quand le code est payé (essais commencés avant : honorés).
    - Code Pass actif (payé) : son identifiant et la clé du tableau (chiffrée avec une clé tirée du code) sont dans acces.json
      (écrit par le robot privé). Le tableau de la semaine (rapport.dat) est CHIFFRÉ (AES-256-GCM) depuis le 17/10/2026 :
      deriver() et dechiffrer() = mêmes calculs que robot/pass_web.py.
-   Rien n'est envoyé : la page ne fait que lire ses deux fichiers. */
+   Seul le formulaire d'achat envoie quelque chose (Formspree, au clic) ; le Pass ne fait que lire ses deux fichiers. */
 (function () {
   var zone = document.getElementById("pass-web");
   var CLE = "pass-immobilier", ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -81,7 +81,13 @@
     if (!etat || etat.code !== h) etat = {code: h, debut: etat && etat.code === h ? etat.debut : null};
     garder();
   }
-  if (/[?&](prendre|essai)\b/.test(location.search) && !etat) { etat = {code: nouveauCode(), debut: null}; garder(); }
+  // ?prendre (bouton « Prendre le Pass » des autres pages) : depuis le 24/11/2026 (règles communes § 69-70), le code n'est plus créé
+  // à l'arrivée : on montre le formulaire commun d'achat (nom, téléphone, e-mail, formule, conditions), le code vient après l'envoi
+  var VIENT_PRENDRE = /[?&](prendre|essai)\b/.test(location.search) && !etat;
+  // 25/11/2026 (CONSIGNES.md point 3) : commande gardée dans ce téléphone (« pass-commande », 60 jours) -> son code est repris et
+  // essayé tout seul (même vérification que la case du code) ; activé -> Pass ouvert et commande effacée
+  var vientDEnvoyer = false, codeDemande = null, nomDemande = "";   // nom : seulement pendant la visite (lien WhatsApp)
+  (function () { var c = window.commandePass && window.commandePass.lire("INV-"); if (c && !etat && /^INV-[A-Z0-9]{4,8}$/.test(c.code)) { etat = {code: c.code, debut: null}; garder(); } })();
 
   // ---- accès
   // PASS : {code, fin} quand le code de ce navigateur est PAYÉ et que le tableau a pu être déchiffré avec lui (ouvrir())
@@ -119,16 +125,30 @@
     } else {
       // 18/10/2026 (Ahmed : « les lignes se coupent beaucoup ») : phrases courtes, une idée par ligne, le lien n'est plus écrit en entier
       // (il se coupait au milieu) : un bouton le copie. Pas d'« essai gratuit » (supprimé le 15/10/2026 ; les essais commencés avant restent)
-      h += '<p class="pass-titre"><b>' + (etat.debut ? T2("Votre essai est terminé", "انتهت تجربتك") : T2("Votre code Pass est prêt", "رمز الباس جاهز")) + "</b></p>" +
-           '<ol class="pass-etapes"><li>' + T2("Payez le Pass ci-dessous.", "ادفع الباس أدناه.") + "</li><li>" +
-           T2("Motif du paiement : votre code.", "سبب الدفع: رمزك.") + "</li><li>" + T2("Le Pass s’ouvre ici, le jour même.", "يُفتح الباس هنا في نفس اليوم.") + "</li></ol>";
+      // 25/11/2026 (pass-commun/CONSIGNES.md point 2) : bloc « Dernière étape » commun (code en gros = numéro de commande = motif,
+      // filet « oublié le code ? », « Nouvelle commande ») ; retour sur la page avec une commande gardée = « commande en attente »
+      var cmd = window.commandePass ? window.commandePass.lire("INV-") : null;
+      if (etat.debut || !window.commandePass)
+        h += '<p class="pass-titre"><b>' + (etat.debut ? T2("Votre essai est terminé", "انتهت تجربتك") : T2("Votre code Pass est prêt", "رمز الباس جاهز")) + "</b></p>" +
+             '<ol class="pass-etapes"><li>' + T2("Payez le Pass ci-dessous.", "ادفع الباس أدناه.") + "</li><li>" +
+             T2("Motif du paiement : votre code.", "سبب الدفع: رمزك.") + "</li><li>" + T2("Le Pass s’ouvre ici, le jour même.", "يُفتح الباس هنا في نفس اليوم.") + "</li></ol>";
+      else h += window.commandePass.html(etat.code, cmd && cmd.code === etat.code ? cmd.formule : "", !!(cmd && cmd.code === etat.code && !vientDEnvoyer), "pass-nouvelle");
     }
-    h += '<p class="pass-code">' + T2("Code", "الرمز") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b></p>" +
-         '<p class="pass-lien"><button type="button" class="pass-copier" id="pass-copier">' + T2("📋 Copier mon lien", "📋 انسخ رابطي") + "</button>" +
+    if (a.ok && window.commandePass) window.commandePass.effacer();   // Pass activé : la commande gardée n'a plus lieu d'être
+    if (a.ok || etat.debut || !window.commandePass) h += '<p class="pass-code">' + T2("Code", "الرمز") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b></p>";
+    h += '<p class="pass-lien"><button type="button" class="pass-copier" id="pass-copier">' + T2("📋 Copier mon lien", "📋 انسخ رابطي") + "</button>" +
          "<small>" + T2("Il ouvre le Pass sur un autre téléphone.", "يفتح الباس على هاتف آخر.") + "</small></p>";
     boite.innerHTML = h;
-    var wa = el("pass-preuve");
-    if (wa) { if (!wa.getAttribute("data-base")) wa.setAttribute("data-base", wa.href); wa.href = wa.getAttribute("data-base") + encodeURIComponent(etat.code); }
+    var wa = el("pass-preuve"), cw = window.commandePass ? window.commandePass.lire("INV-") : null;
+    if (wa) wa.href = window.commandePass ? window.commandePass.lienWa(etat.code, cw && cw.code === etat.code ? cw.formule : "", nomDemande)
+                                          : "https://wa.me/21624321390?text=" + encodeURIComponent("Mon code Pass : " + etat.code);
+    var nv = el("pass-nouvelle");
+    if (nv) nv.onclick = function () {   // « Nouvelle commande » : on oublie la commande en attente (pas un Pass payé : il n'a pas ce bouton)
+      window.commandePass.effacer(); etat = null; codeDemande = null; vientDEnvoyer = false; nomDemande = "";
+      try { localStorage.removeItem(CLE); } catch (e) { /* navigation privée */ }
+      tout();
+      try { el("pass-accueil").scrollIntoView({block: "start"}); } catch (x) { /* ancien navigateur */ }
+    };
     var c = el("pass-copier");
     if (c) c.onclick = function () {
       try { navigator.clipboard.writeText(lienPerso()); c.textContent = T2("Copié ✓", "تم النسخ ✓"); } catch (e) { /* ancien navigateur */ }
@@ -259,11 +279,20 @@
   });
   el("p-filtre").addEventListener("change", classement);
   ["p-c1", "p-c2", "p-c3"].forEach(function (id) { el(id).addEventListener("change", comparer); });
-  el("pass-commencer").addEventListener("click", function () {
-    if (!etat) { etat = {code: nouveauCode(), debut: null}; garder(); }
-    tout();
-    var p = el("pass-payer"); if (p && !p.hidden) { var d = p.querySelector("details.paiement"); if (d) d.open = true; try { p.scrollIntoView({behavior: "smooth", block: "start"}); } catch (x) { /* ancien navigateur */ } }
+  // 24/11/2026 (règles communes § 69-70) : formulaire commun d'achat (assets/page.js achatPass) -> Formspree, PUIS le code INV-XXXXXX
+  // (même format, même calcul qu'avant) et la dernière étape (paiement ouvert, preuve WhatsApp avec le code)
+  if (window.achatPass) window.achatPass(el("pass-achat"), {
+    code: function () { return etat ? etat.code : (codeDemande = codeDemande || nouveauCode()); },
+    fini: function (code, formule, nom) {
+      nomDemande = nom || "";
+      if (!etat) { etat = {code: code, debut: null}; garder(); }
+      if (window.commandePass) window.commandePass.ecrire(code, formule);
+      vientDEnvoyer = true;
+      tout();
+      var p = el("pass-payer"); if (p && !p.hidden) { var d = p.querySelector("details.paiement"); if (d) d.open = true; try { el("pass-etat").scrollIntoView({behavior: "smooth", block: "start"}); } catch (x) { /* ancien navigateur */ } }
+    }
   });
+  if (VIENT_PRENDRE) { try { el("pass-accueil").scrollIntoView({block: "start"}); } catch (x) { /* ancien navigateur */ } }
   el("pass-code-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var c = normaliser(el("pass-code-saisi").value);

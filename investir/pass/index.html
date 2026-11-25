@@ -35,8 +35,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=6e4bbfac60">
-<script src="../../assets/page.js?v=6e4bbfac60"></script>
+<link rel="stylesheet" href="../../assets/style.css?v=0028a7c571">
+<script src="../../assets/page.js?v=0028a7c571"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body data-maj="2026-11-24" data-cv="1d86f99cbf" data-nb="51793" data-page="investir">
@@ -60,9 +60,25 @@
 <section class="bloc pass" id="pass-accueil">
   <h2><span data-l="fr">Prendre le Pass Investisseur</span></h2>
   <p class="pass-prix"><span data-l="fr"><b>49 DT</b> / mois <small>ou 390 DT / an</small></span></p>
-  <p><span data-l="fr">Ici, sans application ni inscription : vous recevez tout de suite votre <b>code Pass</b> (le motif du paiement) et votre <b>lien personnel</b>. Le Pass s’ouvre sur cette page dès que le paiement est reçu, dans la journée.</span></p>
+  <p><span data-l="fr">Ici, sans application : remplissez ce court formulaire, vous recevez tout de suite votre <b>code Pass</b> (le motif du paiement) et votre <b>lien personnel</b>. Le Pass s’ouvre sur cette page dès que le paiement est reçu, dans la journée.</span></p>
   <a class="btn-exemple" href="../exemple/"><span data-l="fr">👀 Voir d’abord l’exemple complet : tout ce que vous recevez</span></a>
-  <button type="button" class="btn-paie" id="pass-commencer"><span data-l="fr">Obtenir mon code Pass et payer</span></button>
+  <form class="achat-pass" id="pass-achat" action="https://formspree.io/f/mwlpakqj" method="POST" novalidate>
+  <label class="achat-etiquette" for="pass-achat-nom"><span data-l="fr">Votre nom</span></label>
+  <input id="pass-achat-nom" name="nom" required maxlength="100" autocomplete="name">
+  <label class="achat-etiquette" for="pass-achat-tel"><span data-l="fr">Téléphone WhatsApp (8 chiffres)</span></label>
+  <input id="pass-achat-tel" name="telephone" type="tel" required inputmode="tel" pattern="[0-9 +]{8,16}" maxlength="16" autocomplete="tel" dir="ltr">
+  <label class="achat-etiquette" for="pass-achat-email"><span data-l="fr">E-mail</span></label>
+  <input id="pass-achat-email" name="email" type="email" required maxlength="200" autocomplete="email" inputmode="email" dir="ltr">
+  <label class="achat-etiquette" for="pass-achat-formule"><span data-l="fr">Formule</span></label>
+  <select id="pass-achat-formule" name="formule" required><option value="Pass Investisseur - 49 DT - 1 mois" selected data-fr="1 mois : 49 DT" data-ar="شهر واحد: 49 دينار">1 mois : 49 DT</option><option value="Pass Investisseur - 390 DT - 1 an" data-fr="1 an : 390 DT" data-ar="سنة: 390 دينار">1 an : 390 DT</option></select>
+  <label class="case"><input type="checkbox" name="conditions" value="oui" required> <span><span data-l="fr">J’accepte les conditions du Pass : le prix ci-dessus, pas de renouvellement automatique, et les <a href="https://clicvia.com/conditions/" rel="noopener">conditions d’utilisation</a>.</span></span></label>
+  <input type="hidden" name="site" value="Immobilier Tunisie"><input type="hidden" name="page" value=""><input type="hidden" name="code" value="">
+  <input type="hidden" name="_subject" value="Pass Investisseur — Immobilier Tunisie">
+  <input type="text" name="_gotcha" class="piege" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <button type="submit" class="btn-paie"><span data-l="fr">Obtenir mon code Pass et payer</span></button>
+  <p class="achat-statut" role="status" aria-live="polite"></p>
+  <p class="petit"><span data-l="fr">Votre nom, votre téléphone et votre e-mail servent seulement à traiter votre commande et à activer votre Pass : ils ne sont jamais publiés ni vendus (envoi par le service Formspree). Rien n’est envoyé sans clic sur le bouton.</span></p>
+</form>
 </section>
 <div id="pass-contenu" hidden>
 <section class="bloc res-payant pass-analyse" id="p-analyse">
@@ -97,18 +113,19 @@
   <details class="paiement"><summary class="btn-paie"><span data-l="fr">Paiement</span></summary>
   <div class="paie"><ol class="paie-etapes">
     <li><span data-l="fr">Ouvrez l'application :</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="fr">Sur iPhone :</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li>
-    <li><span data-l="fr">Dans D17 : « Transfert d’argent » puis « Transfert rapide ». Dans IZI : « Transfert ». Tapez le numéro</span> <strong><bdi dir="ltr">24 321 390</bdi></strong>.<br>
+    <li><span data-l="fr">Dans D17 : « Transfert d’argent » puis « Transfert rapide ». Dans IZI : « Transfert ». Tapez le numéro <strong><bdi dir="ltr">24 321 390</bdi></strong>.</span><br>
       <span data-l="fr">Montant :</span> <strong><span data-l="fr">49 DT pour un mois ou 390 DT pour un an</span></strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><span class="tg-tampon" aria-hidden="true"><span data-l="fr">EXEMPLE</span></span><img src="../../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><span class="tg-tampon" aria-hidden="true"><span data-l="fr">EXEMPLE</span></span><img src="../../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li>
-    <li><span data-l="fr">Motif : <strong>votre code Pass</strong> (affiché sur la page du Pass dès que vous touchez « Prendre le Pass », ou donné par le robot Telegram). Puis envoyez la capture du paiement par WhatsApp (bouton vert).</span></li>
+    <li><span data-l="fr">Motif : <strong>votre code de commande</strong> (le code Pass affiché sur la page dès que vous envoyez le formulaire, ou donné par le robot Telegram). Puis envoyez la capture du paiement par WhatsApp (bouton vert).</span></li>
   </ol>
+  <p class="petit pass-filet"><span data-l="fr">Vous avez oublié le code dans le motif ? Ce n'est pas grave : envoyez quand même la preuve sur WhatsApp, nous retrouvons votre demande.</span></p>
   <p class="paie-confiance"><span data-l="fr">Vous payez directement dans l'application officielle de La Poste Tunisienne (D17) ou de Zitouna Paiement (IZI) : nous ne voyons jamais vos codes.</span></p>
-  <a class="btn-wa" id="pass-preuve" href="https://wa.me/21624321390?text=Bonjour%2C%20voici%20la%20preuve%20de%20paiement%20de%20mon%20Pass%20Investisseur%20%28Immobilier%20Tunisie%29.%20Mon%20code%20Pass%20%3A%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 8.6c0 3.4 2.9 6.4 6.4 6.4l1-1.4-2-1-1 .9c-1-.4-2.1-1.5-2.5-2.5l.9-1-1-2z"/></svg><span data-l="fr">Envoyer la preuve de paiement par WhatsApp</span></a>
+  <a class="btn-wa" id="pass-preuve" href="https://wa.me/21624321390?text=Voici%20ma%20preuve%20de%20paiement%20%E2%80%94%20Immobilier%20Tunisie%20%E2%80%94%20Pass%20Investisseur%20%E2%80%94%20code%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 8.6c0 3.4 2.9 6.4 6.4 6.4l1-1.4-2-1-1 .9c-1-.4-2.1-1.5-2.5-2.5l.9-1-1-2z"/></svg><span data-l="fr">Envoyer la preuve de paiement par WhatsApp</span></a>
   <p class="petit"><span data-l="fr">Pas de renouvellement automatique : un rappel vous est envoyé avant la fin ; sans paiement, vous gardez les alertes gratuites.</span></p></div>
 </details>
 </section>
 </main>
 <footer id="pied" class="pied"><div class="wrap"><p class="pied-legal"><span data-l="fr"><a href="https://clicvia.com/confidentialite/" rel="noopener">Confidentialité</a> · <a href="https://clicvia.com/conditions/" rel="noopener">Conditions d’utilisation</a></span></p></div></footer>
 
-<script src="../../assets/pass.js?v=6e4bbfac60" defer></script>
+<script src="../../assets/pass.js?v=0028a7c571" defer></script>
 </body>
 </html>

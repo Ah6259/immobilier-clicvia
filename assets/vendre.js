@@ -3,16 +3,20 @@
      du calcul (nombre d'annonces comparées, précision mesurée). Si l'IA n'est pas assez fiable pour ce type de bien, on le dit et
      on donne la référence des annonces semblables.
    - Pass Vendeur (analyse complète) : 3 prix, les annonces de référence (les plus proches, avec leur lien), prix au m², concurrence,
-     le calcul expliqué. PAS D'ESSAI (Ahmed, 15/10/2026 : un exemple complet le remplace) ; « Prendre le Pass » donne tout
-     de suite le code VEN-XXXXXX (motif du paiement) ; code payé = identifiant PBKDF2 dans
+     le calcul expliqué. PAS D'ESSAI (Ahmed, 15/10/2026 : un exemple complet le remplace) ; le formulaire commun d'achat
+     (24/11/2026) puis tout de suite le code VEN-XXXXXX (motif du paiement) ; code payé = identifiant PBKDF2 dans
      investir/pass/acces.json (écrit par le robot privé immobilier-abonnes, même calcul que assets/pass.js, 17/10/2026).
-   Les annonces viennent de donnees/annonces.js (publiques) : rien n'est envoyé, tout se calcule dans le téléphone. */
+   Les annonces viennent de donnees/annonces.js (publiques) : tout se calcule dans le téléphone (seul le formulaire d'achat du Pass envoie quelque chose, au clic). */
 (function () {
   var form = document.getElementById("v-form"), res = document.getElementById("v-res");
   if (!form || !res) return;
   var CLE = "pass-vendeur", ESSAI = 3, FIN_ESSAIS = "2026-10-15", OFFERTS = 30, ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
   var racine = document.documentElement.getAttribute("data-racine") || "";
   var ACCES = null, etat = lire(), dernier = null;
+  // 25/11/2026 (CONSIGNES.md point 3) : commande gardée dans ce téléphone (« pass-commande », 60 jours) -> son code est repris et essayé
+  // tout seul (même vérification que la case du code) ; activé -> analyse ouverte et commande effacée
+  var vientDEnvoyer = false, codeDemande = null, nomDemande = "";   // nom : seulement pendant la visite (lien WhatsApp)
+  (function () { var c = window.commandePass && window.commandePass.lire("VEN-"); if (c && !etat && /^VEN-[A-Z0-9]{6}$/.test(c.code)) { etat = { code: c.code, debut: null }; try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) { /* navigation privée */ } } })();
   // lien personnel vendre/#VEN-XXXXXX (comme investir/pass/#INV-…) : le code s'ouvre sans rien taper (15/10/2026)
   (function () {
     var h = String(location.hash || "").slice(1).toUpperCase();
@@ -649,7 +653,7 @@
 
   function afficherEtat() {
     var b = el("v-etat"), a = acces(), h = "";
-    el("v-prendre").hidden = !!etat;
+    el("v-achat").hidden = !!etat;   // formulaire commun d'achat (24/11/2026) : caché dès qu'un code existe
     if (a.ok && el("estimer-d") && !el("estimer-d").dataset.vu) { el("estimer-d").open = true; el("estimer-d").dataset.vu = "1"; }
     // Pass actif (15/10/2026, Ahmed) : plus le mot « gratuit » ; la carte devient « Analyse complète et détaillée »
     if (el("v-titre")) {
@@ -673,17 +677,28 @@
       if (a.offrable) h += '<p class="pass-offert"><b>' + T2("Votre bien n’est pas encore vendu ou loué ?", "لم يُبع أو يُكرَ عقارك بعد؟") + "</b> " +
         T2("Nous vous offrons 30 jours de plus, gratuitement.", "نهديك 30 يومًا إضافية مجانًا.") + ' <button type="button" class="btn-paie" id="v-offert">' +
         T2("Pas encore vendu ni loué : prolonger de 30 jours offerts", "لم يُبع ولم يُكرَ: مدّد 30 يومًا مجانًا") + "</button></p>";
-      h += a.ok ? "<p><b>" + (a.quoi === "essai" ? T2("Essai gratuit actif", "التجربة المجانية مفعّلة") : a.quoi === "offert" ? T2("30 jours offerts", "30 يومًا هدية") : T2("Pass Propriétaire actif", "باس المالك مفعّل")) + "</b> " + T2("jusqu’au ", "إلى غاية ") + jfr(a.fin) + T2(" inclus — l’analyse complète de votre bien est juste sous l’estimation gratuite.", " — التحليل الكامل لعقارك تحت التقدير المجاني مباشرة.") + "</p>"
-                : '<p class="pass-titre"><b>' + (etat.debut ? T2("Votre essai est terminé", "انتهت تجربتك") : T2("Votre code Pass est prêt", "رمز الباس جاهز")) + "</b></p>" +
-                  '<ol class="pass-etapes"><li>' + T2("Payez le Pass ci-dessous.", "ادفع الباس أدناه.") + "</li><li>" + T2("Motif du paiement : votre code.", "سبب الدفع: رمزك.") +
-                  "</li><li>" + T2("L’analyse s’ouvre ici, le jour même.", "يُفتح التحليل هنا في نفس اليوم.") + "</li></ol>";   // (18/10/2026 : comme investir/pass/)
-      h += '<p class="pass-code">' + T2("Code", "الرمز") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b></p>";
+      h += a.ok ? "<p><b>" + (a.quoi === "essai" ? T2("Essai gratuit actif", "التجربة المجانية مفعّلة") : a.quoi === "offert" ? T2("30 jours offerts", "30 يومًا هدية") : T2("Pass Propriétaire actif", "باس المالك مفعّل")) + "</b> " + T2("jusqu’au ", "إلى غاية ") + jfr(a.fin) + T2(" inclus — l’analyse complète de votre bien est juste sous l’estimation gratuite.", " — التحليل الكامل لعقارك تحت التقدير المجاني مباشرة.") + "</p>" : "";
+      // 25/11/2026 (pass-commun/CONSIGNES.md point 2) : bloc « Dernière étape » commun ; commande gardée = « commande en attente »
+      var cmd = window.commandePass ? window.commandePass.lire("VEN-") : null, fcmd = cmd && cmd.code === etat.code ? cmd.formule : "";
+      if (!a.ok) h += etat.debut || !window.commandePass
+        ? '<p class="pass-titre"><b>' + (etat.debut ? T2("Votre essai est terminé", "انتهت تجربتك") : T2("Votre code Pass est prêt", "رمز الباس جاهز")) + "</b></p>" +
+          '<ol class="pass-etapes"><li>' + T2("Payez le Pass ci-dessous.", "ادفع الباس أدناه.") + "</li><li>" + T2("Motif du paiement : votre code.", "سبب الدفع: رمزك.") +
+          "</li><li>" + T2("L’analyse s’ouvre ici, le jour même.", "يُفتح التحليل هنا في نفس اليوم.") + "</li></ol>"
+        : window.commandePass.html(etat.code, fcmd, !!(fcmd !== "" && !vientDEnvoyer), "v-nouvelle");
+      if (a.ok && window.commandePass) window.commandePass.effacer();   // Pass activé : la commande gardée n'a plus lieu d'être
+      if (a.ok || etat.debut || !window.commandePass) h += '<p class="pass-code">' + T2("Code", "الرمز") + ' : <b><bdi dir="ltr">' + esc(etat.code) + "</bdi></b></p>";
       var wa = el("pass-preuve");
-      if (wa) { if (!wa.getAttribute("data-base")) wa.setAttribute("data-base", wa.href); wa.href = wa.getAttribute("data-base") + encodeURIComponent(etat.code); }
+      if (wa) wa.href = window.commandePass ? window.commandePass.lienWa(etat.code, fcmd, nomDemande) : "https://wa.me/21624321390?text=" + encodeURIComponent("Mon code Pass : " + etat.code);
     }
     b.innerHTML = h;
     var o = el("v-offert");
     if (o) o.onclick = function () { etat.offert = a.paye; garder(); tout(); };
+    var nv = el("v-nouvelle");
+    if (nv) nv.onclick = function () {   // « Nouvelle commande » : on oublie la commande en attente (jamais montré pour un Pass payé)
+      window.commandePass.effacer(); etat = null; codeDemande = null; vientDEnvoyer = false; nomDemande = "";
+      try { localStorage.removeItem(CLE); } catch (e) { /* navigation privée */ }
+      tout();
+    };
   }
 
   function tout() {
@@ -705,11 +720,19 @@
     tout();
   });
   form.addEventListener("input", function () { tout(); });
-  el("v-prendre").addEventListener("click", function () {
-    if (!etat) { etat = { code: nouveauCode(), debut: null }; garder(); verifierCode(); }
-    tout();
-    var d = document.querySelector("#pass-vendeur details.paiement"); if (d) ouvrir(d);
-    try { el("v-etat").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (x) { /* ancien navigateur */ }
+  // 24/11/2026 (règles communes § 69-70) : formulaire commun d'achat (assets/page.js achatPass : nom, téléphone, e-mail, formule,
+  // conditions -> Formspree), PUIS le code VEN-XXXXXX (même format, même calcul qu'avant) et la dernière étape (paiement ouvert)
+  if (window.achatPass) window.achatPass(el("v-achat-form"), {
+    code: function () { return etat ? etat.code : (codeDemande = codeDemande || nouveauCode()); },
+    fini: function (code, formule, nom) {
+      nomDemande = nom || "";
+      if (!etat) { etat = { code: code, debut: null }; garder(); verifierCode(); }
+      if (window.commandePass) window.commandePass.ecrire(code, formule);
+      vientDEnvoyer = true;
+      tout();
+      var d = document.querySelector("#pass-vendeur details.paiement"); if (d) ouvrir(d);
+      try { el("v-etat").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (x) { /* ancien navigateur */ }
+    }
   });
   el("v-code-form").addEventListener("submit", function (e) {
     e.preventDefault();

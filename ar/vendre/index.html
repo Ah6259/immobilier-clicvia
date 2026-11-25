@@ -35,8 +35,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=6e4bbfac60">
-<script src="../../assets/page.js?v=6e4bbfac60"></script>
+<link rel="stylesheet" href="../../assets/style.css?v=0028a7c571">
+<script src="../../assets/page.js?v=0028a7c571"></script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://immobilier.clicvia.com/"}, {"@type": "ListItem", "position": 2, "name": "Vendre", "item": "https://immobilier.clicvia.com/vendre/"}]}</script>
 </head>
@@ -120,8 +120,27 @@
   </div>
 </details>
   <div class="pass-etat" id="v-etat" role="status" aria-live="polite"></div>
-  <button type="button" class="btn-paie" id="v-prendre"><span data-l="ar">خذ باس المالك: ⁦29⁩ دينار</span></button>
-  <details class="aide-q"><summary aria-label="Explication" title="Explication">?</summary><p class="petit"><span data-l="ar">دون تطبيق أو تسجيل: تحصل فورًا على رمز الباس (سبب الدفع). يُفتح التحليل الكامل لعقارك في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.</span></p></details>
+  <div class="v-achat" id="v-achat">
+  <h3><span data-l="ar">خذ باس المالك</span></h3>
+  <p class="petit"><span data-l="ar">دون تطبيق: املأ هذه الاستمارة القصيرة، تحصل فورًا على رمز الباس (سبب الدفع). يُفتح التحليل الكامل لعقارك في هذه الصفحة بمجرد وصول الدفع، في نفس اليوم.</span></p>
+  <form class="achat-pass" id="v-achat-form" action="https://formspree.io/f/mwlpakqj" method="POST" novalidate>
+  <label class="achat-etiquette" for="v-achat-form-nom"><span data-l="ar">اسمك</span></label>
+  <input id="v-achat-form-nom" name="nom" required maxlength="100" autocomplete="name">
+  <label class="achat-etiquette" for="v-achat-form-tel"><span data-l="ar">هاتف واتساب (⁦8⁩ أرقام)</span></label>
+  <input id="v-achat-form-tel" name="telephone" type="tel" required inputmode="tel" pattern="[0-9 +]{8,16}" maxlength="16" autocomplete="tel" dir="ltr">
+  <label class="achat-etiquette" for="v-achat-form-email"><span data-l="ar">البريد الإلكتروني</span></label>
+  <input id="v-achat-form-email" name="email" type="email" required maxlength="200" autocomplete="email" inputmode="email" dir="ltr">
+  <label class="achat-etiquette" for="v-achat-form-formule"><span data-l="ar">الصيغة</span></label>
+  <select id="v-achat-form-formule" name="formule" required><option value="Pass Propriétaire (vente) - 29 DT - 30 jours" selected data-fr="Pass Propriétaire : 29 DT pour 30 jours" data-ar="باس المالك: 29 دينار لمدة 30 يومًا">باس المالك: 29 دينار لمدة 30 يومًا</option></select>
+  <label class="case"><input type="checkbox" name="conditions" value="oui" required> <span><span data-l="ar">أوافق على شروط الباس: السعر أعلاه، دون تجديد تلقائي، و<a href="https://clicvia.com/ar/conditions/" rel="noopener">شروط الاستعمال</a>.</span></span></label>
+  <input type="hidden" name="site" value="Immobilier Tunisie"><input type="hidden" name="page" value=""><input type="hidden" name="code" value="">
+  <input type="hidden" name="_subject" value="Pass Propriétaire — Immobilier Tunisie">
+  <input type="text" name="_gotcha" class="piege" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <button type="submit" class="btn-paie"><span data-l="ar">خذ باس المالك: ⁦29⁩ دينار</span></button>
+  <p class="achat-statut" role="status" aria-live="polite"></p>
+  <p class="petit"><span data-l="ar">يُستعمل اسمك وهاتفك وبريدك الإلكتروني فقط لمعالجة طلبك وتفعيل باسك: لا تُنشر ولا تُباع أبدًا (إرسال عبر خدمة Formspree). لا يُرسل أي شيء دون الضغط على الزر.</span></p>
+</form>
+  </div>
   <form class="pass-code-form" id="v-code-form">
     <label for="v-code"><span data-l="ar">لديك رمز باس المالك؟</span></label>
     <span><input id="v-code" type="text" autocomplete="off" placeholder="VEN-ABC234" dir="ltr"><button type="submit"><span data-l="ar">افتح</span></button></span>
@@ -130,12 +149,13 @@
   <details class="paiement"><summary class="btn-paie"><span data-l="ar">الدفع</span></summary>
   <div class="paie"><ol class="paie-etapes">
     <li><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li>
-    <li><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم</span> <strong><bdi dir="ltr">24 321 390</bdi></strong>.<br>
+    <li><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم <strong><bdi dir="ltr">24321390</bdi></strong>.</span><br>
       <span data-l="ar">المبلغ:</span> <strong><span data-l="ar">⁦29⁩ دينار لمدة ⁦30⁩ يومًا</span></strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><span class="tg-tampon" aria-hidden="true"><span data-l="ar">مثال</span></span><img src="../../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><span class="tg-tampon" aria-hidden="true"><span data-l="ar">مثال</span></span><img src="../../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li>
-    <li><span data-l="ar">سبب الدفع: <strong>رمز الباس</strong> (يظهر في صفحة الباس بمجرد لمس « خذ الباس »، أو يعطيك إياه روبوت تيليغرام). ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li>
+    <li><span data-l="ar">سبب الدفع: <strong>رقم طلبك</strong> (رمز الباس الذي يظهر في الصفحة بمجرد إرسال الاستمارة، أو يعطيك إياه روبوت تيليغرام). ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li>
   </ol>
+  <p class="petit pass-filet"><span data-l="ar">نسيت الرمز في سبب الدفع؟ لا بأس: أرسل الوصل على واتساب وسنجد طلبك.</span></p>
   <p class="paie-confiance"><span data-l="ar">تدفع مباشرة في التطبيق الرسمي للبريد التونسي (D17) أو لزيتونة للدفع (IZI): لا نطّلع أبدًا على رموزك.</span></p>
-  <a class="btn-wa" id="pass-preuve" href="https://wa.me/21624321390?text=Bonjour%2C%20voici%20la%20preuve%20de%20paiement%20de%20mon%20Pass%20Propri%C3%A9taire%20%28Immobilier%20Tunisie%29.%20Mon%20code%20Pass%20%3A%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 8.6c0 3.4 2.9 6.4 6.4 6.4l1-1.4-2-1-1 .9c-1-.4-2.1-1.5-2.5-2.5l.9-1-1-2z"/></svg><span data-l="ar">أرسل إثبات الدفع عبر واتساب</span></a>
+  <a class="btn-wa" id="pass-preuve" href="https://wa.me/21624321390?text=Voici%20ma%20preuve%20de%20paiement%20%E2%80%94%20Immobilier%20Tunisie%20%E2%80%94%20Pass%20Propri%C3%A9taire%20%E2%80%94%20code%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 8.6c0 3.4 2.9 6.4 6.4 6.4l1-1.4-2-1-1 .9c-1-.4-2.1-1.5-2.5-2.5l.9-1-1-2z"/></svg><span data-l="ar">أرسل إثبات الدفع عبر واتساب</span></a>
   <p class="petit"><span data-l="ar">لا تجديد تلقائي: بعد ⁦30⁩ يومًا (و⁦30⁩ يومًا هدية إن لم يُبع أو يُكرَ عقارك بعد) يبقى التقدير المجاني متاحًا.</span></p></div>
 </details>
  </details>
@@ -150,9 +170,9 @@
 <script src="../../donnees/lieux.js?v=2026-11-24" defer></script>
 <script src="../../donnees/decoupage.js?v=d4e3f18d33" defer></script>
 <script src="../../donnees/criteres.js?v=2d89753b85" defer></script>
-<script src="../../assets/app.js?v=6e4bbfac60" defer></script>
-<script src="../../assets/ia.js?v=6e4bbfac60" defer></script>
-<script src="../../assets/vendre.js?v=6e4bbfac60" defer></script>
-<script src="../../assets/alerte.js?v=6e4bbfac60" defer></script>
+<script src="../../assets/app.js?v=0028a7c571" defer></script>
+<script src="../../assets/ia.js?v=0028a7c571" defer></script>
+<script src="../../assets/vendre.js?v=0028a7c571" defer></script>
+<script src="../../assets/alerte.js?v=0028a7c571" defer></script>
 </body>
 </html>

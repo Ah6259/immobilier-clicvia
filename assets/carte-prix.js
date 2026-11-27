@@ -477,3 +477,6 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", lancer); else lancer();
 })();
+
+/* 27/11/2026 (§ 66) : à l'impression, toutes les parties du tableau des prix par quartier sont ouvertes */
+window.addEventListener("beforeprint", function () { document.querySelectorAll("details.cp-gouv").forEach(function (d) { d.open = true; }); });

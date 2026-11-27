@@ -479,4 +479,4 @@
 })();
 
 /* 27/11/2026 (§ 66) : à l'impression, toutes les parties du tableau des prix par quartier sont ouvertes */
-window.addEventListener("beforeprint", function () { document.querySelectorAll("details.cp-gouv").forEach(function (d) { d.open = true; }); });
+window.addEventListener("beforeprint", function () { document.querySelectorAll("details.cp-partie").forEach(function (d) { d.open = true; }); });

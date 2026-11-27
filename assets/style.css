@@ -1722,16 +1722,17 @@ button.an-appel{font:inherit;cursor:pointer;width:100%}
 /* 27/11/2026 (IMM.V) : tableau des prix par quartier sous la carte (prix/), parties repliées par gouvernorat (§ 66), lisible par ChatGPT et Bing */
 .cp-tableau{margin:28px 0 8px}
 .cp-tableau>p{color:var(--doux);font-size:14.5px;margin:0 0 14px}
-.cp-gouv{border:1px solid var(--bord,#e3dccf);border-radius:12px;margin:0 0 10px;background:#fff}
-.cp-gouv>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}
-.cp-gouv>summary::-webkit-details-marker{display:none}
-.cp-gouv>summary::before{content:"›";font-size:20px;line-height:1;color:var(--doux);transition:transform .2s}
-.cp-gouv[open]>summary::before{transform:rotate(90deg)}
-.cp-gouv>summary h3{margin:0;font-size:16px;flex:1;min-width:0;overflow-wrap:anywhere}
-details.cp-gouv>summary span{white-space:normal;line-height:inherit;letter-spacing:normal} /* l’ancienne règle .cp-gouv span (bulles de la carte) empêchait le titre de passer à la ligne : page de 432 px au téléphone (27/11/2026) */
-.cp-gouv .pastille{flex-shrink:0;min-width:28px;padding:2px 8px;border-radius:99px;background:var(--sable,#f7f2ea);font-size:13px;font-weight:700;text-align:center}
-.cp-gouv .tab-defile{overflow-x:auto;padding:0 10px 12px}
+.cp-partie{border:1px solid var(--bord,#e3dccf);border-radius:12px;margin:0 0 10px;background:#fff}
+.cp-partie>summary{display:block;padding:12px 14px 12px 34px;cursor:pointer;list-style:none;position:relative}
+.cp-partie>summary::-webkit-details-marker{display:none}
+.cp-partie>summary::before{content:"›";position:absolute;inset-inline-start:14px;top:11px;font-size:20px;line-height:1;color:var(--doux);transition:transform .2s}
+[dir="rtl"] .cp-partie>summary{padding:12px 34px 12px 14px}
+.cp-partie[open]>summary::before{transform:rotate(90deg)}
+.cp-partie>summary h3{display:inline;margin:0;font-size:16px;overflow-wrap:anywhere}
+.cp-partie .cp-nb{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:99px;background:var(--sable,#f7f2ea);font-size:13px;font-weight:700;vertical-align:1px}
+.cp-partie .tab-defile{overflow-x:auto;padding:0 10px 12px;max-width:100%}
+.cp-partie{min-width:0;max-width:100%}
 .cp-tab{font-size:14px;min-width:560px}
 .cp-tab td small{display:block;font-size:11.5px;color:var(--doux)}
 .cp-tab td,.cp-tab th{white-space:nowrap}
-@media print{.cp-gouv{break-inside:avoid}.cp-gouv>summary::before{display:none}}
+@media print{.cp-partie{break-inside:avoid}.cp-partie>summary::before{display:none}}

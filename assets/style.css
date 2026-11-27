@@ -1035,7 +1035,8 @@ html[dir="rtl"] .avantage summary{padding:9px 12px 9px 34px}
 .res-verrou{list-style:none;padding:0;margin:0 0 10px}
 .res-verrou li{margin:6px 0;line-height:1.4}
 .res-boutons{display:flex;flex-wrap:wrap;gap:8px}
-.res-boutons .btn-exemple,.res-boutons .btn-paie{flex:1 1 150px;text-align:center}
+.res-boutons .btn-exemple,.res-boutons .btn-paie{flex:1 1 150px;text-align:center;margin:0;width:auto;height:auto;min-height:48px;display:flex;align-items:center;justify-content:center;line-height:1.25}   /* 27/11/2026 : mêmes marges dans la rangée (texte de « Voir le prix du Pass » qui débordait, telephone.mjs) */
+.res-boutons{margin:12px 0 0;align-items:stretch}
 #inv-res p > b{white-space:nowrap}
 /* Haut de « Où investir ? » : « Mon code Pass » et « Estimer un bien » côte à côte (15/10/2026) */
 .hero-boutons{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}

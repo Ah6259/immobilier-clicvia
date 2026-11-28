@@ -1,6 +1,6 @@
 # Immobilier Tunisie — annonces immobilières gratuites, 24 gouvernorats
 
-> 49 188 annonces immobilières en Tunisie au 28 novembre 2026 (28 025 à vendre, 21 163 à louer au mois) : appartements, maisons, villas, terrains, bureaux et locaux, par gouvernorat et par quartier, avec les prix médians calculés chaque jour. Gratuit, sans inscription. عقارات تونس.
+> 49 187 annonces immobilières en Tunisie au 28 novembre 2026 (28 024 à vendre, 21 163 à louer au mois) : appartements, maisons, villas, terrains, bureaux et locaux, par gouvernorat et par quartier, avec les prix médians calculés chaque jour. Gratuit, sans inscription. عقارات تونس.
 
 Site gratuit et indépendant, publié par Clicvia (https://clicvia.com/), le portail de services pratiques pour la Tunisie. Adresse : https://immobilier.clicvia.com/
 Langues : français (https://immobilier.clicvia.com/) et arabe (https://immobilier.clicvia.com/ar/). Mise à jour : chaque jour.
@@ -14,7 +14,7 @@ Langues : français (https://immobilier.clicvia.com/) et arabe (https://immobili
 
 ## Gouvernorats
 
-- [Immobilier Tunis](https://immobilier.clicvia.com/tunis/) : 17 676 annonces (6 660 à vendre, 11 016 à louer) ; appartement S+2 (prix médian) : 370 000 DT à l'achat, 1 470 DT par mois en location (non meublé). عقارات تونس.
+- [Immobilier Tunis](https://immobilier.clicvia.com/tunis/) : 17 675 annonces (6 659 à vendre, 11 016 à louer) ; appartement S+2 (prix médian) : 370 000 DT à l'achat, 1 470 DT par mois en location (non meublé). عقارات تونس.
 - [Immobilier Ariana](https://immobilier.clicvia.com/ariana/) : 8 160 annonces (4 506 à vendre, 3 654 à louer) ; appartement S+2 (prix médian) : 375 000 DT à l'achat, 1 200 DT par mois en location (non meublé). عقارات أريانة.
 - [Immobilier Nabeul](https://immobilier.clicvia.com/nabeul/) : 7 800 annonces (6 078 à vendre, 1 722 à louer) ; appartement S+2 (prix médian) : 360 000 DT à l'achat, 1 280 DT par mois en location (non meublé). عقارات نابل.
 - [Immobilier Sousse](https://immobilier.clicvia.com/sousse/) : 5 129 annonces (3 577 à vendre, 1 552 à louer) ; appartement S+2 (prix médian) : 328 000 DT à l'achat, 1 050 DT par mois en location (non meublé). عقارات سوسة.
